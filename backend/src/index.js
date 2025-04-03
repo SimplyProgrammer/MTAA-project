@@ -7,12 +7,17 @@ dotenv.config();
 
 const express = require('express');
 const app = express();
-
 app.use(express.json());
+
+const { verifyToken } = require("./middlewares/auth");
 
 const db = require("./config/db"); 
 
-app.get("/", async (req, res) => {
+// Auth
+const authRouter = require("./routes/auth");
+app.use("/auth", authRouter);
+
+app.get("/", verifyToken, async (req, res) => {
 	try {
 		const result = await db.query("SELECT NOW() AS current_time"); // Test db
 		res.send(`Hello, Node.js Backend! Server Time: ${result.rows[0].current_time}`);
@@ -21,10 +26,6 @@ app.get("/", async (req, res) => {
 		res.status(500).send("Database connection error");
 	}
 });
-
-// Auth
-const authRouter = require("./routes/auth");
-app.use("/auth", authRouter);
 
 const PORT = process.env.PORT | 5000
 app.listen(PORT, () => {
