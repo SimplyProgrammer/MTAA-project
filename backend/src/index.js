@@ -6,27 +6,27 @@ if (fs.existsSync(".env.local")) {
 dotenv.config();
 
 const express = require('express');
-
 const app = express();
 
 app.use(express.json());
 
-// PostgreSQL Pool
-const { Pool } = require('pg');
-const pool = new Pool({
-    user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    database: process.env.DB_NAME || 'mtaa',
-    password:  process.env.DB_PASSWD || 'mypostgres',
-    port: process.env.DB_PORT || 5432
+const db = require("./config/db"); 
+
+app.get("/", async (req, res) => {
+	try {
+		const result = await db.query("SELECT NOW() AS current_time"); // Test db
+		res.send(`Hello, Node.js Backend! Server Time: ${result.rows[0].current_time}`);
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Database connection error");
+	}
 });
 
-console.log(process.env.DB_PASSWD)
+// Auth
+const authRouter = require("./routes/auth");
+app.use("/auth", authRouter);
 
-app.get("/", (req, res) => {
-    res.send("Hello, Node.js Backend!");
-});
-
-app.listen(process.env.PORT, () => {
-    console.log(`Server running on http://localhost:${process.env.PORT}`);
+const PORT = process.env.PORT | 5000
+app.listen(PORT, () => {
+	console.log(`Server running on http://localhost:${PORT}`);
 });
