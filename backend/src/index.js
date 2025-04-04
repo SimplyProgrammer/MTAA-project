@@ -9,15 +9,18 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-const { verifyToken } = require("./middlewares/auth");
-
-const db = require("./config/db"); 
-
 // Auth
 const authRouter = require("./routes/auth");
 app.use("/auth", authRouter);
 
-app.get("/", verifyToken, async (req, res) => {
+const { verifyToken } = require("./middlewares/auth");
+app.use(verifyToken);
+
+// Routers for other routes will be here
+
+const db = require("./config/db"); 
+
+app.get("/", async (req, res) => {
 	try {
 		const result = await db.query("SELECT NOW() AS current_time"); // Test db
 		res.send(`Hello, Node.js Backend! Server Time: ${result.rows[0].current_time}`);
