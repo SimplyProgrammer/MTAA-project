@@ -1,7 +1,10 @@
+# Test
+
 GET http://localhost:5000/
-Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjEsImVtYWlsIjoiaGkudGhlcmVAZ21haWwuY29tIiwiaWF0IjoxNzQzNzY4NjAyLCJleHAiOjE3NDM3Njg2MjJ9.JK52WgNBB3RcJdBFrbhW6VmtjSNRRCkAfpbBCZzez0M
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjEsImVtYWlsIjoiaGkudGhlcmVAZ21haWwuY29tIiwiaWF0IjoxNzQzNzcyMDEwLCJleHAiOjE3NDM3NzkyMTB9.OhB1EMtudWDLORU5btRF6KVrnt6Bfanz4O9O6go4OHs
 
 ###
+# Auth
 
 POST http://localhost:5000/auth/signup
 Content-Type: application/json
@@ -37,3 +40,9 @@ Content-Type: application/json
 {
 	"refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjEsImVtYWlsIjoiaGkudGhlcmVAZ21haWwuY29tIiwiaWF0IjoxNzQzNzYxMzU0fQ.sgtjJlc46Z4DKw79rBhL_hvaJ_mwodc5ao1CPNaFZGc"
 }
+
+###
+# Posts
+
+GET http://localhost:5000/posts
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50SWQiOjEsImVtYWlsIjoiaGkudGhlcmVAZ21haWwuY29tIiwiaWF0IjoxNzQzNzcyMDEwLCJleHAiOjE3NDM3NzkyMTB9.OhB1EMtudWDLORU5btRF6KVrnt6Bfanz4O9O6go4OHs

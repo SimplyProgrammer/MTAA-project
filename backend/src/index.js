@@ -18,6 +18,9 @@ const { verifyToken } = require("./middlewares/auth");
 
 // Routers for other routes will be here
 
+const postsRouter = require("./routes/posts");
+app.use("/posts", verifyToken, postsRouter);
+
 const db = require("./config/db"); 
 
 app.get("/", verifyToken, async (req, res) => {

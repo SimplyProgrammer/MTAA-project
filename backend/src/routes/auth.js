@@ -1,4 +1,4 @@
-const router = require("express").Router();;
+const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const db = require("../config/db"); // Use the same pool
 const { genAccessToken, genRefreshToken, doRefreshToken, invalidateRefreshToken } = require("../middlewares/auth");
