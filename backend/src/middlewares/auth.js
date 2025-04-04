@@ -17,7 +17,7 @@ exports.verifyToken = (req, res, next) => {
 var activeRefreshTokens = {}; // Ongoing login sessions
 
 exports.genAccessToken = (user) => {
-	return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20s" });
+	return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2h" });
 };
 
 exports.genRefreshToken = (user, register = true) => {
@@ -46,7 +46,7 @@ exports.doRefreshToken = (refreshToken, res) => {
 exports.invalidateRefreshToken = (refreshToken) => {
 	if (!refreshToken)
 		return false
-	try{
+	try {
 		const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
 		if (activeRefreshTokens[user.accountId] != refreshToken)
 			return false

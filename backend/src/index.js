@@ -14,13 +14,13 @@ const authRouter = require("./routes/auth");
 app.use("/auth", authRouter);
 
 const { verifyToken } = require("./middlewares/auth");
-app.use(verifyToken);
+// app.use(verifyToken);
 
 // Routers for other routes will be here
 
 const db = require("./config/db"); 
 
-app.get("/", async (req, res) => {
+app.get("/", verifyToken, async (req, res) => {
 	try {
 		const result = await db.query("SELECT NOW() AS current_time"); // Test db
 		res.send(`Hello, Node.js Backend! Server Time: ${result.rows[0].current_time}`);
@@ -29,6 +29,10 @@ app.get("/", async (req, res) => {
 		res.status(500).send("Database connection error");
 	}
 });
+
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT | 5000
 app.listen(PORT, () => {

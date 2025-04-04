@@ -3,6 +3,38 @@ const bcrypt = require("bcrypt");
 const db = require("../config/db"); // Use the same pool
 const { genAccessToken, genRefreshToken, doRefreshToken, invalidateRefreshToken } = require("../middlewares/auth");
 
+/**
+ * @openapi
+ * /auth/signup:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Register a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               first_name:
+ *                 type: string
+ *                 nullable: true
+ *               last_name:
+ *                 type: string
+ *                 nullable: true
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully and its data are returned
+ *       400:
+ *         description: Bad request, something was filled up incorrectly
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/signup", async (req, res) => {
 	try {
 		// console.log(req)
@@ -13,8 +45,8 @@ router.post("/signup", async (req, res) => {
 			last_name = names[1]
 		}
 		
-		first_name = first_name.trim();
-		last_name = last_name.trim();
+		first_name = first_name?.trim() || "";
+		last_name = last_name?.trim() || "";
 		email = email.trim();
 		password = password.trim();
 		
@@ -36,6 +68,32 @@ router.post("/signup", async (req, res) => {
 	}
 });
 
+/**
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Login a user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User logged in successfully and its data are returned including the jwts
+ *       401:
+ *         description: Unauthorized, invalid credentials
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/login", async (req, res) => {
 	try {
 		const { email, password } = req.body;
@@ -72,6 +130,28 @@ router.post("/login", async (req, res) => {
 	}
 });
 
+/**
+ * @openapi
+ * /auth/refresh:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Refresh a user's token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User token refreshed successfully and its data are returned including the jwts
+ *       401:
+ *         description: Unauthorized, invalid refresh token
+ */
 router.post("/refresh", async (req, res) => {
 	const refreshToken = req.body?.refreshToken;
 	if (!refreshToken)
@@ -79,6 +159,28 @@ router.post("/refresh", async (req, res) => {
 	doRefreshToken(refreshToken, res);
 });
 
+/**
+ * @openapi
+ * /auth/invalidate:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Invalidate a user's refresh token aka. logout
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User refresh token invalidated successfully
+ *       403:
+ *         description: Forbidden, invalid refresh token
+ */
 router.post("/invalidate", async (req, res) => {
 	if (invalidateRefreshToken(req.body?.refreshToken))
 		return res.sendStatus(200);
