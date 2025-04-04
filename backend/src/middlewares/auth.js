@@ -14,30 +14,30 @@ exports.verifyToken = (req, res, next) => {
 	});
 };
 
-var activeRefreshTokens = [];
+var activeRefreshTokens = {}; // Ongoing login sessions
 
 exports.genAccessToken = (user) => {
 	return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20s" });
 };
 
 exports.genRefreshToken = (user, register = true) => {
+	if (activeRefreshTokens[user.accountId])
+		return activeRefreshTokens[user.accountId]
+
 	const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-	if (register)
-	{
-		activeRefreshTokens.push(refreshToken);
-		if (activeRefreshTokens.length > 50)
-			activeRefreshTokens.shift();
+	if (register) {
+		activeRefreshTokens[user.accountId] = refreshToken
 	}
 	return refreshToken;
 };
 
 exports.doRefreshToken = (refreshToken, res) => {
-	if (!activeRefreshTokens.includes(refreshToken))
-		return res.sendStatus(403);
-
 	jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
 		if (err)
 			return res.sendStatus(403);
+		if (activeRefreshTokens[user.accountId] != refreshToken)
+			return res.sendStatus(403);
+		// console.log(activeRefreshTokens[user.accountId])
 		const token = exports.genAccessToken({ accountId: user.accountId, email: user.email });
 		res.json({ token });
 	});
@@ -46,10 +46,15 @@ exports.doRefreshToken = (refreshToken, res) => {
 exports.invalidateRefreshToken = (refreshToken) => {
 	if (!refreshToken)
 		return false
-	if (activeRefreshTokens.includes(refreshToken)) {
-		activeRefreshTokens = activeRefreshTokens.filter(token => token != refreshToken);
+	try{
+		const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+		if (activeRefreshTokens[user.accountId] != refreshToken)
+			return false
+
+		activeRefreshTokens[user.accountId] = undefined
 		return true
 	}
-
-	return false
+	catch(e) {
+		return false
+	}
 };
