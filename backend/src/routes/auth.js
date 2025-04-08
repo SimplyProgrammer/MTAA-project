@@ -45,10 +45,13 @@ router.post("/signup", async (req, res) => {
 			last_name = names[1]
 		}
 		
-		first_name = first_name?.trim() || "";
-		last_name = last_name?.trim() || "";
+		first_name = first_name?.trim();
+		last_name = last_name?.trim();
 		email = email.trim();
 		password = password.trim();
+
+		if (!first_name || !last_name)
+			return res.status(400).json({ error: "Missing first name or last name" });
 		
 		if (!password || !email)
 			return res.status(400).json({ error: "Missing email or password" });
