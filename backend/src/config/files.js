@@ -2,7 +2,6 @@ const multer = require("multer");
 const path = require("path");
 const stringHash = require("string-hash");
 // const fs = require("fs");
-const jwt = require("jsonwebtoken");
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
