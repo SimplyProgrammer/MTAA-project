@@ -18,9 +18,6 @@ const { verifyToken } = require("./middlewares/auth");
 
 // Routers for other routes will be here
 
-const postsRouter = require("./routes/posts");
-app.use("/posts", verifyToken, postsRouter);
-
 const db = require("./config/db"); 
 
 app.get("/", verifyToken, async (req, res) => {
@@ -33,12 +30,26 @@ app.get("/", verifyToken, async (req, res) => {
 	}
 });
 
+// Files
+const filesRouter = require("./routes/files");
+app.use("/files", verifyToken,filesRouter);
+
+// Posts
+const postsRouter = require("./routes/posts");
+app.use("/posts", verifyToken, postsRouter);
+
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/api-docs.json", (req, res) => {	
 	res.json(swaggerSpec);
+});
+
+app.use(verifyToken, (req, res, next) => {
+	res.status(404).json({
+		message: `Route ${req.originalUrl} does not exist`,
+	});
 });
 
 const PORT = process.env.PORT | 5000

@@ -10,13 +10,9 @@ const PAGE_SIZE = process.env.PAGE_SIZE || 20;
  *     tags:
  *       - Posts
  *     summary: Get all posts
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: Authorization
- *         in: header
- *         description: Bearer token for authorization
- *         required: true
- *         schema:
- *           type: string
  *       - name: offset
  *         in: query
  *         description: Offset for pagination
@@ -74,13 +70,9 @@ router.get("/", async (req, res) => {
  *     tags:
  *       - Posts
  *     summary: Get a single specific post
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: Authorization
- *         in: header
- *         description: Bearer token for authorization
- *         required: true
- *         schema:
- *           type: string
  *       - name: id
  *         in: path
  *         description: ID of the post
@@ -113,13 +105,8 @@ router.get("/:id", async (req, res) => {
  *     tags:
  *       - Posts
  *     summary: Create a new post
- *     parameters:
- *       - name: Authorization
- *         in: header
- *         description: Bearer token for authorization
- *         required: true
- *         schema:
- *           type: string
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -171,13 +158,9 @@ router.post("/", async (req, res) => {
  *     tags:
  *       - Posts
  *     summary: Delete a specific post
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: Authorization
- *         in: header
- *         description: Bearer token for authorization
- *         required: true
- *         schema:
- *           type: string
  *       - name: id
  *         in: path
  *         description: ID of the post
