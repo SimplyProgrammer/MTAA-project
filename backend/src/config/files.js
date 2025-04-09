@@ -8,13 +8,14 @@ const storage = multer.diskStorage({
 		cb(null, path.join(__dirname, "../../uploads")); // upload directory
 	},
 	filename: (req, file, cb) => {
-		const fileName = stringHash(req.user.email) + "-" + stringHash(file.originalname) + path.extname(file.originalname);
+		const ext = path.extname(file.originalname), fileName = req?.body?.fileName || file.originalname;
+		const realFileName = req.user.accountId + "" + stringHash(req.user.email) + "-" + stringHash(fileName) + ext;
 
 		// const filePath = path.join(__dirname, "../../uploads", fileName);
 		// console.log(filePath)
 		// if (fs.existsSync(filePath))
 		// 	fs.unlinkSync(filePath);
-		cb(null, fileName);
+		cb(null, realFileName);
 	}
 })
 
