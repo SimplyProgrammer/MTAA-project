@@ -1,7 +1,5 @@
 const router = require("express").Router();
-const path = require("path");
-const fs = require("fs");
-const upload = require("../config/files");
+const { upload, getPath } = require("../config/files");
 
 /**
  * @openapi
@@ -57,8 +55,8 @@ router.post("/", upload.single("file"), (req, res) => {
  *         description: File not found
  */
 router.get("/:filename", (req, res) => {
-	const filePath = path.join(__dirname, "../../uploads", req.params.filename);
-	if (fs.existsSync(filePath))
+	const filePath = getPath(req.params.filename);
+	if (filePath)
 		return res.download(filePath);
 
 	res.status(404).json({ message: "File not found." });

@@ -1,11 +1,13 @@
 const multer = require("multer");
 const path = require("path");
 const stringHash = require("string-hash");
-// const fs = require("fs");
+const fs = require("fs");
+
+const FS_PATH = path.join(__dirname, "../../uploads");
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, path.join(__dirname, "../../uploads")); // upload directory
+		cb(null, FS_PATH); // upload directory
 	},
 	filename: (req, file, cb) => {
 		const ext = path.extname(file.originalname), fileName = req?.body?.fileName || file.originalname;
@@ -19,4 +21,10 @@ const storage = multer.diskStorage({
 	}
 })
 
-module.exports = multer({ storage });
+const getPath = (filename) => {
+	const filePath = path.join(FS_PATH, filename);
+	if (fs.existsSync(filePath))
+		return filePath;
+}
+
+module.exports = { FS_PATH, getPath, upload: multer({ storage }) };

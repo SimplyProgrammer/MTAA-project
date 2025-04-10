@@ -120,6 +120,9 @@ router.get("/:id", async (req, res) => {
  *                 type: string
  *               user_id:
  *                 type: integer
+ *               image:
+ *                 type: string
+ *                 nullable: true
  *     responses:	
  *       200:	
  *         description: Successful responses, respective post is returned	
@@ -130,7 +133,7 @@ router.get("/:id", async (req, res) => {
  */
 router.post("/", async (req, res) => {
 	try {
-		const { title, text, user_id } = req.body;
+		const { title, text, user_id, image } = req.body;
 		if (!title)
 			return res.status(400).send("Missing title");
 		if (!text)
@@ -139,8 +142,8 @@ router.post("/", async (req, res) => {
 		// TODO: Add image
 
 		const result = await db.query(
-			"INSERT INTO posts (title, text, user_id) VALUES ($1, $2, $3) RETURNING *",
-			[title, text, user_id]
+			"INSERT INTO posts (title, text, user_id, image) VALUES ($1, $2, $3, $4) RETURNING *",
+			[title, text, user_id, image]
 		);
 		res.json({ data: result.rows[0] });
 	} catch (err) {
@@ -149,7 +152,22 @@ router.post("/", async (req, res) => {
 	}
 });
 
-// TODO: router.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
+	try {
+		const { title, text, image } = req.body;
+		const result = await db.query(
+			"UPDATE posts SET title = $1, text = $2, image = $3 WHERE id = $4 RETURNING *",
+			[title, text, image, req.params.id]
+		);
+		if (!result.rows.length)
+			return res.status(404).send("Post not found");
+
+		res.json({ message: "Post updated", data: result.rows[0] });
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Internal server error");
+	}
+});
 
 /**
  * @openapi
