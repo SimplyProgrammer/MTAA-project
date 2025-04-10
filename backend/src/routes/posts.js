@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const db = require("../config/db"); // Use the same pool
+const { select, insert, update, remove } = require("../config/db"); // Use the same pool
 
 const PAGE_SIZE = process.env.PAGE_SIZE || 20;
 
@@ -52,8 +52,8 @@ router.get("/", async (req, res) => {
 		}
 		var search = req.query.search || "";
 
-		const result = await db.query(
-			`SELECT * FROM posts WHERE title ILIKE $1 OR text ILIKE $1 OFFSET $2 LIMIT $3`,
+		const result = await select(
+			`posts WHERE title ILIKE $1 OR text ILIKE $1 OFFSET $2 LIMIT $3`,
 			[search, offset, limit]
 		);
 		res.json({ data: result.rows });
@@ -87,10 +87,12 @@ router.get("/", async (req, res) => {
  */
 router.get("/:id", async (req, res) => {
 	try {
-		const result = await db.query(
-			"SELECT * FROM posts WHERE id = $1", 
+		const result = await select(
+			"posts WHERE id = $1",
 			[req.params.id]
 		);
+		if (!result.rows.length)
+			return res.status(404).send("Post not found");
 		res.json({ data: result.rows[0] });
 	} catch (err) {
 		console.error(err);
@@ -141,8 +143,8 @@ router.post("/", async (req, res) => {
 
 		// TODO: Add image
 
-		const result = await db.query(
-			"INSERT INTO posts (title, text, user_id, image) VALUES ($1, $2, $3, $4) RETURNING *",
+		const result = await insert(
+			"posts (title, text, user_id, image) VALUES ($1, $2, $3, $4)",
 			[title, text, user_id, image]
 		);
 		res.json({ data: result.rows[0] });
@@ -155,8 +157,8 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
 	try {
 		const { title, text, image } = req.body;
-		const result = await db.query(
-			"UPDATE posts SET title = $1, text = $2, image = $3 WHERE id = $4 RETURNING *",
+		const result = await update(
+			"posts SET title = $1, text = $2, image = $3 WHERE id = $4",
 			[title, text, image, req.params.id]
 		);
 		if (!result.rows.length)
@@ -193,8 +195,8 @@ router.put("/:id", async (req, res) => {
  */
 router.delete("/:id", async (req, res) => {
 	try {
-		const result = await db.query(
-			"DELETE FROM posts WHERE id = $1 RETURNING *",
+		const result = await remove(
+			"posts WHERE id = $1",
 			[req.params.id]
 		);
 		res.json({ data: result.rows[0] });

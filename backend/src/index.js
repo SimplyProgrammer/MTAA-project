@@ -18,11 +18,11 @@ const { verifyToken } = require("./middlewares/auth");
 
 // Routers for other routes will be here
 
-const db = require("./config/db"); 
+const { query } = require("./config/db"); 
 
 app.get("/", verifyToken, async (req, res) => {
 	try {
-		const result = await db.query("SELECT NOW() AS current_time"); // Test db
+		const result = await query("SELECT NOW() AS current_time"); // Test db
 		res.send(`Hello, Node.js Backend! Server Time: ${result.rows[0].current_time}`);
 	} catch (err) {
 		console.error(err);

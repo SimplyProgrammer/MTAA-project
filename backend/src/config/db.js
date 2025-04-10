@@ -7,4 +7,14 @@ const db = new Pool({
 	port: process.env.DB_PORT || 5432
 });
 
-module.exports = db;
+const select = (query, params) => db.query(`SELECT * FROM ${query}`, params);
+
+const insert = (query, params) => db.query(`INSERT INTO ${query} RETURNING *`, params);
+
+const update = (query, params) => db.query(`UPDATE ${query} RETURNING *`, params);
+
+const remove = (query, params) => db.query(`DELETE FROM ${query} RETURNING *`, params);
+
+const query = (query, params) => db.query(query, params);
+
+module.exports = { select, insert, update, remove, query, db };

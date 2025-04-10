@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
-const db = require("../config/db"); // Use the same pool
+const { select, insert } = require("../config/db"); // Use the same pool
 const { genAccessToken, genRefreshToken, doRefreshToken, invalidateRefreshToken } = require("../middlewares/auth");
 
 /**
@@ -57,8 +57,8 @@ router.post("/signup", async (req, res) => {
 			return res.status(400).json({ error: "Missing email or password" });
 
 		const hashedPassword = await bcrypt.hash(password, 11);
-		const result = await db.query(
-			`INSERT INTO useraccounts(first_name, last_name, email, "password") VALUES ($1, $2, $3, $4) RETURNING *`,
+		const result = await insert(
+			`useraccounts(first_name, last_name, email, "password") VALUES ($1, $2, $3, $4)`,
 			[first_name, last_name, email, hashedPassword]
 		);
 
@@ -100,7 +100,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
 	try {
 		const { email, password } = req.body;
-		const dbUserAccount = await db.query("SELECT * FROM useraccounts WHERE email = $1", [email]);
+		const dbUserAccount = await select("useraccounts WHERE email = $1", [email]);
 
 		if (!dbUserAccount.rows.length || !dbUserAccount.rows[0].active)
 			return res.status(401).json({ message: "There is no such account" });
@@ -110,9 +110,9 @@ router.post("/login", async (req, res) => {
 			return res.status(401).json({ message: "Invalid credentials" });
 
 		var user = undefined;
-		const dbUser = await db.query(`SELECT * FROM users where account_id = $1`, [dbUserAccount.rows[0].id])
+		const dbUser = await select(`users WHERE account_id = $1`, [dbUserAccount.rows[0].id])
 		if (!dbUser.rows.length) {
-			const result = await db.query(`INSERT INTO users(account_id) VALUES ($1) RETURNING *`, [dbUserAccount.rows[0].id])
+			const result = await insert(`users(account_id) VALUES ($1)`, [dbUserAccount.rows[0].id])
 			user = result.rows[0]
 			user.activated = true
 		}
