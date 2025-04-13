@@ -38,6 +38,10 @@ app.use("/files", verifyToken,filesRouter);
 const postsRouter = require("./routes/posts");
 app.use("/posts", verifyToken, postsRouter);
 
+// Events
+const eventsRouter = require("./routes/events");
+app.use("/events", verifyToken, eventsRouter);
+
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
