@@ -37,9 +37,8 @@ router.post("/", async (req, res) => {
 
 	try {
 		const result = await db.query(`
-			INSERT INTO Events (id, title, subject_id, type, date_till)
+			INSERT INTO Events (title, subject_id, type, date_till)
 			VALUES (
-				(SELECT COALESCE(MAX(id), 0) + 1 FROM Events),
 				$1, $2, $3, $4
 			)
 			RETURNING *
