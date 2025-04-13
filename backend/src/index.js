@@ -46,6 +46,10 @@ app.use("/events", verifyToken, eventsRouter);
 const usersRouter = require("./routes/users");
 app.use("/users", verifyToken, usersRouter);
 
+// Subjects
+const subjectsRouter = require("./routes/subjects");
+app.use("/subjects", verifyToken, subjectsRouter);
+
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
