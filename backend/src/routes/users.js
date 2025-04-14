@@ -191,7 +191,7 @@ router.put("/:id", async (req, res) => {
  *   put:
  *     tags:
  *       - Users
- *     summary: Update a user account by ID
+ *     summary: Update (or deactivate) a user account by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
