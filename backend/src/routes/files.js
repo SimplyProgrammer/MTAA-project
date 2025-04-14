@@ -10,6 +10,11 @@ const { upload, getPath } = require("../config/files");
  *     summary: Upload a file
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: fileName
+ *         in: query
+ *         description: File name to use...
+ *         required: false
  *     requestBody:
  *       required: true
  *       content:
