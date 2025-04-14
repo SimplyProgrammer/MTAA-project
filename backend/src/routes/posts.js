@@ -157,6 +157,11 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
 	try {
 		const { title, text, image } = req.body;
+		if (!title)
+			return res.status(400).send("Missing title");
+		if (!text)
+			return res.status(400).send("Missing text");
+
 		const result = await update(
 			"posts SET title = $1, text = $2, image = $3 WHERE id = $4",
 			[title, text, image, req.params.id]
