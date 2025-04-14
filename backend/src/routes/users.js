@@ -47,6 +47,68 @@ router.get("/", async (req, res) => {
 
 /**
  * @openapi
+ * /users/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get a user by ID
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The ID of the user to retrieve
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/:id", async (req, res) => {
+	const userId = req.params.id;
+
+	try {
+		const result = await db.query(`
+			SELECT * FROM Users WHERE id = $1
+		`, [userId]);
+
+		if (result.rows.length === 0) {
+			return res.status(404).send("User not found");
+		}
+
+		res.status(200).json({ data: result.rows[0] });
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Internal server error");
+	}
+});
+
+
+/**
+ * @openapi
  * /users:
  *   post:
  *     tags:
@@ -122,66 +184,6 @@ router.post("/", async (req, res) => {
 	}
 });
 
-/**
- * @openapi
- * /users/{id}:
- *   get:
- *     tags:
- *       - Users
- *     summary: Get a user by ID
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         description: The ID of the user to retrieve
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: User found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                     first_name:
- *                       type: string
- *                     last_name:
- *                       type: string
- *                     email:
- *                       type: string
- *                     role:
- *                       type: string
- *       404:
- *         description: User not found
- *       500:
- *         description: Internal server error
- */
-router.get("/:id", async (req, res) => {
-	const userId = req.params.id;
-
-	try {
-		const result = await db.query(`
-			SELECT * FROM Users WHERE id = $1
-		`, [userId]);
-
-		if (result.rows.length === 0) {
-			return res.status(404).send("User not found");
-		}
-
-		res.status(200).json({ data: result.rows[0] });
-	} catch (err) {
-		console.error(err);
-		res.status(500).send("Internal server error");
-	}
-});
 
 /**
  * @openapi
