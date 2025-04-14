@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
 		cb(null, FS_PATH); // upload directory
 	},
 	filename: (req, file, cb) => {
-		const ext = path.extname(file.originalname), fileName = req?.body?.fileName || file.originalname;
+		const ext = path.extname(file.originalname), fileName = req?.query?.fileName || file.originalname;
 		const realFileName = req.user.accountId + "" + stringHash(req.user.email) + "-" + stringHash(fileName) + ext;
 
 		// const filePath = path.join(__dirname, "../../uploads", fileName);
