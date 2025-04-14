@@ -8,6 +8,8 @@ const db = require("../config/db"); // Use the same pool
  *     tags:
  *       - Lectures
  *     summary: Get all lectures
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: user_id
@@ -59,6 +61,8 @@ router.get("/", async (req, res) => {
  *     tags:
  *       - Lectures
  *     summary: Delete a lecture by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -91,6 +95,8 @@ router.delete("/:id", async (req, res) => {
  *     tags:
  *       - Lectures
  *     summary: Add a new lecture and assign to user
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
