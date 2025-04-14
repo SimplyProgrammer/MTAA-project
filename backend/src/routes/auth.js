@@ -30,6 +30,24 @@ const { genAccessToken, genRefreshToken, doRefreshToken, invalidateRefreshToken 
  *     responses:
  *       201:
  *         description: User registered successfully and its data are returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     active:
+ *                       type: boolean
  *       400:
  *         description: Bad request, something was filled up incorrectly
  *       500:
@@ -92,6 +110,30 @@ router.post("/signup", async (req, res) => {
  *     responses:
  *       200:
  *         description: User logged in successfully and its data are returned including the jwts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     email:	
+ *                       type: string
+ *                     active:
+ *                       type: boolean
+ *                     token:
+ *                       type: string
+ *                     refresh_token:
+ *                       type: string
+ *                     user:
+ *                       type: object
  *       401:
  *         description: Unauthorized, invalid credentials
  *       500:

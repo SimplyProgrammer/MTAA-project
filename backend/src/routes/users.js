@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const db = require("../config/db"); // Use the same pool
+const { select, update, query } = require("../config/db"); // Use the same pool
 
 
 /**
@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
 	}
 
 	try {
-		const result = await db.query(queryText, values);
+		const result = await query(queryText, values);
 		res.status(200).json({ data: result.rows });
 	} catch (err) {
 		console.error(err);
@@ -74,11 +74,11 @@ router.get("/", async (req, res) => {
  *                   properties:
  *                     id:
  *                       type: integer
- *                     first_name:
- *                       type: string
- *                     last_name:
- *                       type: string
- *                     email:
+ *                     notifications:
+ *                       type: boolean
+ *                     dark_mode:
+ *                       type: boolean
+ *                     profile_img:
  *                       type: string
  *                     role:
  *                       type: string
@@ -91,9 +91,7 @@ router.get("/:id", async (req, res) => {
 	const userId = req.params.id;
 
 	try {
-		const result = await db.query(`
-			SELECT * FROM Users WHERE id = $1
-		`, [userId]);
+		const result = await select(`Users WHERE id = $1`, [userId]);
 
 		if (result.rows.length === 0) {
 			return res.status(404).send("User not found");
@@ -109,115 +107,172 @@ router.get("/:id", async (req, res) => {
 
 /**
  * @openapi
- * /users:
- *   post:
+ * /users/{id}:
+ *   put:
  *     tags:
  *       - Users
- *     summary: Create a new user
+ *     summary: Update a user by ID
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The ID of the user to update
+ *         required: true
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - first_name
- *               - last_name
- *               - email
- *               - password
- *               - role
  *             properties:
- *               first_name:
- *                 type: string
- *               last_name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
+ *               notifications:
+ *                 type: boolean
+ *               dark_mode:
+ *                 type: boolean
+ *               profile_img:
  *                 type: string
  *               role:
  *                 type: string
  *     responses:
- *       201:
- *         description: User created
- *       400:
- *         description: Missing or invalid fields
+ *       200:
+ *         description: User updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     notifications:
+ *                       type: boolean
+ *                     dark_mode:
+ *                       type: boolean
+ *                     profile_img:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *       404:
+ *         description: User not found
  *       500:
  *         description: Internal server error
  */
-router.post("/", async (req, res) => {
-	const { first_name, last_name, email, password, role } = req.body;
-
-	if (!first_name || !last_name || !email || !password || !role) {
-		return res.status(400).send("Missing required fields");
-	}
-
-	const client = await db.pool.connect();
+router.put("/:id", async (req, res) => {
+	const userId = req.params.id;
+	const { notifications, dark_mode, profile_img, role } = req.body;
+	
 	try {
-		await client.query("BEGIN");
+		const result = await update(
+			"Users SET notifications = $1, dark_mode = $2, profile_img = $3, role = $4 WHERE id = $5",
+			[notifications, dark_mode, profile_img, role, userId]
+		);
 
-		const accRes = await client.query(`
-			INSERT INTO UserAccounts (first_name, last_name, email, password)
-			VALUES ($1, $2, $3, $4)
-			RETURNING id
-		`, [first_name, last_name, email, password]);
+		if (!result.rows.length)
+			return res.status(404).send("User not found");
 
-		const accountId = accRes.rows[0].id;
-
-		const userRes = await client.query(`
-			INSERT INTO Users (account_id, role)
-			VALUES ($1, $2)
-			RETURNING *
-		`, [accountId, role]);
-
-		await client.query("COMMIT");
-
-		res.status(201).json({ data: userRes.rows[0] });
-	} catch (err) {
-		await client.query("ROLLBACK");
+		res.json({ message: "User updated", data: result.rows[0] });
+	}
+	catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
-	} finally {
-		client.release();
 	}
-});
-
+})
 
 /**
  * @openapi
- * /users/{id}:
- *   delete:
+ * /users/accounts/{id}:
+ *   put:
  *     tags:
  *       - Users
- *     summary: Delete a user by ID
+ *     summary: Update a user account by ID
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
- *         description: User ID to delete
+ *         description: The ID of the user account to update
  *         required: true
  *         schema:
  *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:	
+ *               first_name:
+ *                 type: string
+ *               last_name:
+ *                 type: string
+ *               active:
+ *                 type: boolean
+ *                 default: true
  *     responses:
- *       204:
- *         description: User deleted
+ *       200:
+ *         description: User account updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     email:
+ *                       type: string
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     active:
+ *                       type: boolean
+ *       404:
+ *         description: User account not found
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", async (req, res) => {
+router.put("/accounts/:id", async (req, res) => {
 	const userId = req.params.id;
 
+	var { first_name, last_name, active } = req.body;
+
+	first_name = first_name?.trim();
+	last_name = last_name?.trim();
+
+	active ??= true
+
+	if (!first_name || !last_name)
+		return res.status(400).json({ error: "Missing first name or last name" });
+
 	try {
-		await db.query(`DELETE FROM Users WHERE id = $1`, [userId]);
-		res.status(204).send();
-	} catch (err) {
+		const result = await update(
+			"useraccounts SET first_name = $1, last_name = $2, active = $3 WHERE id = $4",
+			[first_name, last_name, active, userId]
+		);
+
+		if (!result.rows.length)
+			return res.status(404).send("User account not found");
+
+		const data = result.rows[0];
+		data.password = undefined;
+		res.json({ message: "User updated", data });
+	}
+	catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
 	}
 });
-
 
 module.exports = router;

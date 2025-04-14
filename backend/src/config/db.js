@@ -17,4 +17,8 @@ const remove = (query, params) => db.query(`DELETE FROM ${query} RETURNING *`, p
 
 const query = (query, params) => db.query(query, params);
 
-module.exports = { select, insert, update, remove, query, db };
+const begin = () => db.query('BEGIN');
+const commit = () => db.query('COMMIT');
+const rollback = () => db.query('ROLLBACK');
+
+module.exports = { select, insert, update, remove, query, begin, commit, rollback, db };

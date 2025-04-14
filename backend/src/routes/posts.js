@@ -50,12 +50,16 @@ router.get("/", async (req, res) => {
 		if (req.query.page) {
 			offset = (req.query.page - 1) * PAGE_SIZE;
 		}
-		var search = req.query.search || "";
+		var search = req.query.search?.trim() || "";
 
-		const result = await select(
-			`posts WHERE title ILIKE $1 OR text ILIKE $1 OFFSET $2 LIMIT $3`,
+		const result = await (search ? select(
+			`posts WHERE title ~ $1 OR text ~ $1 OFFSET $2 LIMIT $3`,
 			[search, offset, limit]
-		);
+		) : select(
+			`posts OFFSET $1 LIMIT $2`,
+			[offset, limit]
+		));
+		 
 		res.json({ data: result.rows });
 	} catch (err) {
 		console.error(err);
@@ -82,6 +86,26 @@ router.get("/", async (req, res) => {
  *     responses:
  *       200:
  *         description: Successful responses, respective post is returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     user_id:
+ *                       type: integer
+ *                     title:
+ *                       type: string
+ *                     text:
+ *                       type: string
+ *                     image:
+ *                       type: string
+ *       404:
+ *         description: Post not found
  *       500:
  *         description: Internal server error
  */
@@ -91,8 +115,10 @@ router.get("/:id", async (req, res) => {
 			"posts WHERE id = $1",
 			[req.params.id]
 		);
+
 		if (!result.rows.length)
 			return res.status(404).send("Post not found");
+
 		res.json({ data: result.rows[0] });
 	} catch (err) {
 		console.error(err);
@@ -127,7 +153,25 @@ router.get("/:id", async (req, res) => {
  *                 nullable: true
  *     responses:	
  *       200:	
- *         description: Successful responses, respective post is returned	
+ *         description: Successful responses, respective post is returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     user_id:
+ *                       type: integer
+ *                     title:
+ *                       type: string
+ *                     text:
+ *                       type: string
+ *                     image:
+ *                       type: string
  *       400:	
  *         description: Bad request, missing title or text	
  *       500:	
@@ -154,6 +198,66 @@ router.post("/", async (req, res) => {
 	}
 });
 
+/**
+ * @openapi
+ * /posts/{id}:
+ *   put:
+ *     tags:
+ *       - Posts
+ *     summary: Update a specific post
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the post
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               text:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Successful responses, respective post is returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     user_id:
+ *                       type: integer
+ *                     title:
+ *                       type: string
+ *                     text:
+ *                       type: string
+ *                     image:
+ *                       type: string
+ *       400:
+ *         description: Bad request, missing title or text
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Internal server error
+ */
 router.put("/:id", async (req, res) => {
 	try {
 		const { title, text, image } = req.body;
