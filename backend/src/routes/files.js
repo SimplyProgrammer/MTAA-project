@@ -35,7 +35,11 @@ router.post("/", upload.single("file"), (req, res) => {
 	if (!req.file)
 		return res.status(400).json({ message: "No file uploaded." });
 
-	res.status(200).json({ message: "File uploaded", data: req.file });
+	const data = req.file;
+	data.destination = undefined;
+	data.path = undefined;
+	data.url = "/files/" + data.filename;
+	res.status(200).json({ message: "File uploaded", data });
 });
 
 /**
