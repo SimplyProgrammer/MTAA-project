@@ -9,7 +9,7 @@ exports.verifyToken = (req, res, next) => {
 	
 	jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
 		if (err) 
-			return res.sendStatus(403);
+			return res.sendStatus(401);
 		req.user = user;
 		next();
 	});
@@ -22,12 +22,12 @@ exports.genAccessToken = (user) => {
 };
 
 exports.genRefreshToken = (user, register = true) => {
-	if (activeRefreshTokens[user.accountId])
-		return activeRefreshTokens[user.accountId]
+	if (activeRefreshTokens[user.id])
+		return activeRefreshTokens[user.id]
 
 	const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
 	if (register) {
-		activeRefreshTokens[user.accountId] = refreshToken
+		activeRefreshTokens[user.id] = refreshToken
 	}
 	return refreshToken;
 };
@@ -36,10 +36,10 @@ exports.doRefreshToken = (refreshToken, res) => {
 	jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
 		if (err)
 			return res.sendStatus(403);
-		if (activeRefreshTokens[user.accountId] != refreshToken)
+		if (activeRefreshTokens[user.id] != refreshToken)
 			return res.sendStatus(403);
-		// console.log(activeRefreshTokens[user.accountId])
-		const token = exports.genAccessToken({ accountId: user.accountId, email: user.email });
+		// console.log(activeRefreshTokens[user.id])
+		const token = exports.genAccessToken({ id: user.id, email: user.email });
 		res.json({ token });
 	});
 };
@@ -49,10 +49,10 @@ exports.invalidateRefreshToken = (refreshToken) => {
 		return false
 	try {
 		const user = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-		if (activeRefreshTokens[user.accountId] != refreshToken)
+		if (activeRefreshTokens[user.id] != refreshToken)
 			return false
 
-		activeRefreshTokens[user.accountId] = undefined
+		activeRefreshTokens[user.id] = undefined
 		return true
 	}
 	catch(e) {

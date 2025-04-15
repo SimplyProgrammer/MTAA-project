@@ -155,23 +155,23 @@ router.post("/login", async (req, res) => {
 		if (!passCorrect)
 			return res.status(401).json({ message: "Invalid credentials" });
 
-		var user = undefined;
-		const dbUser = await select(`users WHERE account_id = $1`, [dbUserAccount.rows[0].id])
-		if (!dbUser.rows.length) {
-			const result = await insert(`users(account_id) VALUES ($1)`, [dbUserAccount.rows[0].id])
-			user = result.rows[0]
-			user.activated = true
+		var preferences = undefined;
+		const dbPreferences = await select(`UserPreferences WHERE user_id = $1`, [dbUserAccount.rows[0].id])
+		if (!dbPreferences.rows.length) {
+			const result = await insert(`UserPreferences (user_id) VALUES ($1)`, [dbUserAccount.rows[0].id])
+			preferences = result.rows[0]
+			preferences.activated = true
 		}
 		else
-			user = dbUser.rows[0]
+		preferences = dbPreferences.rows[0]
 
-		user.account_id = undefined
+		preferences.user_id = undefined
 
 		const userAccount = dbUserAccount.rows[0]
 		userAccount.password = undefined
-		userAccount.token = genAccessToken({ accountId: dbUserAccount.rows[0].id, email });
-		userAccount.refreshToken = genRefreshToken({ accountId: dbUserAccount.rows[0].id, email });
-		userAccount.user = user
+		userAccount.token = genAccessToken({ id: dbUserAccount.rows[0].id, email });
+		userAccount.refreshToken = genRefreshToken({ id: dbUserAccount.rows[0].id, email });
+		userAccount.preferences = preferences
 		res.json({ message: "Login successful", data: userAccount });
 	} catch (error) {
 		console.error(error);

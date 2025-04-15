@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 		const ext = path.extname(file.originalname), fileName = req?.query?.fileName || file.originalname;
-		const realFileName = (req.user.accountId ** 2) + "" + stringHash(req.user.email) + "-" + (fileName?.length ** 3) + "" + stringHash(fileName) + ext;
+		const realFileName = (req.user.id ** 2) + "" + stringHash(req.user.email) + "-" + (fileName?.length ** 3) + "" + stringHash(fileName) + ext;
 
 		// const filePath = path.join(__dirname, "../../uploads", fileName);
 		// console.log(filePath)
