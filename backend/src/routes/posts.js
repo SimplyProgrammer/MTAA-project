@@ -308,6 +308,9 @@ router.delete("/:id", async (req, res) => {
 			"posts WHERE id = $1",
 			[req.params.id]
 		);
+		if (!result.rows.length)
+			return res.status(404).send("Post not found");
+
 		res.json({ data: result.rows[0] });
 	} catch (err) {
 		console.error(err);

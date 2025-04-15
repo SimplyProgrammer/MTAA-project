@@ -74,6 +74,10 @@ router.post("/signup", async (req, res) => {
 		if (!password || !email)
 			return res.status(400).json({ error: "Missing email or password" });
 
+		const existingUser = await select("useraccounts WHERE email = $1 LIMIT 1", [email]);
+		if (existingUser.rows.length)
+			return res.status(400).json({ error: "Account already exists" });
+
 		const hashedPassword = await bcrypt.hash(password, 11);
 		const result = await insert(
 			`useraccounts(first_name, last_name, email, "password") VALUES ($1, $2, $3, $4)`,
