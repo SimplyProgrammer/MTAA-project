@@ -26,8 +26,29 @@ const db = require("../config/db"); // Use the same pool
  *     responses:
  *       200:
  *         description: List of seminars
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     additionalProperties: true
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: null
  */
 router.get("/", async (req, res) => {
 	const { user_id, subject_id } = req.query;
@@ -49,10 +70,16 @@ router.get("/", async (req, res) => {
 			result = await db.query(`SELECT * FROM Seminars`);
 		}
 
-		res.json(result.rows);
+		res.status(200).json({
+			message: "Seminars fetched successfully",
+			data: result.rows,
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
 
@@ -62,7 +89,7 @@ router.get("/", async (req, res) => {
  *   delete:
  *     tags:
  *       - Seminars
- *     summary: Delete a seminar by ID
+ *     summary: Delete a seminar by ID and return the deleted record
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -73,23 +100,69 @@ router.get("/", async (req, res) => {
  *           type: integer
  *         description: Seminar ID to delete
  *     responses:
- *       204:
- *         description: Seminar deleted
+ *       200:
+ *         description: Seminar deleted successfully with the deleted record returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   additionalProperties: true
+ *       404:
+ *         description: Seminar not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: null
  */
 router.delete("/:id", async (req, res) => {
 	const seminarId = req.params.id;
 
 	try {
-		await db.query(`DELETE FROM Seminars WHERE id = $1`, [seminarId]);
-		res.status(204).send();
+		const deletedSeminar = await db.query(
+			"DELETE FROM Seminars WHERE id = $1 RETURNING *",
+			[seminarId]
+		);
+
+		if (deletedSeminar.rows.length === 0) {
+			return res.status(404).json({
+				message: "Seminar not found",
+				data: null,
+			});
+		}
+
+		res.status(200).json({
+			message: "Seminar deleted successfully",
+			data: deletedSeminar.rows[0],
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
-
 
 /**
  * @openapi
@@ -124,8 +197,27 @@ router.delete("/:id", async (req, res) => {
  *     responses:
  *       201:
  *         description: Seminar created and linked
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   additionalProperties: true
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: null
  */
 router.post("/", async (req, res) => {
 	const { subject_id, user_id, from_time, to_time } = req.body;
@@ -134,20 +226,26 @@ router.post("/", async (req, res) => {
 		const result = await db.query(`
 			INSERT INTO Seminars (subject_id, from_time, to_time)
 			VALUES ($1, $2, $3)
-			RETURNING id
+			RETURNING *
 		`, [subject_id, from_time, to_time]);
 
-		const seminarId = result.rows[0].id;
+		const seminar = result.rows[0];
 
 		await db.query(`
 			INSERT INTO User_Seminars (user_id, seminar_id)
 			VALUES ($1, $2)
-		`, [user_id, seminarId]);
+		`, [user_id, seminar.id]);
 
-		res.status(201).json({ message: "Seminar created and assigned", seminar_id: seminarId });
+		res.status(201).json({
+			message: "Seminar created and assigned",
+			data: seminar,
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
 
