@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const db = require("../config/db"); // Use the same pool
+const db = require("../config/db");
 
 /**
  * @openapi
@@ -36,18 +36,23 @@ router.post("/", async (req, res) => {
 	const { title, subject_id, type, date_till } = req.body;
 
 	try {
-		const result = await db.query(`
-			INSERT INTO Events (title, subject_id, type, date_till)
-			VALUES (
-				$1, $2, $3, $4
-			)
-			RETURNING *
-		`, [title, subject_id, type, date_till]);
+		const result = await db.query(
+			`INSERT INTO Events (title, subject_id, type, date_till)
+			 VALUES ($1, $2, $3, $4)
+			 RETURNING *`,
+			[title, subject_id, type, date_till]
+		);
 
-		res.status(201).json({ data: result.rows[0] });
+		res.status(201).json({
+			message: "Event created successfully",
+			data: result.rows[0],
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
 
@@ -68,8 +73,8 @@ router.post("/", async (req, res) => {
  *         schema:
  *           type: integer
  *     responses:
- *       204:
- *         description: Event deleted successfully (No Content)
+ *       200:
+ *         description: Event deleted successfully
  *       500:
  *         description: Internal server error
  */
@@ -78,10 +83,16 @@ router.delete("/:id", async (req, res) => {
 
 	try {
 		await db.query(`DELETE FROM Events WHERE id = $1`, [eventId]);
-		res.status(204).send();
+		res.status(200).json({
+			message: "Event deleted successfully",
+			data: null,
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
 
@@ -122,27 +133,6 @@ router.delete("/:id", async (req, res) => {
  *     responses:
  *       200:
  *         description: A list of events
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                       subject_id:
- *                         type: integer
- *                       title:
- *                         type: string
- *                       type:
- *                         type: string
- *                       date_till:
- *                         type: string
- *                         format: date-time
  *       500:
  *         description: Internal server error
  */
@@ -175,10 +165,16 @@ router.get("/", async (req, res) => {
 
 	try {
 		const result = await db.query(queryText, values);
-		res.status(200).json({ data: result.rows });
+		res.status(200).json({
+			message: "Events fetched successfully",
+			data: result.rows,
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
 
