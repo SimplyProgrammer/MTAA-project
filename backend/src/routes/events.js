@@ -62,7 +62,7 @@ router.post("/", async (req, res) => {
  *   delete:
  *     tags:
  *       - Events
- *     summary: Delete an event by ID
+ *     summary: Delete an event by ID and return the deleted record
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -74,18 +74,60 @@ router.post("/", async (req, res) => {
  *           type: integer
  *     responses:
  *       200:
- *         description: Event deleted successfully
+ *         description: Event deleted successfully with the deleted record returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   description: The deleted event record
+ *                   additionalProperties: true
+ *       404:
+ *         description: Event not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: null
  */
 router.delete("/:id", async (req, res) => {
 	const eventId = req.params.id;
 
 	try {
-		await db.query(`DELETE FROM Events WHERE id = $1`, [eventId]);
+		const deletedEvent = await db.query(
+			"DELETE FROM Events WHERE id = $1 RETURNING *",
+			[eventId]
+		);
+
+		if (deletedEvent.rows.length === 0) {
+			return res.status(404).json({
+				message: "Event not found",
+				data: null,
+			});
+		}
+
 		res.status(200).json({
 			message: "Event deleted successfully",
-			data: null,
+			data: deletedEvent.rows[0],
 		});
 	} catch (err) {
 		console.error(err);
