@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const db = require("../config/db"); // Use the same pool
+const db = require("../config/db");
 
 /**
  * @openapi
@@ -35,13 +35,18 @@ router.get("/", async (req, res) => {
 				`, [user_id])
 			: await db.query("SELECT * FROM Subjects");
 
-		res.status(200).json({ data: result.rows });
+		res.status(200).json({
+			message: "Subjects fetched successfully",
+			data: result.rows,
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
-
 
 /**
  * @openapi
@@ -72,15 +77,6 @@ router.get("/", async (req, res) => {
  *     responses:
  *       201:
  *         description: Subject created and assigned to user
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 subject_id:
- *                   type: integer
  *       500:
  *         description: Internal server error
  */
@@ -88,49 +84,48 @@ router.post("/", async (req, res) => {
 	const { title, description, user_id } = req.body;
 
 	try {
-		// Check if a subject with the same title exists
-		let result = await db.query(`
-			SELECT id FROM Subjects WHERE title = $1
-		`, [title]);
+		let result = await db.query(`SELECT * FROM Subjects WHERE title = $1`, [title]);
 
-		let subjectId;
+		let subject;
+		let was_created = false;
 
 		if (result.rows.length > 0) {
-			subjectId = result.rows[0].id;
+			subject = result.rows[0];
 		} else {
-			// Insert new subject
 			const insertResult = await db.query(`
 				INSERT INTO Subjects (title, description)
 				VALUES ($1, $2)
-				RETURNING id
-			`, [title, description]);
-
-			subjectId = insertResult.rows[0].id;
+				RETURNING *`, [title, description]);
+			subject = insertResult.rows[0];
+			was_created = true;
 		}
 
-		// Link user to subject if not already linked
 		const linkResult = await db.query(`
 			SELECT 1 FROM User_Subjects WHERE user_id = $1 AND subject_id = $2
-		`, [user_id, subjectId]);
+		`, [user_id, subject.id]);
 
 		if (linkResult.rows.length === 0) {
 			await db.query(`
 				INSERT INTO User_Subjects (user_id, subject_id)
 				VALUES ($1, $2)
-			`, [user_id, subjectId]);
+			`, [user_id, subject.id]);
 		}
 
 		res.status(201).json({
-			message: "Subject assigned to user",
-			subject_id: subjectId,
-			was_created: result.rows.length === 0
+			message: was_created ? "Subject created and assigned to user" : "Subject assigned to user",
+			data: {
+				...subject,
+				was_created,
+			},
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
-
 
 /**
  * @openapi
@@ -149,7 +144,7 @@ router.post("/", async (req, res) => {
  *         schema:
  *           type: integer
  *     responses:
- *       204:
+ *       200:
  *         description: Subject deleted
  *       500:
  *         description: Internal server error
@@ -158,16 +153,18 @@ router.delete("/:id", async (req, res) => {
 	const subjectId = req.params.id;
 
 	try {
-		// First remove relations
-		await db.query(`DELETE FROM User_Subjects WHERE subject_id = $1`, [subjectId]);
-
-		// Then delete subject
 		await db.query(`DELETE FROM Subjects WHERE id = $1`, [subjectId]);
 
-		res.status(204).send();
+		res.status(200).json({
+			message: "Subject deleted successfully",
+			data: null,
+		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).send("Internal server error");
+		res.status(500).json({
+			message: "Internal server error",
+			data: null,
+		});
 	}
 });
 
