@@ -1,8 +1,8 @@
-const { select } = require("../config/db");
+const { query } = require("../config/db");
 
 const hasRole = async (user, ...roles) => {
 	try {
-		const result = await select("UserAccounts WHERE id = $1", [user.id]);
+		const result = await query("SELECT role FROM UserAccounts WHERE id = $1", [user.id]);
 		return roles.includes(result.rows[0].role)
 	} catch (err) {
 		return false;
