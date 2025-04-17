@@ -65,14 +65,16 @@ router.post("/signup", async (req, res) => {
 		
 		first_name = first_name?.trim();
 		last_name = last_name?.trim();
-		email = email.trim();
-		password = password.trim();
+		email = email?.trim();
 
 		if (!first_name || !last_name)
 			return res.status(400).json({ error: "Missing first name or last name" });
 		
 		if (!password || !email)
 			return res.status(400).json({ error: "Missing email or password" });
+
+		if (password.length < 6)
+			return res.status(400).json({ error: "Password must be at least 6 characters" });
 
 		const existingUser = await select("useraccounts WHERE email = $1 LIMIT 1", [email]);
 		if (existingUser.rows.length)
