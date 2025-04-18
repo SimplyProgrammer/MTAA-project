@@ -9,4 +9,4 @@ uploads/*
 .vscode
 dist
 dist-ssr
-*.local
+*.env

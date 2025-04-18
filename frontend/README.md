@@ -20,6 +20,13 @@ In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+TLDR:
+1. Add this system env variable:
+Variable name: ANDROID_HOME
+Variable value: C:\Users\<your-username>\AppData\Local\Android\Sdk
+2. Add to "Path" variable
+%ANDROID_HOME%\platform-tools
+%ANDROID_HOME%\emulator
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 

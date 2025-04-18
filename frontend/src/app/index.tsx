@@ -1,14 +1,21 @@
-import { Button, Text, View } from "react-native";
-import { useSignal } from "@preact-signals/safe-react";
+import {View } from "react-native";
+import LoginForm from "@/components/LoginForm";
+
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { useEffect } from "react";
 
 export default function Index() {
-	const count = useSignal(0);
+	const handleLogin = ({ email, password }) => {
+		console.log("Login form values:", email, password);
+		console.log("API_URL:", process.env.EXPO_PUBLIC_API_URL);
+	};
 
 	return (
-		<View className="flex-1 items-center justify-center bg-white">
-			<Text>Was clicked {count.value} times</Text>
-
-			<Button title="Click Me" onPress={() => {count.value++; console.log(count.value)}} />
+		<View className="flex-1 items-center justify-center bg-white dark:bg-black">
+			<LoginForm
+				onSubmit={handleLogin}
+				buttonText="Sign In"
+			/>
 		</View>
 	);
 }
