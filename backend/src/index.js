@@ -23,7 +23,7 @@ const { query } = require("./config/db");
 app.get("/", verifyToken, async (req, res) => {
 	try {
 		const result = await query("SELECT NOW() AS current_time"); // Test db
-		res.send(`Hello, Node.js Backend! Server Time: ${result.rows[0].current_time}`);
+		res.status(200).send({ message: `Hello, Node.js Backend! Server Time: ${result.rows[0].current_time}`, data: { current_time: result.rows[0].current_time } });
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Database connection error");
@@ -60,6 +60,7 @@ app.use("/lectures", verifyToken, lecturesRouter);
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/api-docs.json", (req, res) => {	

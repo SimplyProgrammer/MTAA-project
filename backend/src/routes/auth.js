@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const { select, insert } = require("../config/db"); // Use the same pool
-const { genAccessToken, genRefreshToken, doRefreshToken, invalidateRefreshToken } = require("../middlewares/auth");
+const { genAccessToken, getTokenFromRequest, doRefreshToken, invalidateToken } = require("../middlewares/auth");
 
 /**
  * @openapi
@@ -124,22 +124,23 @@ router.post("/signup", async (req, res) => {
  *                 data:
  *                   type: object
  *                   properties:
- *                     id:
- *                       type: integer
- *                     first_name:
- *                       type: string
- *                     last_name:
- *                       type: string
- *                     email:	
- *                       type: string
- *                     active:
- *                       type: boolean
  *                     token:
- *                       type: string
- *                     refresh_token:
  *                       type: string
  *                     user:
  *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                         first_name:
+ *                           type: string
+ *                         last_name:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                         active:
+ *                           type: boolean
+ *                         user:
+ *                           type: object
  *       401:
  *         description: Unauthorized, invalid credentials
  *       500:
@@ -165,16 +166,18 @@ router.post("/login", async (req, res) => {
 			preferences.activated = true
 		}
 		else
-		preferences = dbPreferences.rows[0]
+			preferences = dbPreferences.rows[0]
 
 		preferences.user_id = undefined
 
-		const userAccount = dbUserAccount.rows[0]
-		userAccount.password = undefined
-		userAccount.token = genAccessToken({ id: dbUserAccount.rows[0].id, email });
-		userAccount.refreshToken = genRefreshToken({ id: dbUserAccount.rows[0].id, email });
-		userAccount.preferences = preferences
-		res.json({ message: "Login successful", data: userAccount });
+		const user = dbUserAccount.rows[0]
+		user.password = undefined
+		user.preferences = preferences
+
+		const auth = {
+			token: genAccessToken({ id: dbUserAccount.rows[0].id, email })
+		}
+		res.json({ message: "Login successful", data: { ...auth, user } });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: "Internal Server Error" });
@@ -188,26 +191,26 @@ router.post("/login", async (req, res) => {
  *     tags:
  *       - Auth
  *     summary: Refresh a user's token
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               refreshToken:
- *                 type: string
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User token refreshed successfully and its data are returned including the jwts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
  *       401:
- *         description: Unauthorized, invalid refresh token
+ *         description: Unauthorized, invalid token
  */
 router.post("/refresh", async (req, res) => {
-	const refreshToken = req.body?.refreshToken;
-	if (!refreshToken)
-		return res.sendStatus(401);
-	doRefreshToken(refreshToken, res);
+	doRefreshToken(getTokenFromRequest(req), res);
 });
 
 /**
@@ -217,25 +220,18 @@ router.post("/refresh", async (req, res) => {
  *     tags:
  *       - Auth
  *     summary: Invalidate a user's refresh token aka. logout
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               refreshToken:
- *                 type: string
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User refresh token invalidated successfully
- *       403:
- *         description: Forbidden, invalid refresh token
+ *       401:
+ *          description: Unauthorized, invalid token
  */
 router.post("/invalidate", async (req, res) => {
-	if (invalidateRefreshToken(req.body?.refreshToken))
+	if (invalidateToken(getTokenFromRequest(req)))
 		return res.sendStatus(200);
-	res.sendStatus(403);
+	res.sendStatus(401);
 });
 
 module.exports = router;

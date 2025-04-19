@@ -10,7 +10,6 @@ PAGE_SIZE=20
 
 # Generate both of these with require('crypto').randomBytes(128).toString('hex') make sure both are different!
 ACCESS_TOKEN_SECRET=
-REFRESH_TOKEN_SECRET=
 
 # Accordingly as needed...
 DB_NAME= 
