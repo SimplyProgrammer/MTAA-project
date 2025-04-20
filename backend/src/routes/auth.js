@@ -141,7 +141,7 @@ router.post("/signup", async (req, res) => {
  *                           type: boolean
  *                         user:
  *                           type: object
- *       401:
+ *       400:
  *         description: Unauthorized, invalid credentials
  *       500:
  *         description: Internal server error
@@ -149,14 +149,17 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
 	try {
 		const { email, password } = req.body;
+		if (!email || !password)
+			return res.status(400).json({ message: "Missing email or password" });
+
 		const dbUserAccount = await select("useraccounts WHERE email = $1", [email]);
 
 		if (!dbUserAccount.rows.length || !dbUserAccount.rows[0].active)
-			return res.status(401).json({ message: "There is no such account" });
+			return res.status(400).json({ message: "Invalid credentials" });
 
 		const passCorrect = await bcrypt.compare(password, dbUserAccount.rows[0].password);
 		if (!passCorrect)
-			return res.status(401).json({ message: "Invalid credentials" });
+			return res.status(400).json({ message: "Invalid credentials" });
 
 		var preferences = undefined;
 		const dbPreferences = await select(`UserPreferences WHERE user_id = $1`, [dbUserAccount.rows[0].id])

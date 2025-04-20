@@ -9,6 +9,18 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+const cors = require("cors");
+app.use(cors());
+
+// const rateLimit = require("express-rate-limit");
+// const limiter = rateLimit({
+// 	windowMs: 8 * 60 * 1000, // 8 minutes mem span
+// 	limit: 100, // Limit each IP to 100 requests per `window` (here, per 8 minutes).
+// 	standardHeaders: 'draft-8', 
+// 	legacyHeaders: false
+// })
+// app.use(limiter)
+
 // Auth
 const authRouter = require("./routes/auth");
 app.use("/auth", authRouter);
@@ -17,6 +29,8 @@ const { verifyToken } = require("./middlewares/auth");
 // app.use(verifyToken);
 
 // Routers for other routes will be here
+
+// app.use(function(req, res, next) { setTimeout(next, Math.random()*1000+500) }); // For testing
 
 const { query } = require("./config/db"); 
 

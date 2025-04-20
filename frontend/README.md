@@ -4,10 +4,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
+0. Install node.js (reasonably new 20+)
+
 1. Install dependencies
 
    ```bash
-   npm install
+   npm i
    ```
 
 2. Start the app
@@ -20,7 +22,17 @@ In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-TLDR:
+TLDR: Emulator:
+1. Install Android Studio
+	- Select custom install and check all checkboxes
+2. Create virtual device - With API 33+ and google playstore preinstalled.
+3. Launch the ANdroid device
+4. npx expo start --clear 
+5. Press a and than j...
+
+6. O use Expo Go app if u have android but this is iffy...
+
+TLDR build:
 1. Add this system env variable:
 Variable name: ANDROID_HOME
 Variable value: C:\Users\<your-username>\AppData\Local\Android\Sdk
@@ -33,6 +45,7 @@ Variable value: C:\Users\<your-username>\AppData\Local\Android\Sdk
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
 ## Get a fresh project
+WAS ALREADY DONE, DO NOT!
 
 When you're ready, run:
 
