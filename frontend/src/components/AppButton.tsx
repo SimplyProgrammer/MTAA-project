@@ -9,7 +9,9 @@ import React, { useMemo, useState } from 'react';
 
 import { debounce } from 'lodash';
 
-const MainButton = ({onPress = null, title = "Button", loading = false, disable = false, className = "", textClassName = "text-white", debounceTime = 550}) => {
+export const Outline = "bg-transparent border border-blue-700 text-blue-700";
+
+const MainButton = ({children = undefined, onPress = null, title = "Button", loading = false, disable = false, className = "", textClassName = "text-white", debounceTime = 500}) => {
 	const [isLoading, setIsLoading] = useState(loading);
 	// const pressCount = useSignal(0);
 
@@ -34,9 +36,11 @@ const MainButton = ({onPress = null, title = "Button", loading = false, disable 
 			disabled={disable}
 		>
 			{isLoading ? (
-				<ActivityIndicator className={`${textClassName}`} />
+				<ActivityIndicator className={`${textClassName} ${className.includes('bg-transparent') ? '!text-blue-700' : ''}`} />
 			) : (
-				<Text className={`${textClassName}`}>{title}</Text>
+				children || (
+					<Text className={`${textClassName} ${className.includes('bg-transparent') ? '!text-blue-700 font-bold' : ''}`}>{title}</Text>
+				)
 			)}
 		</TouchableOpacity>
 	);
