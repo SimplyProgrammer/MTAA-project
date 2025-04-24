@@ -180,6 +180,7 @@ router.post("/login", async (req, res) => {
 		const auth = {
 			token: genAccessToken({ id: dbUserAccount.rows[0].id, email })
 		}
+		// console.log(auth)
 		res.json({ message: "Login successful", data: { ...auth, user } });
 	} catch (error) {
 		console.error(error);
@@ -209,11 +210,17 @@ router.post("/login", async (req, res) => {
  *                   properties:
  *                     token:
  *                       type: string
- *       401:
- *         description: Unauthorized, invalid token
+ *       440:
+ *         description: Invalid token or expired no longer redressable one
  */
 router.post("/refresh", async (req, res) => {
-	doRefreshToken(getTokenFromRequest(req), res);
+	try {
+		const token = doRefreshToken(getTokenFromRequest(req));
+		res.json({ data: { token } });
+	}
+	catch (e) {
+		res.status(440).json({ message: e.message || e.toString() });
+	}
 });
 
 /**

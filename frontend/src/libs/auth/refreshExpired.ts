@@ -4,14 +4,18 @@ import * as useAuthStore from '.'
 import { router } from "expo-router";
 
 const refreshAuthLogic = async (err: AxiosError) => {
-	if (err.config?.url.endsWith('auth/refresh'))
-		return;
+	// console.log(err.config?.url)
+	// if (err.config?.url.includes('auth/'))
+	// 	return;
 
-	const redirectToLogin = () => { router.dismissTo('/login'); console.log('No refresh go to login') }
+	const redirectToLogin = () => { 
+		router.dismissTo('/login'); 
+		// console.log('No refresh go to login') 
+	}
 	
 	console.log("Refreshing token...")
-	const refreshToken = await useAuthStore.refreshToken().catch(() => null)
 	try {
+		const refreshToken = await useAuthStore.refreshToken()
 		// console.log("Refreshing attempted...")
 		if (refreshToken) {
 			return Promise.resolve()

@@ -24,10 +24,13 @@ exports.verifyToken = (req, res, next) => {
 
 var activeSessions = {}; // Ongoing login sessions
 
-const newToken = (user) => sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION_TIME });
+const newToken = (user) => {
+	// console.log(ACCESS_TOKEN_EXPIRATION_TIME)
+	return sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION_TIME });
+};
 
 exports.genAccessToken = (user) => {
-	if (activeSessions[user.id]) {
+	if (activeSessions[user.id]?.token) {
 		// console.log(activeSessions[user.id])
 		return activeSessions[user.id].token
 	}
@@ -38,25 +41,25 @@ exports.genAccessToken = (user) => {
 	return token;
 };
 
-exports.doRefreshToken = (oldToken, res) => {
+exports.doRefreshToken = (oldToken) => {
 	const user = decode(oldToken, process.env.ACCESS_TOKEN_SECRET)
 	if (!user)
-		return res.sendStatus(401);
+		throw "Invalid or expired token"
 
 	const session =	activeSessions[user.id]
 	if (!session || session.token != oldToken)
-		return res.sendStatus(401);
+		throw "Invalid or expired token"
 
 	if (session.remainingRefreshes <= 0) {
 		activeSessions[user.id] = undefined
-		return res.sendStatus(401);
+		throw "Invalid or expired token"
 	}
 
 	const token = newToken({ id: user.id, email: user.email });
 	session.token = token
 	session.remainingRefreshes--
 	// console.log(activeSessions[user.id])
-	res.json({ data: { token } });
+	return token
 };
 
 exports.invalidateToken = (oldToken) => {

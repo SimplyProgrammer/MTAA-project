@@ -23,42 +23,8 @@ app.use(cors());
 // app.use(limiter)
 
 // Loging
-const morgan = require('morgan');
-morgan.token('req-body', (req, res) => {
-	const body = req?.body ?? null
-	if (body)
-		body.password = "..."
-	return JSON.stringify(body)
-})
-
-const originalSend = app.response.send
-app.response.send = function sendOverWrite(body) {
-	originalSend.call(this, body)
-	this.__custombody__ = body
-}
-
-morgan.token('res-body', (_req, res) => {
-	if (res.__custombody__?.toString().startsWith("{") || res.__custombody__?.toString().startsWith("[")) 
-		return res.__custombody__
-	return JSON.stringify(res.__custombody__ ?? null)
-})
-
-morgan.token('remote-address', function (req) {
-	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-	const port = req.socket.remotePort; // Seems to be generating some random number but whatever...
-	return `${ip}:${port}`;
-});
-
-const { getTokenFromRequest } = require("./middlewares/auth");
-morgan.token('auth-header', function (req) {
-	const auth = getTokenFromRequest(req);
-	if (!auth) 
-		return 'NoAuth';
-	return auth.length > 22 ? auth.substring(0, 10) + '...' : auth;
-});
-
-var accessLogStream = fs.createWriteStream(__dirname + './../.log', {flags: 'a'})
-app.use(morgan(':date[iso] | :remote-address -> :method :url :status :response-time ms :auth-header	:req-body  ->  :res-body', {stream: accessLogStream}))
+const { logging } = require("./config/logging");
+app.use(logging(app, __dirname + "/../.log"));
 
 // Auth
 const authRouter = require("./routes/auth");

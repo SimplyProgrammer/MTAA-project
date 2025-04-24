@@ -59,6 +59,8 @@ export function login(credentials) {
 
 		if (token)
 			await setToken(token)
+		else
+			throw "Token was not provided!"
 
 		if (user)
 			await setUser(user)
@@ -92,7 +94,7 @@ export function refreshToken() {
 	.catch(async (error) => {
 		await setToken(null)
 		// await setUser(null)
-
+		
 		console.error(error)
 		status.value = 'error'
 		throw error
