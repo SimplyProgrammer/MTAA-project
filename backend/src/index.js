@@ -12,6 +12,7 @@ app.use(express.json());
 const cors = require("cors");
 app.use(cors());
 
+// Rate Limit
 // const rateLimit = require("express-rate-limit");
 // const limiter = rateLimit({
 // 	windowMs: 8 * 60 * 1000, // 8 minutes mem span
@@ -20,6 +21,44 @@ app.use(cors());
 // 	legacyHeaders: false
 // })
 // app.use(limiter)
+
+// Loging
+const morgan = require('morgan');
+morgan.token('req-body', (req, res) => {
+	const body = req?.body ?? null
+	if (body)
+		body.password = "..."
+	return JSON.stringify(body)
+})
+
+const originalSend = app.response.send
+app.response.send = function sendOverWrite(body) {
+	originalSend.call(this, body)
+	this.__custombody__ = body
+}
+
+morgan.token('res-body', (_req, res) => {
+	if (res.__custombody__?.toString().startsWith("{") || res.__custombody__?.toString().startsWith("[")) 
+		return res.__custombody__
+	return JSON.stringify(res.__custombody__ ?? null)
+})
+
+morgan.token('remote-address', function (req) {
+	const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+	const port = req.socket.remotePort; // Seems to be generating some random number but whatever...
+	return `${ip}:${port}`;
+});
+
+const { getTokenFromRequest } = require("./middlewares/auth");
+morgan.token('auth-header', function (req) {
+	const auth = getTokenFromRequest(req);
+	if (!auth) 
+		return 'NoAuth';
+	return auth.length > 22 ? auth.substring(0, 10) + '...' : auth;
+});
+
+var accessLogStream = fs.createWriteStream(__dirname + './../.log', {flags: 'a'})
+app.use(morgan(':date[iso] | :remote-address -> :method :url :status :response-time ms :auth-header	:req-body  ->  :res-body', {stream: accessLogStream}))
 
 // Auth
 const authRouter = require("./routes/auth");

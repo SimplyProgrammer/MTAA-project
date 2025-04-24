@@ -35,12 +35,23 @@ export default function HomeScreen() {
 		}
 	}
 
+	const testRefresh = async () => {
+		try {
+			const resp = await useAuthStore.refreshToken().catch(() => null)
+			console.log("Refresh test: ", resp)
+		}
+		catch (err) {
+			console.error(err)
+		}
+	}
+
 	return (
 		<View className={`${Screen}`}>
 			<Text>Home</Text>
 			<Text>{JSON.stringify(useAuthStore.getUser())}</Text>
 
 			<AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
+			<AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
 			<AppButton title="Test" className={`mt-4 ${Outline}`} onPress={doTest}>
 				<MaterialIcons name="http" size={24} color="blue" />
 			</AppButton>

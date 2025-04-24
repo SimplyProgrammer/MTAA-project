@@ -10,3 +10,5 @@ uploads/*
 dist
 dist-ssr
 *.env
+
+.log
