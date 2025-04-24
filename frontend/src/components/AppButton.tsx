@@ -2,7 +2,6 @@ import {
 	ActivityIndicator,
 	Pressable,
 	Text,
-	TouchableOpacity,
 	View,
 } from 'react-native';
 import React, { useMemo, useState } from 'react';
@@ -29,7 +28,7 @@ const MainButton = ({children = undefined, onPress = null, title = "Button", loa
 	}, debounceTime, { leading: true, trailing: false }), [onPress, debounceTime]);
 
 	return (
-		<TouchableOpacity
+		<Pressable
 			className={`flex items-center justify-center h-12 border-lg bg-blue-700 rounded-md w-full ${className}`}
 			style={[ disable && {opacity: 0.5} ]}
 			onPress={debouncedPress}
@@ -42,7 +41,7 @@ const MainButton = ({children = undefined, onPress = null, title = "Button", loa
 					<Text className={`${textClassName} ${className.includes('bg-transparent') ? '!text-blue-700 font-bold' : ''}`}>{title}</Text>
 				)
 			)}
-		</TouchableOpacity>
+		</Pressable>
 	);
 };
 

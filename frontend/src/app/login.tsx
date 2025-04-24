@@ -11,6 +11,7 @@ import * as toasts from "@/libs/toasts";
 import { Link, router } from "expo-router";
 
 import { Card, Screen, H3 } from "@/components/styles";
+import AppImage from "@/components/AppImage";
 
 const loginForm = [
 	<Text className={`${H3} text-center mb-4`}>
@@ -48,7 +49,12 @@ export default function Login() {
 	};
 	
 	return (
-		<View className={`${Screen} justify-center`}>
+		<View className={`${Screen}`}>
+			<AppImage
+				className="w-full aspect-video my-6 px-5"
+				source={require('../../assets/images/hero1.png')}
+			/>
+
 			<Form className={`${Card} flex flex-col gap-5 w-full`}
 				formConfig={loginForm}
 				onSubmit={handleLogin}

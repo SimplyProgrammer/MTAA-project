@@ -25,6 +25,15 @@ const handleLogout = async () => {
 	}
 }
 
+const tryGetImage = async () => {
+	try {
+		const img = await toasts.forAxiosActionCall(axios.get_auth_data('files/test.PNG'), "Img");
+		console.log("Img: ", img);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 export default function HomeScreen() {
 	const doTest = async () => {
 		try {
@@ -37,7 +46,7 @@ export default function HomeScreen() {
 
 	const testRefresh = async () => {
 		try {
-			const resp = await useAuthStore.refreshToken().catch(() => null)
+			const resp = await useAuthStore.refreshToken()
 			console.log("Refresh test: ", resp)
 		}
 		catch (err) {
@@ -52,7 +61,7 @@ export default function HomeScreen() {
 
 			<AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
 			<AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
-			<AppButton title="Test" className={`mt-4 ${Outline}`} onPress={doTest}>
+			<AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
 				<MaterialIcons name="http" size={24} color="blue" />
 			</AppButton>
 		</View>

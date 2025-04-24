@@ -25,8 +25,10 @@ const { genAccessToken, getTokenFromRequest, doRefreshToken, invalidateToken } =
  *                 nullable: true
  *               email:
  *                 type: string
+ *                 default: "hi.there@mail.co"
  *               password:
  *                 type: string
+ *                 default: "tst123"
  *     responses:
  *       201:
  *         description: User registered successfully and its data are returned
@@ -111,8 +113,10 @@ router.post("/signup", async (req, res) => {
  *             properties:
  *               email:
  *                 type: string
+ *                 default: "hi.there@mail.co"
  *               password:
  *                 type: string
+ *                 default: "tst123"
  *     responses:
  *       200:
  *         description: User logged in successfully and its data are returned including the jwts
@@ -211,7 +215,7 @@ router.post("/login", async (req, res) => {
  *                     token:
  *                       type: string
  *       440:
- *         description: Invalid token or expired no longer redressable one
+ *         description: Invalid token or expired no longer refreshable one
  */
 router.post("/refresh", async (req, res) => {
 	try {

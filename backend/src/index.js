@@ -51,7 +51,7 @@ app.get("/", verifyToken, async (req, res) => {
 
 // Files
 const filesRouter = require("./routes/files");
-app.use("/files", verifyToken,filesRouter);
+app.use("/files", verifyToken, filesRouter);
 
 // Posts
 const postsRouter = require("./routes/posts");

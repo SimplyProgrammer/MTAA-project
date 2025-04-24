@@ -2,7 +2,7 @@ node_modules
 build
 npm-debug.log
 
-uploads/*
+uploads/[0-9]*
 
 .DS_Store
 .idea

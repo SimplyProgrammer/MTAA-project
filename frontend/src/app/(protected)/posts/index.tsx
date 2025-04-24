@@ -1,14 +1,15 @@
-import { View, Text, FlatList  } from "react-native";
+import { View, Text, FlatList, Pressable  } from "react-native";
 import { Screen } from "@/components/styles";
 import { Link } from "expo-router";
+import { router } from "expo-router";
 
-import PostCard from "@/components/PostCard";
+import PostCard from "@/components/posts/PostCard";
 
 const posts = Array.from({ length: 10 }, (_, i) => ({
 	id: i + 1,
 	title: `Post #${i + 1}`,
 	text: `This is post #${i + 1}. You can click on the image to open the post.`,
-	image: `https://reactnative.dev/img/tiny_logo.png`,
+	image: `test.PNG`,
 }));
 
 export default function PostsScreen() {
@@ -17,9 +18,13 @@ export default function PostsScreen() {
 			<FlatList
 				data={posts}
 				keyExtractor={(item) => item.id.toString()}
-				renderItem={({ item }) => <PostCard {...item} />}
+				renderItem={({ item }) => (
+					<Pressable onPress={() => router.push(`/posts/${item.id}`)}>
+						<PostCard {...item} />
+					</Pressable>
+				)}
 				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={{ gap: 16 }}
+				contentContainerClassName="gap-5 overflow-visible"
 			/>
 		</View>
 	);
