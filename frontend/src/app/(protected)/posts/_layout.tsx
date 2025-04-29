@@ -8,14 +8,14 @@ export default function PostsLayout() {
 
 				headerRight: () => (<Link href="/posts/new">New</Link>)
 			}} />
+			<Stack.Screen name="new" options={{
+				title: "New post"
+			}} />
 			<Stack.Screen name="[id]/index" options={{
 				title: "Post"
 			}} />
 			<Stack.Screen name="[id]/edit" options={{
 				title: "Edit post"
-			}} />
-			<Stack.Screen name="/new" options={{
-				title: "New post"
 			}} />
 		</Stack>
 	);
