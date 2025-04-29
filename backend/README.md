@@ -8,7 +8,7 @@ IP=<Your IP>
 PORT=5000
 PAGE_SIZE=20
 
-# Generate both of these with require('crypto').randomBytes(128).toString('hex') make sure both are different!
+# Generate both of these with node and require('crypto').randomBytes(128).toString('hex')!
 ACCESS_TOKEN_SECRET=
 
 # Accordingly as needed...

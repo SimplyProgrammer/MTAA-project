@@ -9,6 +9,6 @@ uploads/[0-9]*
 .vscode
 dist
 dist-ssr
-*.env
+*.env*
 
 .log

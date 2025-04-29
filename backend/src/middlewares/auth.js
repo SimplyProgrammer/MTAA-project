@@ -1,6 +1,7 @@
 const { sign, verify, decode } = require("jsonwebtoken");
 
-const ACCESS_TOKEN_EXPIRATION_TIME = process.env.ACCESS_TOKEN_EXPIRATION_TIME || "2h";
+const ACCESS_TOKEN_EXPIRATION_TIME = process.env.ACCESS_TOKEN_EXPIRATION_TIME || "30m";
+const ACCESS_TOKEN_REFRESH_COUNT = process.env.ACCESS_TOKEN_REFRESH_COUNT || 48;
 
 exports.getTokenFromRequest = (req) => {
 	const authHeader = req.headers["authorization"];
@@ -36,7 +37,7 @@ exports.genAccessToken = (user) => {
 	}
 
 	const token = newToken(user);
-	activeSessions[user.id] = { token, remainingRefreshes: 3 }
+	activeSessions[user.id] = { token, remainingRefreshes: ACCESS_TOKEN_REFRESH_COUNT }
 	// console.log(activeSessions[user.id])
 	return token;
 };
