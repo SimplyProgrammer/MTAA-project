@@ -6,13 +6,18 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 0. Install node.js (reasonably new 20+)
 
-1. Install dependencies
+1. Create .env file with
+```
+EXPO_PUBLIC_API_URL=<IP:Port/ or URL/ of BE> For example 192.168.0.1:5000
+```
+
+2. Install dependencies
 
    ```bash
    npm i
    ```
 
-2. Start the app
+3. Start the app
 
    ```bash
     npx expo start

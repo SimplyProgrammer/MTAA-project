@@ -17,5 +17,8 @@ DB_USER=
 DB_HOST=
 DB_PASSWD=
 DB_PORT=
+
+Or use this:
+DATABASE_URL=
 ```
 4. npm run dev
