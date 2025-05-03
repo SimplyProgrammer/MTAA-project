@@ -264,11 +264,11 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   eventCard: {
-    backgroundColor: "#e0e7ff",
+    backgroundColor: "#dbdbdb",
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   eventTitle: {
     fontSize: 15,
