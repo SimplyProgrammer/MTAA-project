@@ -148,7 +148,7 @@ router.delete("/:id", async (req, res) => {
  *   post:
  *     tags:
  *       - Lectures
- *     summary: Add a new lecture and assign to user
+ *     summary: Add a new lecture and assign it to a user
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -162,6 +162,7 @@ router.delete("/:id", async (req, res) => {
  *               - user_id
  *               - from_time
  *               - to_time
+ *               - day
  *             properties:
  *               subject_id:
  *                 type: integer
@@ -173,21 +174,45 @@ router.delete("/:id", async (req, res) => {
  *               to_time:
  *                 type: string
  *                 format: date-time
+ *               day:
+ *                 type: string
+ *                 format: varchar
+ *                 description: day of the week (e.g., Monday, Tuesday, etc.)
  *     responses:
  *       201:
  *         description: Lecture created and assigned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Lecture created and assigned
+ *                 data:
+ *                   type: object
+ *                   additionalProperties: true
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: "null"
  */
 router.post("/", async (req, res) => {
-	const { subject_id, user_id, from_time, to_time } = req.body;
+	const { subject_id, user_id, from_time, to_time, day } = req.body;
 
 	try {
 		const result = await db.query(`
-			INSERT INTO Lectures (subject_id, from_time, to_time)
-			VALUES ($1, $2, $3)
+			INSERT INTO Lectures (subject_id, from_time, to_time, day)
+			VALUES ($1, $2, $3, $4)
 			RETURNING *
-		`, [subject_id, from_time, to_time]);
+		`, [subject_id, from_time, to_time, day]);
 
 		const lecture = result.rows[0];
 

@@ -170,7 +170,7 @@ router.delete("/:id", async (req, res) => {
  *   post:
  *     tags:
  *       - Seminars
- *     summary: Add a new seminar and assign to a user
+ *     summary: Add a new seminar and assign it to a user
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -183,6 +183,8 @@ router.delete("/:id", async (req, res) => {
  *               - subject_id
  *               - user_id
  *               - from_time
+ *               - to_time
+ *               - day
  *             properties:
  *               subject_id:
  *                 type: integer
@@ -194,9 +196,13 @@ router.delete("/:id", async (req, res) => {
  *               to_time:
  *                 type: string
  *                 format: date-time
+ *               day:
+ *                 type: string
+ *                 format: varchar
+ *                 description: day of the week (e.g., Monday, Tuesday, etc.)
  *     responses:
  *       201:
- *         description: Seminar created and linked
+ *         description: Seminar created and assigned
  *         content:
  *           application/json:
  *             schema:
@@ -204,6 +210,7 @@ router.delete("/:id", async (req, res) => {
  *               properties:
  *                 message:
  *                   type: string
+ *                   example: Seminar created and assigned
  *                 data:
  *                   type: object
  *                   additionalProperties: true
@@ -217,17 +224,17 @@ router.delete("/:id", async (req, res) => {
  *                 message:
  *                   type: string
  *                 data:
- *                   type: null
+ *                   type: "null"
  */
 router.post("/", async (req, res) => {
-	const { subject_id, user_id, from_time, to_time } = req.body;
+	const { subject_id, user_id, from_time, to_time, day } = req.body;
 
 	try {
 		const result = await db.query(`
-			INSERT INTO Seminars (subject_id, from_time, to_time)
-			VALUES ($1, $2, $3)
+			INSERT INTO Seminars (subject_id, from_time, to_time, day)
+			VALUES ($1, $2, $3, $4)
 			RETURNING *
-		`, [subject_id, from_time, to_time]);
+		`, [subject_id, from_time, to_time, day]);
 
 		const seminar = result.rows[0];
 

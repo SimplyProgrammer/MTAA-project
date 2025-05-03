@@ -241,7 +241,7 @@ router.get("/", async (req, res) => {
 	// add ordering and pagination
 	values.push(offset, limit);
 	queryText += `
-	  ORDER BY e.date_till DESC
+	  ORDER BY e.date_till ASC
 	  OFFSET $${values.length - 1}
 	  LIMIT  $${values.length}
 	`;
