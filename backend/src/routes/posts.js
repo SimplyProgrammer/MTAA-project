@@ -1,7 +1,8 @@
 const router = require("express").Router();
-const { select, insert, update, remove } = require("../config/db"); // Use the same pool
+const { begin, commit, rollback, select, insert, update, remove } = require("../config/db"); // Use the same pool
 
-const PAGE_SIZE = process.env.PAGE_SIZE || 20;
+const { checkOwnership, authorizeFor } = require("../middlewares/authorize");
+const { getPageInfo, pagination } = require("../config/pagination");
 
 /**
  * @openapi
@@ -43,13 +44,10 @@ const PAGE_SIZE = process.env.PAGE_SIZE || 20;
  *       500:
  *         description: Internal server error
  */
-router.get("/", async (req, res) => {
+router.get("/", authorizeFor("*"), async (req, res) => {
 	try {
-		var offset = req.query.offset || 0;
-		var limit = req.query.limit || PAGE_SIZE;
-		if (req.query.page) {
-			offset = (req.query.page - 1) * PAGE_SIZE;
-		}
+		const { offset, limit, page } = getPageInfo(req.query);
+
 		var search = req.query.search?.trim() || "";
 
 		const result = await (search ? select(
@@ -59,8 +57,14 @@ router.get("/", async (req, res) => {
 			`posts OFFSET $1 LIMIT $2`,
 			[offset, limit]
 		));
-		 
-		res.json({ data: result.rows });
+
+		result.rows.forEach(post => {
+			if (checkOwnership(req.user, post))
+				post.canEdit = true;
+		});
+		// console.log(result.rows);
+
+		res.json({ data: result.rows, ...pagination(page, result.rows, limit) });
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
@@ -185,8 +189,6 @@ router.post("/", async (req, res) => {
 		if (!text)
 			return res.status(400).send("Missing text");
 
-		// TODO: Add image
-
 		const result = await insert(
 			"posts (title, text, user_id, image) VALUES ($1, $2, $3, $4)",
 			[title, text, user_id, image]
@@ -253,12 +255,14 @@ router.post("/", async (req, res) => {
  *                       type: string
  *       400:
  *         description: Bad request, missing title or text
+ *       403:
+ *         description: Operation forbidden (you are not the author)
  *       404:
  *         description: Post not found
  *       500:
  *         description: Internal server error
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", authorizeFor("*"), async (req, res) => {
 	try {
 		const { title, text, image } = req.body;
 		if (!title)
@@ -266,13 +270,18 @@ router.put("/:id", async (req, res) => {
 		if (!text)
 			return res.status(400).send("Missing text");
 
-		const result = await update(
+		const result = await begin().then(() => update(
 			"posts SET title = $1, text = $2, image = $3 WHERE id = $4",
 			[title, text, image, req.params.id]
-		);
+		));
 		if (!result.rows.length)
 			return res.status(404).send("Post not found");
+		if (!checkOwnership(req.user, result.rows[0])) {
+			await rollback();
+			return res.status(403).send("Operation forbidden!");
+		}
 
+		await commit();
 		res.json({ message: "Post updated", data: result.rows[0] });
 	} catch (err) {
 		console.error(err);

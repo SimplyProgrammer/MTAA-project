@@ -8,7 +8,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 1. Create .env file with
 ```
-EXPO_PUBLIC_API_URL=<IP:Port/ or URL/ of BE> For example 192.168.0.1:5000
+EXPO_PUBLIC_API_URL=<IP:Port/ or URL/ of BE> For example http://192.168.0.1:5000/
 ```
 
 2. Install dependencies
