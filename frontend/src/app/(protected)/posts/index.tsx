@@ -8,7 +8,7 @@ import PostCard from "@/components/posts/PostCard";
 const posts = Array.from({ length: 10 }, (_, i) => ({
 	id: i + 1,
 	title: `Post #${i + 1}`,
-	text: `This is post #${i + 1}. You can click on the image to open the post.`,
+	text: `This is post #${i + 1}. You can click on the image to open the post.  You can click on the image to open the pos  You can click on the image to open the pos  You can click on the image to open the pos  You can click on the image to open the pos  You can click on the image to open the pos`,
 	image: `test.PNG`,
 }));
 
@@ -23,7 +23,6 @@ export default function PostsScreen() {
 						<PostCard {...item} />
 					</Pressable>
 				)}
-				showsHorizontalScrollIndicator={false}
 				contentContainerClassName="gap-5 overflow-visible"
 			/>
 		</View>

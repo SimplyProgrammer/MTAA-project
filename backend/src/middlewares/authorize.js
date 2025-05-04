@@ -3,7 +3,8 @@ const { query } = require("../config/db");
 const hasRole = async (user, ...roles) => {
 	try {
 		const result = await query("SELECT role FROM UserAccounts WHERE id = $1", [user.id]);
-		return roles.includes(result.rows[0].role)
+		user.role = result.rows[0].role
+		return roles?.[0] == "*" || roles.includes(user.role)
 	} catch (err) {
 		return false;
 	}
@@ -21,4 +22,11 @@ const authorizeFor = (...roles) => async (req, res, next) => {
 	}
 };
 
-module.exports = { hasRole, authorizeFor };
+const checkOwnership = (user, item) => {
+	if (user?.role == "ADMIN")
+		return true;
+	// console.log(user.id, (item?.user_id || parseInt(item)), user.id == (item?.user_id || parseInt(item)))
+	return user.id == (item?.user_id || +item);
+}
+
+module.exports = { hasRole, authorizeFor, checkOwnership };

@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-console.log(process.env.DATABASE_URL)
+
 const db = new Pool(
 	process.env.DATABASE_URL ? {
 		connectionString: process.env.DATABASE_URL,
