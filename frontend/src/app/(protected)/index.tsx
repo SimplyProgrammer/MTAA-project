@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 
@@ -135,7 +135,15 @@ export default function HomeScreen() {
 	}
 
 	return (
-		<View className={`${Screen}`}>
+		<ScrollView 
+            contentContainerStyle={{
+                flexGrow: 1,
+                alignItems: "center",
+                backgroundColor: "#fff",
+                padding: 16,
+            }}
+        >
+		<View style={{ width: "100%", maxWidth: 600 }}>
             <Text>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
             <Text>{JSON.stringify(useAuthStore.getUser())}</Text>
 
@@ -147,6 +155,11 @@ export default function HomeScreen() {
             <AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
                 <MaterialIcons name="http" size={24} color="blue" />
             </AppButton>
+			<AppButton
+                title="Admin Panel"
+                className={`mt-4`}
+                onPress={() => router.push("/admin")}
+            />
             <View style={styles.timetableContainer}>
                 <Text style={styles.timetableHeader}>
                     {timetableLabel}
@@ -197,6 +210,7 @@ export default function HomeScreen() {
                 )}
             </View>
         </View>
+		</ScrollView>
 	);
 
 	
