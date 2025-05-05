@@ -153,10 +153,14 @@ router.delete("/:id", async (req, res) => {
 	const subjectId = req.params.id;
 
 	try {
+		// Remove subject references from User_Subjects first
+		await db.query(`DELETE FROM User_Subjects WHERE subject_id = $1`, [subjectId]);
+
+		// Then remove the subject itself
 		await db.query(`DELETE FROM Subjects WHERE id = $1`, [subjectId]);
 
 		res.status(200).json({
-			message: "Subject deleted successfully",
+			message: "Subject and associated user-subject links deleted successfully",
 			data: null,
 		});
 	} catch (err) {
@@ -167,5 +171,4 @@ router.delete("/:id", async (req, res) => {
 		});
 	}
 });
-
 module.exports = router;
