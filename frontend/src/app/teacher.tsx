@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Alert, View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
-import { Screen } from "@/components/styles";
+import * as Styles from "@/components/styles";
 import AppButton from "@/components/AppButton";
 import axios from "@/libs/axios";
-import * as toasts from "@/libs/toasts";
-import * as useAuthStore from "@/libs/auth";
-
+import { getUser } from "@/libs/auth";
+import { Picker } from "@react-native-picker/picker";
 
 export default function TeacherOverviewScreen() {
     const [subjects, setSubjects] = useState<any[]>([]);
@@ -13,26 +12,27 @@ export default function TeacherOverviewScreen() {
     const [newSubjectDescription, setNewSubjectDescription] = useState("");
     const [loading, setLoading] = useState(false);
 
-	// Events state
+    // Events state
     const [events, setEvents] = useState<any[]>([]);
     const [newEventTitle, setNewEventTitle] = useState("");
     const [newEventType, setNewEventType] = useState("");
     const [newEventSubjectId, setNewEventSubjectId] = useState<number | null>(null);
     const [newEventDateTill, setNewEventDateTill] = useState<string>("");
 
+    // Fetch subjects assigned to the teacher
     const fetchSubjects = async () => {
         try {
-            const user = useAuthStore.getUser();
+            const user = getUser();
             if (!user?.id) return;
-
-            const response = await axios.get(`subjects?user_id=${user.id}`);
-            setSubjects(response.data.data || []);
+            const response = await axios.get_auth_data(`subjects?user_id=${user.id}`);
+            setSubjects(response.data?.data || response.data || response || []);
         } catch (error) {
             console.error(error);
         }
     };
 
-	const handleDeleteSubject = async (subjectId: number) => {
+    // Delete subject
+    const handleDeleteSubject = async (subjectId: number) => {
         Alert.alert(
             "Delete Subject",
             "Are you sure you want to delete this subject?",
@@ -44,7 +44,7 @@ export default function TeacherOverviewScreen() {
                     onPress: async () => {
                         try {
                             setLoading(true);
-                            await axios.delete(`subjects/${subjectId}`);
+                            await axios.delete_auth_data(`subjects/${subjectId}`);
                             setSubjects((prev) => prev.filter((s) => s.id !== subjectId));
                         } catch (error) {
                             console.error(error);
@@ -57,30 +57,27 @@ export default function TeacherOverviewScreen() {
         );
     };
 
+    // Fetch all events for the teacher's subjects
     const fetchEvents = async () => {
         try {
-            const user = useAuthStore.getUser();
-            if (!user?.id) return;
-            // Get all events for subjects assigned to this user
             const subjectIds = subjects.map((s) => s.id);
             if (subjectIds.length === 0) {
                 setEvents([]);
                 return;
             }
-            // Fetch all events for these subjects
             const promises = subjectIds.map((id: number) =>
-                axios.get(`events?subject_id=${id}`)
+                axios.get_auth_data(`events?subject_id=${id}`)
             );
             const results = await Promise.all(promises);
-            // Flatten and merge all events
-            const allEvents = results.flatMap((res) => res.data.data || []);
+            const allEvents = results.flatMap((res) => res.data?.data || res.data || res || []);
             setEvents(allEvents);
         } catch (error) {
             console.error(error);
         }
     };
 
-	const handleDeleteEvent = async (eventId: number) => {
+    // Delete event
+    const handleDeleteEvent = async (eventId: number) => {
         Alert.alert(
             "Delete Event",
             "Are you sure you want to delete this event?",
@@ -92,7 +89,7 @@ export default function TeacherOverviewScreen() {
                     onPress: async () => {
                         try {
                             setLoading(true);
-                            await axios.delete(`events/${eventId}`);
+                            await axios.delete_auth_data(`events/${eventId}`);
                             setEvents((prev) => prev.filter((e) => e.id !== eventId));
                         } catch (error) {
                             console.error(error);
@@ -105,66 +102,66 @@ export default function TeacherOverviewScreen() {
         );
     };
 
+    // Add new subject and assign to user
+    const handleAddSubject = async () => {
+        if (!newSubjectTitle || !newSubjectDescription) {
+            console.error("Please fill in all fields");
+            return;
+        }
+        const user = getUser();
+        try {
+            setLoading(true);
+            const response = await axios.post_auth_data("subjects", {
+                title: newSubjectTitle,
+                description: newSubjectDescription,
+                user_id: user.id,
+            });
+            if (response && response.data && response.data.data) {
+                setSubjects((prev) => [...prev, response.data.data]);
+                setNewSubjectTitle("");
+                setNewSubjectDescription("");
+            } else if (response && response.id) {
+                setSubjects((prev) => [...prev, response]);
+                setNewSubjectTitle("");
+                setNewSubjectDescription("");
+            } else {
+                console.error('Unexpected response structure:', response);
+            }
+        } catch (error) {
+            console.error('API Error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-	const handleAddEvent = async () => {
+    // Add new event for a subject
+    const handleAddEvent = async () => {
         if (!newEventTitle || !newEventType || !newEventSubjectId || !newEventDateTill) {
             console.error("Please fill in all event fields");
             return;
         }
         try {
             setLoading(true);
-            const response = await toasts.forAxiosActionCall(
-                axios.post("events", {
-                    title: newEventTitle,
-                    subject_id: newEventSubjectId,
-                    type: newEventType,
-                    date_till: newEventDateTill,
-                }),
-                "Add Event",
-                "Event added successfully"
-            );
-            if (response) {
-                setEvents((prev) => [...prev, response.data]);
+            const response = await axios.post_auth_data("events", {
+                title: newEventTitle,
+                subject_id: newEventSubjectId,
+                type: newEventType,
+                date_till: newEventDateTill,
+            });
+            if (response.data && response.data.data) {
+                setEvents((prev) => [...prev, response.data.data]);
                 setNewEventTitle("");
                 setNewEventType("");
                 setNewEventSubjectId(null);
                 setNewEventDateTill("");
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleAddSubject = async () => {
-        if (!newSubjectTitle || !newSubjectDescription) {
-            console.error("Please fill in all fields");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const user = useAuthStore.getUser();
-            if (!user?.id) {
-                console.error("User not found");
-                return;
-            }
-
-            const response = await toasts.forAxiosActionCall(
-                axios.post("subjects", {
-                    title: newSubjectTitle,
-                    description: newSubjectDescription,
-                    user_id: user.id,
-                }),
-                "Add Subject",
-                "Subject added successfully"
-            );
-
-            if (response) {
-                setSubjects((prev) => [...prev, response.data]);
-                setNewSubjectTitle("");
-                setNewSubjectDescription("");
+            } else if (response && response.id) {
+                setEvents((prev) => [...prev, response]);
+                setNewEventTitle("");
+                setNewEventType("");
+                setNewEventSubjectId(null);
+                setNewEventDateTill("");
+            } else {
+                console.error('Unexpected response structure:', response);
             }
         } catch (error) {
             console.error(error);
@@ -177,54 +174,49 @@ export default function TeacherOverviewScreen() {
         fetchSubjects();
     }, []);
 
-	useEffect(() => {
+    useEffect(() => {
         if (subjects.length > 0) fetchEvents();
     }, [subjects]);
 
     return (
-        <ScrollView className={`${Screen}`}>
-            <Text className="text-2xl font-bold mb-4">Teacher Overview</Text>
+        <ScrollView className={Styles.ScrollViewContainer}>
+            <Text className={Styles.H2 + " mb-4"}>Teacher Overview</Text>
 
-            <Text className="text-xl font-semibold mb-2">Your Subjects</Text>
+            <Text className={Styles.H3 + " mb-2"}>Your Subjects</Text>
             <View className="mb-4">
                 {subjects.length === 0 ? (
-                    <Text>No subjects found.</Text>
+                    <Text className={Styles.emptyText}>No subjects found.</Text>
                 ) : (
                     subjects.map((subject) => (
-                        <View key={subject.id} className="mb-2 p-2 border rounded flex-row justify-between items-center">
+                        <View key={subject.id} className={Styles.subjectItem}>
                             <View>
-                                <Text className="font-bold">{subject.title}</Text>
-                                <Text>{subject.description}</Text>
+                                <Text className={Styles.subjectTitle}>{subject.title}</Text>
+                                <Text className="text-xs text-gray-500">{subject.description}</Text>
                             </View>
                             <TouchableOpacity
                                 onPress={() => handleDeleteSubject(subject.id)}
-                                style={{
-                                    backgroundColor: "#ffdddd",
-                                    padding: 6,
-                                    borderRadius: 4,
-                                    marginLeft: 8,
-                                }}
+                                className={Styles.deleteButton}
                             >
-                                <Text style={{ color: "#b00" }}>Delete</Text>
+                                <Text className={Styles.deleteButtonText}>×</Text>
                             </TouchableOpacity>
                         </View>
                     ))
                 )}
             </View>
 
-            <Text className="text-xl font-semibold mb-2">Add New Subject</Text>
-            <View className="mb-4">
+            <Text className={Styles.H3 + " mb-2"}>Add New Subject</Text>
+            <View className={Styles.basicContainer}>
                 <TextInput
                     placeholder="Subject Title"
                     value={newSubjectTitle}
                     onChangeText={setNewSubjectTitle}
-                    className="border p-2 rounded mb-2"
+                    className={Styles.Input + " mb-2"}
                 />
                 <TextInput
                     placeholder="Subject Description"
                     value={newSubjectDescription}
                     onChangeText={setNewSubjectDescription}
-                    className="border p-2 rounded mb-2"
+                    className={Styles.Input + " mb-2"}
                 />
                 <AppButton
                     title={loading ? "Adding..." : "Add Subject"}
@@ -232,73 +224,67 @@ export default function TeacherOverviewScreen() {
                     disable={loading}
                 />
             </View>
-			<Text className="text-xl font-semibold mb-2">Events for Your Subjects</Text>
+
+            <Text className={Styles.H3 + " mb-2"}>Events for Your Subjects</Text>
             <View className="mb-4">
                 {events.length === 0 ? (
-                    <Text>No events found.</Text>
+                    <Text className={Styles.emptyText}>No events found.</Text>
                 ) : (
                     events.map((event) => (
-                        <View key={event.id} className="mb-2 p-2 border rounded flex-row justify-between items-center">
+                        <View key={event.id} className={Styles.EventCardItem + " flex-row justify-between items-center"}>
                             <View>
-                                <Text className="font-bold">{event.title}</Text>
-                                <Text>Type: {event.type}</Text>
-                                <Text>Subject: {event.subject_title || (subjects.find(s => s.id === event.subject_id)?.title ?? "")}</Text>
-                                <Text>Due: {event.date_till?.slice(0, 10)}</Text>
+                                <Text className={Styles.EventCardTitle}>{event.title}</Text>
+                                <Text className={Styles.EventCardSubject}>Type: {event.type}</Text>
+                                <Text className={Styles.EventCardSubject}>
+                                    Subject: {event.subject_title || (subjects.find(s => s.id === event.subject_id)?.title ?? "")}
+                                </Text>
+                                <Text className={Styles.EventCardDate}>Due: {event.date_till?.slice(0, 10)}</Text>
                             </View>
                             <TouchableOpacity
                                 onPress={() => handleDeleteEvent(event.id)}
-                                style={{
-                                    backgroundColor: "#ffdddd",
-                                    padding: 6,
-                                    borderRadius: 4,
-                                    marginLeft: 8,
-                                }}
+                                className={Styles.deleteButton}
                             >
-                                <Text style={{ color: "#b00" }}>Delete</Text>
+                                <Text className={Styles.deleteButtonText}>×</Text>
                             </TouchableOpacity>
                         </View>
                     ))
                 )}
             </View>
 
-            <Text className="text-xl font-semibold mb-2">Add New Event</Text>
-            <View className="mb-4">
+            <Text className={Styles.H3 + " mb-2"}>Add New Event</Text>
+            <View className={Styles.basicContainer}>
                 <TextInput
                     placeholder="Event Title"
                     value={newEventTitle}
                     onChangeText={setNewEventTitle}
-                    className="border p-2 rounded mb-2"
+                    className={Styles.Input + " mb-2"}
                 />
                 <TextInput
-                    placeholder="Event Type (e.g. exam, deadline)"
+                    placeholder="assignment/exam"
                     value={newEventType}
                     onChangeText={setNewEventType}
-                    className="border p-2 rounded mb-2"
+                    className={Styles.Input + " mb-2"}
                 />
-                <View className="border p-2 rounded mb-2">
-                    <Text>Select Subject:</Text>
-                    {subjects.map((subject) => (
-                        <TouchableOpacity
-                            key={subject.id}
-                            onPress={() => setNewEventSubjectId(subject.id)}
-                            style={{
-                                backgroundColor: newEventSubjectId === subject.id ? "#ddd" : "#fff",
-                                padding: 6,
-                                marginVertical: 2,
-                                borderRadius: 4,
-                            }}
-                        >
-                            <Text>{subject.title}</Text>
-                        </TouchableOpacity>
-                    ))}
+                <View className={Styles.Input + " h-[52px] mb-2 px-0"}>
+						<Picker
+							selectedValue={newEventSubjectId}
+							onValueChange={(itemValue) => setNewEventSubjectId(itemValue)}
+							
+							dropdownIconColor="#333"
+							style={{ fontSize: 13.5 }} 
+						>
+							<Picker.Item style={{ fontSize: 13.5 }} label="Select subject..." value={null} />
+							{subjects.map((subject) => (
+								<Picker.Item style={{ fontSize: 13.5 }}  key={subject.id} label={subject.title} value={subject.id} />
+							))}
+						</Picker>
                 </View>
                 <TextInput
                     placeholder="Due Date (YYYY-MM-DD)"
                     value={newEventDateTill}
                     onChangeText={setNewEventDateTill}
-                    className="border p-2 rounded mb-2"
+                    className={Styles.Input + " mb-2"}
                 />
-              
                 <AppButton
                     title={loading ? "Adding..." : "Add Event"}
                     onPress={handleAddEvent}

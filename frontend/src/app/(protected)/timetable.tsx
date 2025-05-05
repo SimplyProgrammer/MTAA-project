@@ -140,7 +140,7 @@ export default function TimetableScreen() {
 
   return (
     <ScrollView className={Styles.ScrollViewContainer}>
-      <Text className={Styles.H2}>Timetable</Text>
+      <Text className={`${Styles.H3} mt-6 my-3`}>Timetable</Text>
       <View className={Styles.basicContainer}>
         {DAYS.map((day) => (
           <View key={day} className={Styles.daySection}>
@@ -169,7 +169,7 @@ export default function TimetableScreen() {
           </View>
         ))}
       </View>
-      <Text className={Styles.H2}>Exams</Text>
+      <Text className={`${Styles.H3} mt-6 my-3`}>Exams</Text>
       <View className={Styles.basicContainer}>
       {examEvents.length === 0 ? (
         <Text>No exam events found.</Text>
@@ -189,7 +189,7 @@ export default function TimetableScreen() {
         })
       )}
       </View>
-      <Text className={Styles.H2}>Assignments</Text>
+      <Text className={`${Styles.H3} mt-6 my-3`}>Assignments</Text>
       <View className={Styles.basicContainer}>
       {assignmentEvents.length === 0 ? (
         <Text>No assignment events found.</Text>

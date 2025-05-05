@@ -41,9 +41,9 @@ export default function TimelineScreen() {
     return (
         <ScrollView className={Styles.ScrollViewContainer}>
             <Text className={Styles.H2}>{name}</Text>
-            <Text>{desc}</Text>
+            <Text className="my-3">{desc}</Text>
 
-            <Text className={Styles.H3}>Evaluations</Text>
+            <Text className={`${Styles.H3} mt-6 my-3`}>Evaluations</Text>
             {loading ? (
                 <ActivityIndicator />
             ) : error ? (
@@ -63,7 +63,7 @@ export default function TimelineScreen() {
                 </View>
             )}
 
-            <Text className={Styles.H3}>Events for this subject</Text>
+            <Text className={`${Styles.H3} mt-6 my-3`}>Events for this subject</Text>
             {loading ? (
                 <ActivityIndicator />
             ) : error ? (

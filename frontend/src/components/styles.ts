@@ -38,3 +38,8 @@ export const countdownGreen  = "text-green-500 dark:text-green-400 font-bold tex
 export const subjectItem = "bg-white dark:bg-gray-900 border border-gray-300 shadow-md dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-1.5 flex-row items-center justify-between";
 export const subjectTitle = "text-base font-semibold text-gray-800";
 export const arrowRight = "text-lg text-gray-400 ml-2";
+
+export const deleteButton = "ml-2 px-2 py-1 rounded bg-red-200 w-8";
+export const deleteButtonText = "text-dark text-center";
+
+export const dropdown = "text-sm text-red-500";
