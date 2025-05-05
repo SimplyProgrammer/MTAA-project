@@ -1,7 +1,9 @@
-import { signal } from "@preact-signals/safe-react";
+import { signal, useSignal } from "@preact-signals/safe-react";
 import { createStorage } from '@/libs/storage';
 import axios from '@/libs/axios'
-import _axios from 'axios'
+import _axios, { InternalAxiosRequestConfig } from 'axios'
+import Toast from "react-native-toast-message";
+import { show } from "../toasts";
 
 const authStorage = createStorage({ name: 'auth', secure: true });
 
@@ -64,6 +66,8 @@ export function login(credentials) {
 
 		if (user)
 			await setUser(user)
+		else
+			throw "User was not provided, this is not allowed!"
 
 		status.value = 'success'
 		return response
@@ -95,6 +99,8 @@ export function refreshToken() {
 		await setToken(null)
 		// await setUser(null)
 		
+		if (error.status == 440)
+			show('error', 'Session has expired', 'Please login again!')
 		console.error(error)
 		status.value = 'error'
 		throw error
@@ -109,9 +115,24 @@ export function logout() {
 	})
 }
 
-function authInterceptor(request) {
+async function authInterceptor(request) {
+	// console.log(request.url, status.value)
 	if (request.useAuth) {
-		request.headers['Authorization'] = `Bearer ${getToken()}`
+		let token = getToken();
+
+		const interval = 100;
+		let waited = 0;
+		while (!token && waited <= 500) {
+			await new Promise(r => setTimeout(r, interval));
+			waited += interval;
+			token = getToken();
+		}
+
+		if (token) {
+			request.headers['Authorization'] = `Bearer ${token}`;
+			return request;
+		}
+		console.warn("Doing unauthenticated request, with no token provided!");
 	}
 	return request
 }
