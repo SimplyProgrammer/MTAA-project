@@ -1,12 +1,11 @@
 import { Link, Stack } from "expo-router";
+import { View, Text } from "react-native";
 
 export default function PostsLayout() {
 	return (
 		<Stack>
 			<Stack.Screen name="index" options={{ 
 				title: "Posts",
-
-				headerRight: () => (<Link href="/posts/new">New</Link>)
 			}} />
 			<Stack.Screen name="new" options={{
 				title: "New post"

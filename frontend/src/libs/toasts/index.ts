@@ -1,6 +1,10 @@
 
 import Toast from 'react-native-toast-message';
 
+export function getAxiosErrorMessage(error, defaultMessage = "Something went wrong...") {
+	return error?.data?.message ?? error?.data?.error ?? error.message ?? error ?? defaultMessage
+}
+
 export function forAxiosActionCall(call: Promise<any>, actionTitle: string, successMessage?: string) {
 	if (successMessage != undefined) {
 		call.then(resp => {
@@ -11,12 +15,12 @@ export function forAxiosActionCall(call: Promise<any>, actionTitle: string, succ
 			})
 		})
 	}
-	
+
 	call.catch(error => {
 		Toast.show({
 			type: 'error',
 			text1: `${actionTitle} failed`,
-			text2: error?.data?.message ?? error?.data?.error ?? error.message ?? error ?? "Something went wrong"
+			text2: getAxiosErrorMessage(error)
 		})
 		throw error
 	})

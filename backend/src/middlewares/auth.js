@@ -1,7 +1,7 @@
 const { sign, verify, decode } = require("jsonwebtoken");
 
-const ACCESS_TOKEN_EXPIRATION_TIME = process.env.ACCESS_TOKEN_EXPIRATION_TIME || "30m";
-const ACCESS_TOKEN_REFRESH_COUNT = process.env.ACCESS_TOKEN_REFRESH_COUNT || 48;
+const ACCESS_TOKEN_EXPIRATION_TIME = process.env.ACCESS_TOKEN_EXPIRATION_TIME || "2h";
+const ACCESS_TOKEN_REFRESH_COUNT = process.env.ACCESS_TOKEN_REFRESH_COUNT || 6;
 
 exports.getTokenFromRequest = (req) => {
 	const authHeader = req.headers["authorization"];
@@ -16,8 +16,10 @@ exports.verifyToken = (req, res, next) => {
 		return res.sendStatus(401);
 	
 	verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-		if (err) 
+		if (err) {
+			// console.error(err)
 			return res.sendStatus(401);
+		}
 		req.user = user;
 		next();
 	});
@@ -45,7 +47,7 @@ exports.genAccessToken = (user) => {
 exports.doRefreshToken = (oldToken) => {
 	const user = decode(oldToken, process.env.ACCESS_TOKEN_SECRET)
 	if (!user)
-		throw "Invalid or expired token"
+		throw "Invalid token"
 
 	const session =	activeSessions[user.id]
 	if (!session || session.token != oldToken)

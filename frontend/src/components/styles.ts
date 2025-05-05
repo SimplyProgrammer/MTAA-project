@@ -1,12 +1,16 @@
-export const Screen = "flex-1 items-center bg-white dark:bg-gray-900 p-4"
+export const Screen = "flex-1 items-center bg-[#FAFAFA] dark:bg-gray-900 p-4"
 export const ScrollViewContainer = "flex-1 bg-white p-4";
 
-export const Card = "p-6 overflow-hidden max-w-md text-white bg-gray-100 rounded-2xl shadow-md dark:bg-gray-900";
+export const Card = "p-6 min-w-full max-w-2xl overflow-hidden bg-white text-white border border-gray-200 rounded-2xl dark:bg-gray-900";
 
-export const H1 = "text-3xl my-5 font-bold text-gray-900 dark:text-white";
-export const H2 = "text-2xl my-4 font-bold text-gray-900 dark:text-white";
-export const H3 = "text-xl my-3 font-bold text-gray-900 dark:text-white";
+export const H1 = "text-3xl font-bold text-gray-900 dark:text-white";
+export const H2 = "text-2xl font-bold text-gray-900 dark:text-white";
+export const H3 = "text-xl font-bold text-gray-900 dark:text-white";
+export const H = [H1, H2, H3];
+
 export const Input = "h-11 border border-gray-300 dark:border-gray-600 rounded-lg px-4 bg-white dark:bg-gray-800";
+
+export const IconBtn = "active:bg-[rgba(0,0,0,0.08)] rounded-full transition";
 
 // EVENTS
 export const EventCardItem = "bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-1.5";

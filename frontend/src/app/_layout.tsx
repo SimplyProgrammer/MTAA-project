@@ -8,6 +8,8 @@ import "@/global.css"
 
 import "@/libs/auth/refreshExpired"
 
+import "@/libs/datetime-utility/global-time-utility"
+
 import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
@@ -19,7 +21,7 @@ export default function RootLayout() {
 					name="(protected)"
 					options={{
 						headerShown: false,
-						animation: "none",
+						// animation: "none",
 					}}
 				/>
 				<Stack.Screen

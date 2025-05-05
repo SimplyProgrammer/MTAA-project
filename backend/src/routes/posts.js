@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { begin, commit, rollback, select, insert, update, remove } = require("../config/db"); // Use the same pool
+const { begin, commit, rollback, query, select, insert, update, remove } = require("../config/db"); // Use the same pool
 
 const { checkOwnership, authorizeFor } = require("../middlewares/authorize");
 const { getPageInfo, pagination } = require("../config/pagination");
@@ -64,7 +64,7 @@ router.get("/", authorizeFor("*"), async (req, res) => {
 		});
 		// console.log(result.rows);
 
-		res.json({ data: result.rows, ...pagination(page, result.rows, limit) });
+		res.json({ ...pagination(page, result.rows, limit), data: result.rows });
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
@@ -115,9 +115,9 @@ router.get("/", authorizeFor("*"), async (req, res) => {
  */
 router.get("/:id", async (req, res) => {
 	try {
-		const result = await select(
-			"posts WHERE id = $1",
-			[req.params.id]
+		const result = await query(
+			`SELECT p.id, title, text, image, user_id, created, u.email owner, (user_id = $2) "canEdit" FROM posts p JOIN useraccounts u ON p.user_id = u.id WHERE p.id = $1`,
+			[req.params.id, req.user.id]
 		);
 
 		if (!result.rows.length)

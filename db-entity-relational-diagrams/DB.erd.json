@@ -5,12 +5,12 @@
     "width": 3000,
     "height": 3000,
     "scrollTop": 0,
-    "scrollLeft": -129.3996,
+    "scrollLeft": 0,
     "zoomLevel": 0.94,
     "show": 511,
     "database": 16,
     "databaseName": "DB",
-    "canvasType": "ERD",
+    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
     "language": 16,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -319,15 +319,15 @@
           "tgn8TSsgRUTOeu1vtvfGL"
         ],
         "ui": {
-          "x": 470.7913,
-          "y": 645.6587,
+          "x": 391.0045,
+          "y": 659.4881,
           "zIndex": 252,
           "widthName": 79,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1746404854084,
+          "updateAt": 1746466366026,
           "createAt": 1743245899540
         }
       },
@@ -392,7 +392,8 @@
           "v360-wpwgzmTb5N1WaHE4",
           "SayI_4x3UCrvUPgsDFPuE",
           "apYdJGemv-6YIwh8So6cy",
-          "ybBqLAzwZi3KXxBG-lxQ9"
+          "ybBqLAzwZi3KXxBG-lxQ9",
+          "E-YiWh24hrPRDdJvNMR40"
         ],
         "seqColumnIds": [
           "EOU2JhKMARWRtuqm5cPGT",
@@ -407,18 +408,19 @@
           "piumzxWxrCwpPFshHX-0h",
           "5SlZFL3MVV8JE_-VRp-LD",
           "QKqpCdqsmYJBIkhM1tIdZ",
-          "ybBqLAzwZi3KXxBG-lxQ9"
+          "ybBqLAzwZi3KXxBG-lxQ9",
+          "E-YiWh24hrPRDdJvNMR40"
         ],
         "ui": {
-          "x": 59.6282,
-          "y": 212.2595,
+          "x": 69.2027,
+          "y": 300.5574,
           "zIndex": 351,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1746404845513,
+          "updateAt": 1746466338155,
           "createAt": 1743246304176
         }
       },
@@ -514,15 +516,15 @@
           "d6W-SOuSxxcu6ry6Gze5A"
         ],
         "ui": {
-          "x": 114.6127,
-          "y": -18.5774,
+          "x": 153.9744,
+          "y": 38.8694,
           "zIndex": 437,
           "widthName": 62,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1746405032774,
+          "updateAt": 1746466340620,
           "createAt": 1746404687999
         }
       }
@@ -2727,6 +2729,26 @@
           "updateAt": 1746405040927,
           "createAt": 1746404920867
         }
+      },
+      "E-YiWh24hrPRDdJvNMR40": {
+        "id": "E-YiWh24hrPRDdJvNMR40",
+        "tableId": "hxh1ZwYmdSIbo2AJt-JCf",
+        "name": "created",
+        "comment": "",
+        "dataType": "timestamp",
+        "default": "NOW()",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1746466315230,
+          "createAt": 1746466275431
+        }
       }
     },
     "relationshipEntities": {
@@ -2917,8 +2939,8 @@
           "columnIds": [
             "NoNlcFtz5jS51j6IcBvGQ"
           ],
-          "x": 888.7913,
-          "y": 697.6587,
+          "x": 809.0045,
+          "y": 711.4881,
           "direction": 2
         },
         "meta": {
@@ -2945,8 +2967,8 @@
           "columnIds": [
             "tgn8TSsgRUTOeu1vtvfGL"
           ],
-          "x": 470.7913,
-          "y": 697.6587,
+          "x": 391.0045,
+          "y": 711.4881,
           "direction": 1
         },
         "meta": {
@@ -3113,8 +3135,8 @@
           "columnIds": [
             "v360-wpwgzmTb5N1WaHE4"
           ],
-          "x": 480.6282,
-          "y": 300.2595,
+          "x": 490.2027,
+          "y": 400.5574,
           "direction": 2
         },
         "meta": {
@@ -3169,8 +3191,8 @@
           "columnIds": [
             "8cvLCh1hxUxYhTwqlxjzt"
           ],
-          "x": 534.6127,
-          "y": 31.422600000000003,
+          "x": 573.9744000000001,
+          "y": 88.8694,
           "direction": 2
         },
         "meta": {
@@ -3197,8 +3219,8 @@
           "columnIds": [
             "0A7AA2nh6JRi1UpftvrqJ"
           ],
-          "x": 534.6127,
-          "y": 131.4226,
+          "x": 573.9744000000001,
+          "y": 188.86939999999998,
           "direction": 2
         },
         "meta": {
@@ -4738,6 +4760,16 @@
         "name": 1746404926403,
         "dataType": 1746404935603,
         "options(notNull)": 1746405040927
+      }
+    ],
+    "E-YiWh24hrPRDdJvNMR40": [
+      "tableColumnEntities",
+      1746466275430,
+      -1,
+      {
+        "name": 1746466315230,
+        "dataType": 1746466295798,
+        "default": 1746466303544
       }
     ]
   }

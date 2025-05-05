@@ -54,6 +54,7 @@ export default function HomeScreen() {
                     setLoading(false);
                     return;
                 }
+				// console.log(useAuthStore.getToken())
                 const subjectsData = await axios.get_auth_data(`/subjects?user_id=${user.id}`);
                 const subjectsArr: any[] = Array.isArray(subjectsData)
                     ? subjectsData
