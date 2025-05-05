@@ -4,13 +4,13 @@
   "settings": {
     "width": 3000,
     "height": 3000,
-    "scrollTop": 0,
+    "scrollTop": -100,
     "scrollLeft": 0,
     "zoomLevel": 0.94,
     "show": 511,
     "database": 16,
     "databaseName": "DB",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 16,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -412,15 +412,15 @@
           "E-YiWh24hrPRDdJvNMR40"
         ],
         "ui": {
-          "x": 69.2027,
-          "y": 300.5574,
+          "x": 61.7559,
+          "y": 300.5575,
           "zIndex": 351,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1746466338155,
+          "updateAt": 1746476565975,
           "createAt": 1743246304176
         }
       },
@@ -516,15 +516,15 @@
           "d6W-SOuSxxcu6ry6Gze5A"
         ],
         "ui": {
-          "x": 153.9744,
-          "y": 38.8694,
+          "x": 135.8893,
+          "y": 18.6566,
           "zIndex": 437,
           "widthName": 62,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1746466340620,
+          "updateAt": 1746476554797,
           "createAt": 1746404687999
         }
       }
@@ -3135,8 +3135,8 @@
           "columnIds": [
             "v360-wpwgzmTb5N1WaHE4"
           ],
-          "x": 490.2027,
-          "y": 400.5574,
+          "x": 482.7559,
+          "y": 400.5575,
           "direction": 2
         },
         "meta": {
@@ -3191,8 +3191,8 @@
           "columnIds": [
             "8cvLCh1hxUxYhTwqlxjzt"
           ],
-          "x": 573.9744000000001,
-          "y": 88.8694,
+          "x": 555.8893,
+          "y": 68.6566,
           "direction": 2
         },
         "meta": {
@@ -3219,8 +3219,8 @@
           "columnIds": [
             "0A7AA2nh6JRi1UpftvrqJ"
           ],
-          "x": 573.9744000000001,
-          "y": 188.86939999999998,
+          "x": 555.8893,
+          "y": 168.6566,
           "direction": 2
         },
         "meta": {
