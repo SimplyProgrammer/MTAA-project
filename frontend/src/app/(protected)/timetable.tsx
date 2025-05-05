@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import api from "@/libs/axios";
 import { getUser } from "@/libs/auth";
+import EventCard from "@/components/timetable/EventCard";
+import * as Styles from "@/components/styles";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -28,7 +30,7 @@ export default function TimetableScreen() {
         }
 
         // 1) Fetch subjects
-        const subjectsUrl = `/subjects?user_id=${user.id}`;
+        const subjectsUrl = `subjects?user_id=${user.id}`;
         const subjectsData = await api.get_auth_data(subjectsUrl);
         const subjectsArr: any[] = Array.isArray(subjectsData)
           ? subjectsData
@@ -36,7 +38,7 @@ export default function TimetableScreen() {
         setSubjects(subjectsArr);
 
         // 2) Fetch lectures
-        const lecturesUrl = `/lectures?user_id=${user.id}`;
+        const lecturesUrl = `lectures?user_id=${user.id}`;
         const lecturesData = await api.get_auth_data(lecturesUrl);
         const lecturesArr: any[] = Array.isArray(lecturesData)
           ? lecturesData
@@ -44,7 +46,7 @@ export default function TimetableScreen() {
         setLectures(lecturesArr);
 
         // 3) Fetch seminars
-        const seminarsUrl = `/seminars?user_id=${user.id}`;
+        const seminarsUrl = `seminars?user_id=${user.id}`;
         const seminarsData = await api.get_auth_data(seminarsUrl);
         const seminarsArr: any[] = Array.isArray(seminarsData)
           ? seminarsData
@@ -59,7 +61,7 @@ export default function TimetableScreen() {
             let allEvents: any[] = [];
             await Promise.all(
               subjectIds.map(async (subjectId) => {
-                const eventsUrl = `/events?subject_id=${subjectId}&type=${type}`;
+                const eventsUrl = `events?subject_id=${subjectId}&type=${type}`;
                 const eventsData = await api.get_auth_data(eventsUrl);
                 const eventsArr: any[] = Array.isArray(eventsData)
                   ? eventsData
@@ -137,94 +139,75 @@ export default function TimetableScreen() {
     subjects.find((s) => s.id === id)?.title || "";
 
   return (
-<ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        alignItems: "center",
-        backgroundColor: "#fff",
-        padding: 16,
-      }}
-    >
-      <View style={{ width: "100%", maxWidth: 600 }}>
-        <View style={styles.timetableContainer}>
-          {DAYS.map((day) => (
-            <View key={day} style={styles.daySection}>
-              <Text style={styles.dayTitle}>{day}</Text>
-              {eventsByDay[day].length === 0 ? (
-                <Text style={styles.emptyText}>No lectures or seminars.</Text>
-              ) : (
-                <View style={styles.compactList}>
-                  {eventsByDay[day].map((event) => (
-                    <View
-                      key={`${event.type}-${event.id}`}
-                      style={[
-                        styles.compactItem,
-                        isPast(event.to_time) && { opacity: 0.3 },
-                      ]}
-                    >
-                      <Text style={styles.compactType}>{event.type}</Text>
-                      <Text style={styles.compactTitle}>
-                        {getSubjectTitle(event.subject_id)}
-                      </Text>
-                      <Text style={styles.compactTime}>
-                        {formatTime(event.from_time)} - {formatTime(event.to_time)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
-          ))}
-        </View>
-        <Text style={styles.header}>Exams</Text>
-        {examEvents.length === 0 ? (
-          <Text>No exam events found.</Text>
-        ) : (
-          examEvents.map((event) => {
-            const countdown = getCountdown(event.date_till);
-            return (
-              <View
-                key={event.id}
-                style={[
-                  styles.eventCard,
-                  isPast(event.date_till) && { opacity: 0.3 },
-                ]}
-              >
-                <Text style={styles.eventTitle}>{event.title}</Text>
-                <Text style={styles.eventInfo}>{event.subject_title}</Text>
-                <Text style={styles.eventInfo}>
-                  {new Date(event.date_till).toLocaleString()}{" "}
-                  <Text style={countdown.color}>({countdown.text})</Text>
-                </Text>
+    <ScrollView className={Styles.ScrollViewContainer}>
+      <Text className={Styles.H2}>Timetable</Text>
+      <View className={Styles.basicContainer}>
+        {DAYS.map((day) => (
+          <View key={day} className={Styles.daySection}>
+            <Text className={Styles.dayTitle}>{day}</Text>
+            {eventsByDay[day].length === 0 ? (
+              <Text className={Styles.emptyText}>No lectures or seminars.</Text>
+            ) : (
+              <View className={Styles.compactList}>
+                {eventsByDay[day].map((event) => (
+                  <View
+                    key={`${event.type}-${event.id}`}
+                    className={Styles.compactItem}
+                    style={isPast(event.to_time) ? { opacity: 0.3 } : undefined}
+                  >
+                    <Text className={Styles.compactType}>{event.type}</Text>
+                    <Text className={Styles.compactTitle}>
+                      {getSubjectTitle(event.subject_id)}
+                    </Text>
+                    <Text className={Styles.compactTime}>
+                      {formatTime(event.from_time)} - {formatTime(event.to_time)}
+                    </Text>
+                  </View>
+                ))}
               </View>
-            );
-          })
-        )}
-
-        <Text style={styles.header}>Assignments</Text>
-        {assignmentEvents.length === 0 ? (
-          <Text>No assignment events found.</Text>
-        ) : (
-          assignmentEvents.map((event) => {
-            const countdown = getCountdown(event.date_till);
-            return (
-              <View
-                key={event.id}
-                style={[
-                  styles.eventCard,
-                  isPast(event.date_till) && { opacity: 0.3 },
-                ]}
-              >
-                <Text style={styles.eventTitle}>{event.title}</Text>
-                <Text style={styles.eventInfo}>{event.subject_title}</Text>
-                <Text style={styles.eventInfo}>
-                  {new Date(event.date_till).toLocaleString()}{" "}
-                  <Text style={countdown.color}>({countdown.text})</Text>
-                </Text>
-              </View>
-            );
-          })
-        )}
+            )}
+          </View>
+        ))}
+      </View>
+      <Text className={Styles.H2}>Exams</Text>
+      <View className={Styles.basicContainer}>
+      {examEvents.length === 0 ? (
+        <Text>No exam events found.</Text>
+      ) : (
+        examEvents.map((event) => {
+          const countdown = getCountdown(event.date_till);
+          return (
+            <EventCard
+              key={event.id}
+              title={event.title}
+              subject={event.subject_title}
+              date={new Date(event.date_till).toLocaleString()}
+              countdown={countdown}
+              isPast={isPast(event.date_till)}
+            />
+          );
+        })
+      )}
+      </View>
+      <Text className={Styles.H2}>Assignments</Text>
+      <View className={Styles.basicContainer}>
+      {assignmentEvents.length === 0 ? (
+        <Text>No assignment events found.</Text>
+      ) : (
+        assignmentEvents.map((event) => {
+          const countdown = getCountdown(event.date_till);
+          return (
+            <EventCard
+              key={event.id}
+              title={event.title}
+              subject={event.subject_title}
+              date={new Date(event.date_till).toLocaleString()}
+              countdown={countdown}
+              isPast={isPast(event.date_till)}
+            />
+          );
+        })
+      )}
       </View>
     </ScrollView>
   );
@@ -238,120 +221,21 @@ function formatTime(dateStr: string) {
 
 // Helper to get countdown string and color
 function getCountdown(dateStr: string) {
-    const now = new Date();
-    const target = new Date(dateStr);
-    const diffMs = target.getTime() - now.getTime();
-    if (diffMs <= 0) return { text: "Due!", color: styles.countdownRed };
-  
-    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  
-    let color = styles.countdownGreen;
-    if (days < 2) color = styles.countdownRed;
-    else if (days < 10) color = styles.countdownOrange;
-  
-    return { text: `${days}d ${hours}h`, color };
-  }
+  const now = new Date();
+  const target = new Date(dateStr);
+  const diffMs = target.getTime() - now.getTime();
+  if (diffMs <= 0) return { text: "Due!", color: Styles.countdownRed };
 
-function isPast(dateStr: string) {
-    return new Date(dateStr).getTime() < Date.now();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+  let color = Styles.countdownGreen;
+  if (days < 2) color = Styles.countdownRed;
+  else if (days < 10) color = Styles.countdownOrange;
+
+  return { text: `${days}d ${hours}h`, color };
 }
 
-const styles = StyleSheet.create({
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginVertical: 16,
-  },
-  eventCard: {
-    backgroundColor: "#dbdbdb",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  eventTitle: {
-    fontSize: 15,
-    fontWeight: "bold",
-    marginBottom: 2,
-  },
-  eventInfo: {
-    fontSize: 13,
-    marginTop: 3,
-    color: "#333",
-  },
-  timetableContainer: {
-    marginTop: 12,
-    marginBottom: 24,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 10,
-    padding: 14,
-  },
-  daySection: {
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-    paddingBottom: 6,
-  },
-  dayTitle: {
-    fontSize: 15,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#374151",
-  },
-  emptyText: {
-    color: "#888",
-    fontStyle: "italic",
-    marginLeft: 8,
-    fontSize: 12,
-  },
-  compactList: {
-    flexDirection: "column",
-    gap: 2,
-  },
-  compactItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 2,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-    backgroundColor: "#dbdbdb",
-  },
-  compactType: {
-    fontWeight: "bold",
-    fontSize: 13,
-    marginRight: 6,
-    color: "#2563eb",
-    width: 16,
-    textAlign: "center",
-  },
-  compactTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    flex: 1,
-  },
-  compactTime: {
-    fontSize: 12,
-    color: "#555",
-    marginLeft: 8,
-    width: 70,
-    textAlign: "right",
-  },
-  countdownRed: {
-    color: "#ef4444",
-    fontWeight: "bold",
-    fontSize: 12,
-  },
-  countdownOrange: {
-    color: "#f59e42",
-    fontWeight: "bold",
-    fontSize: 12,
-  },
-  countdownGreen: {
-    color: "#22c55e",
-    fontWeight: "bold",
-    fontSize: 12,
-  },
-});
-
+function isPast(dateStr: string) {
+  return new Date(dateStr).getTime() < Date.now();
+}
