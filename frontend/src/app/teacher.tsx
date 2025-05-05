@@ -180,11 +180,15 @@ export default function TeacherOverviewScreen() {
 
     return (
         <ScrollView className={Styles.ScrollViewContainer}>
-            <Text className={Styles.H2 + " mb-4"}>Teacher Overview</Text>
+			<View className="mb-4 mt-6">
+				<Text className={Styles.H2 + "mt-6 mb-2 text-center"}>Teacher Overview</Text>
 
-            <Text className={Styles.H3 + " mb-2"}>Your Subjects</Text>
-            <View className="mb-4">
-                {subjects.length === 0 ? (
+				
+			</View>
+            <View className=" mt-5">
+			<Text className={Styles.H3 + "mt-6 mb-4"}>Your Subjects</Text>
+                <View className={Styles.basicContainer}>
+				{subjects.length === 0 ? (
                     <Text className={Styles.emptyText}>No subjects found.</Text>
                 ) : (
                     subjects.map((subject) => (
@@ -202,10 +206,11 @@ export default function TeacherOverviewScreen() {
                         </View>
                     ))
                 )}
+				</View>
             </View>
 
-            <Text className={Styles.H3 + " mb-2"}>Add New Subject</Text>
-            <View className={Styles.basicContainer}>
+            <Text className={Styles.H3 + " mb-4"}>Add New Subject</Text>
+            <View className={Styles.basicContainer  + " mb-10"}>
                 <TextInput
                     placeholder="Subject Title"
                     value={newSubjectTitle}
@@ -225,8 +230,9 @@ export default function TeacherOverviewScreen() {
                 />
             </View>
 
-            <Text className={Styles.H3 + " mb-2"}>Events for Your Subjects</Text>
-            <View className="mb-4">
+            <Text className={Styles.H3 + "mt-8 mb-4"}>Events for Your Subjects</Text>
+            <View className={Styles.basicContainer}>
+			<View className="mb-4">
                 {events.length === 0 ? (
                     <Text className={Styles.emptyText}>No events found.</Text>
                 ) : (
@@ -250,8 +256,9 @@ export default function TeacherOverviewScreen() {
                     ))
                 )}
             </View>
+				</View>
 
-            <Text className={Styles.H3 + " mb-2"}>Add New Event</Text>
+            <Text className={Styles.H3 + " mb-4"}>Add New Event</Text>
             <View className={Styles.basicContainer}>
                 <TextInput
                     placeholder="Event Title"

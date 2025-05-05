@@ -160,7 +160,7 @@ export default function HomeScreen() {
             <View className={`${Styles.basicContainer} mt-5`}>
                 <Text className={`${Styles.H2} text-center`}>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
             </View>
-            <Text className={`${Styles.H2}`}>{timetableLabel}</Text>
+            <Text className={`${Styles.H3} mt-5 mb-3`}>{timetableLabel}</Text>
             <View className={`${Styles.basicContainer}`}>
 
                 {loading ? (
@@ -186,7 +186,7 @@ export default function HomeScreen() {
                     ))
                 )}
             </View>
-            <Text className={Styles.H2}>Your Subjects</Text>
+            <Text className={`${Styles.H3} mt-5 mb-3`}>Your Subjects</Text>
             <View className={Styles.basicContainer}>
                 {subjects.length === 0 ? (
                     <Text className={Styles.emptyText}>No subjects found.</Text>
