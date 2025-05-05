@@ -77,6 +77,10 @@ app.use("/seminars", verifyToken, seminarsRouter);
 const lecturesRouter = require("./routes/lectures");
 app.use("/lectures", verifyToken, lecturesRouter);
 
+// Evaluations
+const evaluationsRouter = require("./routes/evaluations");
+app.use("/evaluations", verifyToken, evaluationsRouter);
+
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 
