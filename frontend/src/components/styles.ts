@@ -20,8 +20,8 @@ export const basicContainer = "mb-7 bg-white dark:bg-gray-900 border border-gray
 export const daySection    = "mb-2.5 pb-1.5";
 export const dayTitle      = "text-base font-bold mb-2 text-gray-700 dark:text-gray-300";
 export const emptyText     = "text-gray-500 italic ml-2 text-xs dark:text-gray-400";
-export const compactList   = "flex flex-col gap-2";
-export const compactItem   = "bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 flex flex-row items-center py-1 px-2 rounded bg-gray-300 dark:bg-gray-700";
+export const compactList   = "flex flex-col";
+export const compactItem   = "bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 flex flex-row items-center mt-1 py-1 px-2 rounded bg-gray-300 dark:bg-gray-700";
 export const compactType   = "font-bold text-sm mr-1.5 text-blue-600 dark:text-blue-400 w-4 text-center";
 export const compactTitle  = "text-sm font-semibold flex-1 text-gray-900 dark:text-gray-100";
 export const compactTime   = "text-xs text-gray-600 ml-2 w-24 text-right dark:text-gray-400";
@@ -29,3 +29,8 @@ export const countdownRed    = "text-red-500 dark:text-red-400 font-bold text-xs
 export const countdownOrange = "text-orange-500 dark:text-orange-400 font-bold text-xs";
 export const countdownGreen  = "text-green-500 dark:text-green-400 font-bold text-xs";
 
+// IDK YET
+
+export const subjectItem = "bg-white dark:bg-gray-900 border border-gray-300 shadow-md dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-1.5 flex-row items-center justify-between";
+export const subjectTitle = "text-base font-semibold text-gray-800";
+export const arrowRight = "text-lg text-gray-400 ml-2";

@@ -9,6 +9,7 @@ import { Screen } from "@/components/styles";
 import { Link, router } from "expo-router";
 
 import * as toasts from "@/libs/toasts";
+import * as Styles from "@/components/styles";
 
 import axios from "@/libs/axios";
 
@@ -135,146 +136,75 @@ export default function HomeScreen() {
 	}
 
 	return (
-		<ScrollView 
-            contentContainerStyle={{
-                flexGrow: 1,
-                alignItems: "center",
-                backgroundColor: "#fff",
-                padding: 16,
-            }}
-        >
-		<View style={{ width: "100%", maxWidth: 600 }}>
-            <Text>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
-            <Text>{JSON.stringify(useAuthStore.getUser())}</Text>
-
+    <ScrollView className={Styles.ScrollViewContainer}>
             
-
-            {/* ...rest of your code... */}
+            <Text>{JSON.stringify(useAuthStore.getUser())}</Text>
             <AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
             <AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
             <AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
                 <MaterialIcons name="http" size={24} color="blue" />
             </AppButton>
 			<AppButton
-                title="Admin Panel"
+                title="Admin screen"
                 className={`mt-4`}
                 onPress={() => router.push("/admin")}
             />
-            <View style={styles.timetableContainer}>
-                <Text style={styles.timetableHeader}>
-                    {timetableLabel}
-                </Text>
+			<AppButton
+                title="Teacher screen"
+                className={`mt-4`}
+                onPress={() => router.push("/teacher")}
+            />
+
+            
+            <View className={`${Styles.basicContainer} mt-5`}>
+                <Text className={`${Styles.H2} text-center`}>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
+            </View>
+            <Text className={`${Styles.H2}`}>{timetableLabel}</Text>
+            <View className={`${Styles.basicContainer}`}>
+
                 {loading ? (
                     <Text>Loading...</Text>
                 ) : todayEvents.length === 0 ? (
-                    <Text style={styles.emptyText}>
+                    <Text className={Styles.emptyText}>
                         No lectures or seminars {timetableLabel === "Monday's Timetable" ? "on Monday." : "today."}
                     </Text>
                 ) : (
                     todayEvents.map((event) => (
                         <View
                             key={`${event.type}-${event.id}`}
-                            style={[
-                                styles.eventRow,
-                                new Date(event.to_time).getTime() < Date.now() && { opacity: 0.3 },
-                            ]}
+                            className={Styles.compactItem}
                         >
-                            <Text style={styles.eventType}>
-                                {event.type}
-                            </Text>
-                            <Text style={styles.eventTitle}>
+                            <Text className={Styles.compactType}>{event.type}</Text>
+                            <Text className={Styles.compactTitle}>
                                 {getSubjectTitle(event.subject_id)}
                             </Text>
-                            <Text style={styles.eventTime}>
+                            <Text className={Styles.compactTime}>
                                 {formatTime(event.from_time)} - {formatTime(event.to_time)}
                             </Text>
                         </View>
                     ))
                 )}
             </View>
-			{/* Subject List Section */}
-            <View style={styles.subjectListContainer}>
-                <Text style={styles.subjectListHeader}>Your Subjects</Text>
+            <Text className={Styles.H2}>Your Subjects</Text>
+            <View className={Styles.basicContainer}>
                 {subjects.length === 0 ? (
-                    <Text style={styles.emptyText}>No subjects found.</Text>
+                    <Text className={Styles.emptyText}>No subjects found.</Text>
                 ) : (
                     subjects.map((subject) => (
                         <TouchableOpacity
                             key={subject.id}
-                            style={styles.subjectItem}
-                            onPress={() => router.push({ pathname: "/subject", params: { name: subject.title } })}
+                            className={`${Styles.subjectItem}`}
+                            onPress={() => router.push({ pathname: "/subject", params: { id: subject.id, name: subject.title, desc: subject.description } })}
                         >
-                            <Text style={styles.subjectTitle}>{subject.title}</Text>
+                            <Text className={Styles.subjectTitle}>{subject.title}</Text>
+                            <Text className={Styles.arrowRight}>›</Text>
                         </TouchableOpacity>
                     ))
                 )}
             </View>
-        </View>
-		</ScrollView>
-	);
+        </ScrollView>
+    );
 
 	
 }
 
-const styles = StyleSheet.create({
-    timetableContainer: {
-        width: "100%",
-        maxWidth: 600,
-        marginTop: 24,
-        marginBottom: 16,
-    },
-    timetableHeader: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 8,
-    },
-    emptyText: {
-        color: "#888",
-    },
-    eventRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#f3f4f6",
-        borderRadius: 4,
-        paddingVertical: 4,
-        paddingHorizontal: 8,
-        marginBottom: 4,
-    },
-    eventType: {
-        fontWeight: "bold",
-        width: 18,
-        color: "#2563eb",
-    },
-    eventTitle: {
-        flex: 1,
-        fontSize: 13,
-        fontWeight: "600",
-    },
-    eventTime: {
-        fontSize: 12,
-        color: "#555",
-        width: 80,
-        textAlign: "right",
-    },subjectListContainer: {
-        width: "100%",
-        maxWidth: 600,
-        marginTop: 16,
-        marginBottom: 16,
-    },
-    subjectListHeader: {
-        fontSize: 17,
-        fontWeight: "bold",
-        marginBottom: 6,
-    },
-    subjectItem: {
-        backgroundColor: "#e0e7ff",
-        borderRadius: 6,
-        padding: 10,
-        marginBottom: 6,
-    },
-    subjectTitle: {
-        fontSize: 15,
-        fontWeight: "600",
-        color: "#1e293b",
-    },
-});
