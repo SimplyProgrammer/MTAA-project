@@ -58,22 +58,22 @@ export default function ProductScreen() {
 				<AppImage className='w-full' imageName={post?.image} />
 
 				<View className="m-4 flex gap-5">
-					<Text className={`${H1}`}>{post?.title}</Text>
-
 					<View className="flex-row justify-between items-center">
-						<View>
-							<Text>
-								<Text>Created by </Text>
-								<Text className="font-bold">{post?.owner}</Text>
-							</Text>
-							<Text>
-								<Text>On </Text>
-								<Text className="font-bold">{new Date(post?.created).format('dd.MM.yyyy - kk:mm', { moreThan24H: false })}</Text>
-							</Text>
-						</View>
+						<Text className={`${H1}`}>{post?.title}</Text>
 						{post?.canEdit && <Pressable onPress={() => setIsEditing(true)}>
 							<Feather className={`p-1.5 ${IconBtn}`} name="edit" size={20} color="black" />
 						</Pressable>}
+					</View>
+
+					<View>
+						<Text>
+							<Text>Created by </Text>
+							<Text className="font-bold">{post?.owner}</Text>
+						</Text>
+						<Text>
+							<Text>On </Text>
+							<Text className="font-bold">{new Date(post?.created).format('dd.MM.yyyy - kk:mm', { moreThan24H: false })}</Text>
+						</Text>
 					</View>
 
 					<Text className="m-1">{post?.text}</Text>

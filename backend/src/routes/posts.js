@@ -44,7 +44,7 @@ const { getPageInfo, pagination } = require("../config/pagination");
  *       500:
  *         description: Internal server error
  */
-router.get("/", authorizeFor("*"), async (req, res) => {
+router.get("/", /*authorizeFor("*"),*/ async (req, res) => {
 	try {
 		const { offset, limit, page } = getPageInfo(req.query);
 
@@ -113,18 +113,18 @@ router.get("/", authorizeFor("*"), async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id", authorizeFor("*"), async (req, res) => {
 	try {
 		const result = await query(
-			`SELECT p.id, title, text, image, user_id, created, u.email owner, (user_id = $2) "canEdit" FROM posts p JOIN useraccounts u ON p.user_id = u.id WHERE p.id = $1`,
-			[req.params.id, req.user.id]
+			`SELECT p.id, title, text, image, user_id, created, u.email owner FROM posts p JOIN useraccounts u ON p.user_id = u.id WHERE p.id = $1`,
+			[req.params.id]
 		);
 
 		if (!result.rows.length)
 			return res.status(404).send("Post not found");
 
-		if (!result.rows[0].canEdit)
-			result.rows[0].canEdit = undefined;
+		if (checkOwnership(req.user, result.rows[0]))
+			result.rows[0].canEdit = true;
 		res.json({ data: result.rows[0] });
 	} catch (err) {
 		console.error(err);
