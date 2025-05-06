@@ -1,6 +1,6 @@
 import { Card, H1, IconBtn, Screen } from "@/components/styles";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { useEffect, useState } from "react";
 
 import AppImage from "@/components/AppImage";
@@ -71,9 +71,9 @@ export default function ProductScreen() {
 								<Text className="font-bold">{new Date(post?.created).format('dd.MM.yyyy - kk:mm', { moreThan24H: false })}</Text>
 							</Text>
 						</View>
-						<Link href={`/posts/${params.id}/edit`} asChild>
+						{post?.canEdit && <Pressable onPress={() => setIsEditing(true)}>
 							<Feather className={`p-1.5 ${IconBtn}`} name="edit" size={20} color="black" />
-						</Link>
+						</Pressable>}
 					</View>
 
 					<Text className="m-1">{post?.text}</Text>

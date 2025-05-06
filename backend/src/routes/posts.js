@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { begin, commit, rollback, query, select, insert, update, remove } = require("../config/db"); // Use the same pool
+const { begin, commit, rollback, select, insert, update, remove } = require("../config/db"); // Use the same pool
 
 const { checkOwnership, authorizeFor } = require("../middlewares/authorize");
 const { getPageInfo, pagination } = require("../config/pagination");
@@ -64,7 +64,7 @@ router.get("/", authorizeFor("*"), async (req, res) => {
 		});
 		// console.log(result.rows);
 
-		res.json({ ...pagination(page, result.rows, limit), data: result.rows });
+		res.json({ data: result.rows, ...pagination(page, result.rows, limit) });
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
@@ -115,9 +115,9 @@ router.get("/", authorizeFor("*"), async (req, res) => {
  */
 router.get("/:id", async (req, res) => {
 	try {
-		const result = await query(
-			`SELECT p.id, title, text, image, user_id, created, u.email owner, (user_id = $2) "canEdit" FROM posts p JOIN useraccounts u ON p.user_id = u.id WHERE p.id = $1`,
-			[req.params.id, req.user.id]
+		const result = await select(
+			"posts WHERE id = $1",
+			[req.params.id]
 		);
 
 		if (!result.rows.length)
@@ -311,15 +311,20 @@ router.put("/:id", authorizeFor("*"), async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authorizeFor("*"), async (req, res) => {
 	try {
-		const result = await remove(
+		const result = await begin().then(() => remove(
 			"posts WHERE id = $1",
 			[req.params.id]
-		);
+		));
 		if (!result.rows.length)
 			return res.status(404).send("Post not found");
+		if (!checkOwnership(req.user, result.rows[0])) {
+			await rollback();
+			return res.status(403).send("Operation forbidden!");
+		}
 
+		await commit();
 		res.json({ data: result.rows[0] });
 	} catch (err) {
 		console.error(err);
