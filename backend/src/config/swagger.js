@@ -1,7 +1,6 @@
 const swaggerJsDoc = require("swagger-jsdoc");
 
-const PORT = process.env.PORT | 5000
-const IP = process.env.IP || "localhost"
+const { IP, PORT } = require("../utils");
 module.exports = swaggerJsDoc({
 	definition: {
 		openapi: "3.0.0",

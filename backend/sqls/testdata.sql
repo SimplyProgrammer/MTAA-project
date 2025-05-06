@@ -72,22 +72,17 @@ INSERT INTO User_Events (user_id, event_id) VALUES
   (1, 9), (1, 10);
 
 INSERT INTO Evaluations (user_id, subject_id, title, points, max_points) VALUES
-  -- Mathematics (subject_id = 1)
-  (1, 1, 'Calculus Midterm',        87, 100),
+  (1, 1, 'Calculus Midterm',        87, 100),   -- Mathematics (subject_id = 1)
   (1, 1, 'Linear Algebra Final',    92, 100),
 
-  -- Physics (subject_id = 2)
-  (1, 2, 'Mechanics Quiz',          15,  20),
+  (1, 2, 'Mechanics Quiz',          15,  20),   -- Physics (subject_id = 2)
   (1, 2, 'Electromagnetism Final',  88, 100),
 
-  -- Computer Science (subject_id = 3)
-  (1, 3, 'Data Structures Midterm', 78, 100),
+  (1, 3, 'Data Structures Midterm', 78, 100),   -- Computer Science (subject_id = 3)
   (1, 3, 'Algorithms Final',        81, 100),
 
-  -- History (subject_id = 4)
-  (1, 4, 'World History Essay',     45,  50),
+  (1, 4, 'World History Essay',     45,  50),     -- History (subject_id = 4)
   (1, 4, 'Modern History Exam',     90, 100),
 
-  -- Literature (subject_id = 5)
-  (1, 5, 'Poetry Analysis',         19,  20),
+  (1, 5, 'Poetry Analysis',         19,  20), -- Literature (subject_id = 5)
   (1, 5, 'Shakespeare Final',       94, 100);
