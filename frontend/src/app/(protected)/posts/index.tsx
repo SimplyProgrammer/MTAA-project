@@ -77,7 +77,7 @@ export default function PostsScreen() {
 
 			<AppInput className={`${Input} w-full my-2 z-20 opacity-60 focus:opacity-100 transition`} debounceTime={500} onDebouncedChange={handleSearch} />
 
-			{!posts.length && !loading && <Text className="text-center">No posts found</Text>}
+			{!posts.length && !loading && <Text className="text-center my-4">No posts found...</Text>}
 
 			<FlatList
 				data={posts}

@@ -4,7 +4,7 @@
 2. npm i
 3. Setup .env and as:
 ```
-IP=<Your IP>
+IP=<Your IP> or $ip<interface no.>
 PORT=5000
 PAGE_SIZE=20
 

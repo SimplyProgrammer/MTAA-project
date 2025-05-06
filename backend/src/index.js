@@ -96,7 +96,25 @@ app.use(verifyToken, (req, res, next) => {
 	});
 });
 
-const PORT = process.env.PORT | 5000, IP = process.env.IP || "localhost";
+var IP = process.env.IP || "localhost";
+
+if (IP.startsWith("$ip")) {
+	const os = require('os');
+	const interfaces = os.networkInterfaces();
+	var addresses = [];
+	for (var inter in interfaces) {
+		for (var inter2 in interfaces[inter]) {
+			var address = interfaces[inter][inter2];
+			if (address.family === 'IPv4' && !address.internal) {
+				addresses.push(address.address);
+			}
+		}
+	}
+
+	IP = addresses[+IP.substring(3) || 0];
+}
+
+const PORT = process.env.PORT | 5000;
 app.listen(PORT, IP, () => {
 	console.log(`Server running on http://${IP}:${PORT}`);
 });
