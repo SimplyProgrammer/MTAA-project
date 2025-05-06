@@ -63,16 +63,6 @@ export default function ProfileScreen() {
 			<AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
 				<MaterialIcons name="http" size={24} color="blue" />
 			</AppButton>
-			<AppButton
-				title="Admin screen"
-				className={`mt-4`}
-				onPress={() => router.push("/admin")}
-			/>
-			<AppButton
-				title="Teacher screen"
-				className={`mt-4`}
-				onPress={() => router.push("/teacher")}
-			/>
 			
 		</View>
 	);

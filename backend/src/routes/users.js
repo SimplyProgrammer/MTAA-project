@@ -154,7 +154,7 @@ router.put("/preferences/:id", async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/accounts", async (req, res) => {
+router.get("/accounts", authorizeFor("ADMIN"), async (req, res) => {
 	const { role } = req.query;
 
 	let queryText = `SELECT * FROM UserAccounts`;
