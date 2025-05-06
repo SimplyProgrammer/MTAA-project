@@ -143,7 +143,7 @@ export default function HomeScreen() {
                         <TouchableOpacity
                             key={subject.id}
                             className={`${Styles.subjectItem}`}
-                            onPress={() => router.push({ pathname: "/subject", params: { id: subject.id, name: subject.title, desc: subject.description } })}
+                            onPress={() => router.push({ pathname: "/subjects/id/index", params: { id: subject.id, name: subject.title, desc: subject.description } })}
                         >
                             <Text className={Styles.subjectTitle}>{subject.title}</Text>
                             <Text className={Styles.arrowRight}>›</Text>
