@@ -5,19 +5,20 @@ import AppButton from "@/components/AppButton";
 import axios from "@/libs/axios";
 import { getUser } from "@/libs/auth";
 import { Picker } from "@react-native-picker/picker";
+import { router, useRouter, useSegments } from "expo-router";
 
 export default function TeacherOverviewScreen() {
-    const [subjects, setSubjects] = useState<any[]>([]);
-    const [newSubjectTitle, setNewSubjectTitle] = useState("");
-    const [newSubjectDescription, setNewSubjectDescription] = useState("");
-    const [loading, setLoading] = useState(false);
+	const [subjects, setSubjects] = useState<any[]>([]);
+	const [newSubjectTitle, setNewSubjectTitle] = useState("");
+	const [newSubjectDescription, setNewSubjectDescription] = useState("");
+	const [loading, setLoading] = useState(false);
 
-    // Events state
-    const [events, setEvents] = useState<any[]>([]);
-    const [newEventTitle, setNewEventTitle] = useState("");
-    const [newEventType, setNewEventType] = useState("");
-    const [newEventSubjectId, setNewEventSubjectId] = useState<number | null>(null);
-    const [newEventDateTill, setNewEventDateTill] = useState<string>("");
+	// Events state
+	const [events, setEvents] = useState<any[]>([]);
+	const [newEventTitle, setNewEventTitle] = useState("");
+	const [newEventType, setNewEventType] = useState("");
+	const [newEventSubjectId, setNewEventSubjectId] = useState<number | null>(null);
+	const [newEventDateTill, setNewEventDateTill] = useState<string>("");
 
     // Fetch subjects assigned to the teacher
     const fetchSubjects = async () => {

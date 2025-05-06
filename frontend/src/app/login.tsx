@@ -34,6 +34,7 @@ const loginForm = [
 	}
 ]
 
+
 export default function Login() {
 	const handleLogin = async ({ email, password }) => {
 		// console.log(email, password);
@@ -41,7 +42,7 @@ export default function Login() {
 			const resp = await toasts.forAxiosActionCall(login({ email, password }), "Login", "Logged in successfully");
 			// console.log("Login response:", getUser());
 			if (resp)
-				router.replace("/");
+				router.dismissTo("/");
 		}
 		catch (error) {
 			console.error("Login error: ", error.data);

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
+import { Redirect, useRouter, useSegments } from "expo-router";
 
 import * as useAuthStore from '@/libs/auth'
 import AppButton from "@/components/AppButton";
@@ -17,27 +17,13 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { Outline } from "@/components/AppButton";
 
-const handleLogout = async () => {
-	try {
-		const resp = await toasts.forAxiosActionCall(useAuthStore.logout(), "Logout", "Logged out successfully");
-		if (resp)
-			router.dismissTo("/login"); // Explicit...
-		console.log("Logout: ", resp);
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-const tryGetImage = async () => {
-	try {
-		const img = await toasts.forAxiosActionCall(axios.get_auth_data('files/test.PNG'), "Img");
-		console.log("Img: ", img);
-	} catch (error) {
-		console.error(error);
-	}
-}
-
 export default function HomeScreen() {
+	if (useAuthStore.getUser()?.role == 'ADMIN') 
+		return <Redirect href="/(protected)/(home)/admin" />
+
+	if (useAuthStore.getUser()?.role == 'TEACHER') 
+		return <Redirect href="/(protected)/(home)/teacher" />
+
 	const [todayEvents, setTodayEvents] = useState<any[]>([]);
     const [subjects, setSubjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -117,46 +103,8 @@ export default function HomeScreen() {
         return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     };
 
-	const doTest = async () => {
-		try {
-			const resp = await toasts.forAxiosActionCall(axios.get_auth_data(''), "Test", "Tested successfully");
-			console.log("Test: ", resp);
-		} catch (error) {
-			console.error(error);
-		}
-	}
-
-	const testRefresh = async () => {
-		try {
-			const resp = await useAuthStore.refreshToken()
-			console.log("Refresh test: ", resp)
-		}
-		catch (err) {
-			console.error(err)
-		}
-	}
-
 	return (
     <ScrollView className={Styles.ScrollViewContainer}>
-            
-            <Text>{JSON.stringify(useAuthStore.getUser())}</Text>
-            <AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
-            <AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
-            <AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
-                <MaterialIcons name="http" size={24} color="blue" />
-            </AppButton>
-			<AppButton
-                title="Admin screen"
-                className={`mt-4`}
-                onPress={() => router.push("/admin")}
-            />
-			<AppButton
-                title="Teacher screen"
-                className={`mt-4`}
-                onPress={() => router.push("/teacher")}
-            />
-
-            
             <View className={`${Styles.basicContainer} mt-5`}>
                 <Text className={`${Styles.H2} text-center`}>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
             </View>

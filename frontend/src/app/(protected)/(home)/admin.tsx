@@ -3,6 +3,7 @@ import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TextInput, Butto
 import api from "@/libs/axios";
 import { Screen } from "@/components/styles";
 import AppButton from "@/components/AppButton";
+import { router, useSegments } from "expo-router";
 
 export default function AdminScreen() {
   const [students, setStudents] = useState<any[]>([]);

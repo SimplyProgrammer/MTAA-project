@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { begin, commit, rollback, select, insert, update, remove } = require("../config/db"); // Use the same pool
+const { begin, commit, rollback, select, insert, update, remove, query } = require("../config/db"); // Use the same pool
 
 const { checkOwnership, authorizeFor } = require("../middlewares/authorize");
 const { getPageInfo, pagination } = require("../config/pagination");
@@ -58,10 +58,10 @@ router.get("/", authorizeFor("*"), async (req, res) => {
 			[offset, limit]
 		));
 
-		result.rows.forEach(post => {
-			if (checkOwnership(req.user, post))
-				post.canEdit = true;
-		});
+		// result.rows.forEach(post => {
+		// 	if (checkOwnership(req.user, post))
+		// 		post.canEdit = true;
+		// });
 		// console.log(result.rows);
 
 		res.json({ data: result.rows, ...pagination(page, result.rows, limit) });
@@ -115,14 +115,16 @@ router.get("/", authorizeFor("*"), async (req, res) => {
  */
 router.get("/:id", async (req, res) => {
 	try {
-		const result = await select(
-			"posts WHERE id = $1",
-			[req.params.id]
+		const result = await query(
+			`SELECT p.id, title, text, image, user_id, created, u.email owner, (user_id = $2) "canEdit" FROM posts p JOIN useraccounts u ON p.user_id = u.id WHERE p.id = $1`,
+			[req.params.id, req.user.id]
 		);
 
 		if (!result.rows.length)
 			return res.status(404).send("Post not found");
 
+		if (!result.rows[0].canEdit)
+			result.rows[0].canEdit = undefined;
 		res.json({ data: result.rows[0] });
 	} catch (err) {
 		console.error(err);
