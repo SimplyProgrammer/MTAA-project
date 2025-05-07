@@ -1,12 +1,13 @@
 import { Card, H1, IconBtn, Screen } from "@/components/styles";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import { useEffect, useState } from "react";
 
 import AppImage from "@/components/AppImage";
 import Feather from '@expo/vector-icons/Feather';
 
 import SkeletonExpo from "moti/build/skeleton/expo";
+import Text from "@/components/Text";
 
 import axios from "@/libs/axios";
 const api = {
@@ -61,7 +62,7 @@ export default function ProductScreen() {
 					<View className="flex-row justify-between items-center">
 						<Text className={`${H1}`}>{post?.title}</Text>
 						{post?.canEdit && <Pressable onPress={() => setIsEditing(true)}>
-							<Feather className={`p-1.5 ${IconBtn}`} name="edit" size={20} color="black" />
+							<Feather className={`p-1.5 ${IconBtn}`} name="edit" size={20} />
 						</Pressable>}
 					</View>
 

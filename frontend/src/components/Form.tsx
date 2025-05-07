@@ -1,23 +1,41 @@
-import React, { isValidElement, useState } from "react";
-import { TextInput, View, Text } from "react-native";
+import React, { isValidElement, useEffect, useMemo, useState } from "react";
+import { TextInput, View } from "react-native";
+import Checkbox from "expo-checkbox";
 import AppButton from "./AppButton";
+import AppInput from "./AppInput";
 import { Input } from "./styles";
+import AppCheckbox from "./AppCheckbox";
+import { debounce } from "lodash";
 
-export default function Form({ formConfig = [], onSubmit, ...props }) {
+export default function Form({ formConfig = [], onSubmit = null, onChange = null, debounceTime = 500, ...props }) {
 	const [formState, setFormState] = useState(() => {
 		const initialState = {};
 		formConfig.forEach(field => {
 			if (field.type != "button" && !isValidElement(field)) {
 				// console.log(field)
-				initialState[field.variable || field.name] = field.value || "";
+				initialState[field.variable || field.name] = field.value ?? (field.type === "checkbox" ? false : "");
 			}
 		});
 		return initialState;
 	});
 
+	const debouncedOnChange = useMemo(
+		() => debounce(async (state, name, value) => {
+			await onChange?.(state, name, value);
+		}, debounceTime),
+		[onChange, debounceTime]
+	);
+
 	const handleChange = (name, value) => {
-		setFormState(prev => ({ ...prev, [name]: value }));
+		const state = { ...formState, [name]: value };
+		setFormState(state);
+
+		debouncedOnChange(state, name, value);
 	};
+
+	useEffect(() => {
+		return () => debouncedOnChange.cancel();
+	}, [debouncedOnChange]);
 
 	const handleGlobalSubmit = async () => {
 		await onSubmit?.(formState);
@@ -41,8 +59,21 @@ export default function Form({ formConfig = [], onSubmit, ...props }) {
 					);
 				}
 
+				if (field.type === "checkbox") {
+					return (
+						<AppCheckbox
+							key={index}
+							label={field.label || field.name}
+							value={formState[field.variable || field.name]}
+							onValueChange={(value) => handleChange(field.variable || field.name, value)}
+							color={field.color}
+							className={field.className || ""}
+						/>
+					);
+				}
+
 				return (
-					<TextInput
+					<AppInput
 						key={index}
 						className={`${Input} ${field.className || ""}`}
 						placeholder={field.name}

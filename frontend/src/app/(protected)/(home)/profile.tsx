@@ -10,7 +10,14 @@ import * as useAuthStore from "@/libs/auth";
 import axios from "@/libs/axios";
 import { router } from "expo-router";
 
-import { Screen } from "@/components/styles";
+import { Card, H3, Screen } from "@/components/styles";
+import Checkbox from "expo-checkbox";
+import AppCheckbox from "@/components/AppCheckbox";
+import Form from "@/components/Form";
+
+import { forAxiosActionCall } from "@/libs/toasts";
+
+import { Appearance, Switch, useColorScheme } from 'react-native';
 
 const handleLogout = async () => {
 	try {
@@ -51,19 +58,62 @@ const testRefresh = async () => {
 	}
 }
 
+const api = {
+	updateUserPrefs: (id, prefs) => axios.put_auth_data(`users/preferences/${id}`, prefs),
+}
+
 export default function ProfileScreen() {
+	const { preferences } = useAuthStore.getUser();
+
+	const settingsForm = [
+		<Text className={`${H3}`}>
+			User preferences
+		</Text>,
+		{ name: "Enable Notifications", variable: "notifications", type: "checkbox", value: preferences.notifications },
+		{ name: "Dark Mode", variable: "dark_mode", type: "checkbox", value: preferences.dark_mode },
+		{ name: "Use biometric login", variable: "use_biometrics", type: "checkbox", value: preferences.use_biometrics },
+	];
+
+	const onSettingsChange = async (state, name, value) => {
+		try {
+			const user = useAuthStore.getUser();
+			user.preferences = state;
+
+			await forAxiosActionCall(useAuthStore.setUser(user).then(() => { 
+				if (name == "dark_mode") {
+					Appearance.setColorScheme(value ? "dark" : "light");
+				}
+
+				return api.updateUserPrefs(user.id, state) 
+			}), "Updating user preferences");
+
+		}
+		catch (error) {
+			console.error(error);
+		}
+	};
+
 	return (
 		<View className={`${Screen}`}>
-			<Text>Profile...</Text>
+			{/* <Text>Profile...</Text> */}
 
-						
-			<Text>{JSON.stringify(useAuthStore.getUser())}</Text>
-			<AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
-			<AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
+			{/* <AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
 			<AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
 				<MaterialIcons name="http" size={24} color="blue" />
-			</AppButton>
+			</AppButton> */}
 			
+			<View className={`flex gap-5 h-[88%]`}>
+				<View className={`${Card} flex-1`}>
+					<Text>Profile...</Text>
+
+					<Text>{JSON.stringify(useAuthStore.getUser())}</Text>
+					<AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
+				</View>
+				<Form className={`${Card} gap-5`}
+					formConfig={settingsForm}
+					onChange={onSettingsChange}
+				/>
+			</View>
 		</View>
 	);
 }

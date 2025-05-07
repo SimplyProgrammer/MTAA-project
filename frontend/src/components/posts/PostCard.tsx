@@ -1,12 +1,13 @@
 
 import {
-	Text, View
+	View
 } from 'react-native';
 import React, { useState } from 'react';
 import { Image } from 'expo-image';
 
 import { Card, H3 } from '../styles';
 import AppImage from '../AppImage';
+import Text from '../Text';
 
 import { truncate } from 'lodash';
 

@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import React from "react";
-import { useColorScheme as useReactNativeColorScheme } from "react-native";
+import { Appearance, useColorScheme as useReactNativeColorScheme } from "react-native";
 import { colorScheme, useColorScheme } from "nativewind";
 import { StatusBar } from "expo-status-bar";
 
@@ -10,9 +10,15 @@ import "@/libs/auth/refreshExpired"
 
 import "@/libs/datetime-utility/global-time-utility"
 
+import * as useAuthStore from "@/libs/auth";
+
 import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
+	const user = useAuthStore.getUser();
+
+	Appearance.setColorScheme(user?.preferences.dark_mode ? "dark" : "light");
+
 	return (
 		<React.Fragment>
 			<StatusBar style="auto" />

@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import Text from "@/components/Text";
 
 export default function ProductScreen() {
 	const params = useLocalSearchParams();

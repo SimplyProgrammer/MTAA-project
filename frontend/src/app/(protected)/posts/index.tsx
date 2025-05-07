@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable, TextInput  } from "react-native";
+import { View, FlatList, Pressable, TextInput } from "react-native";
 import { Card, H, IconBtn, Screen } from "@/components/styles";
 import { Link, Stack, router } from "expo-router";
 import { debounce } from 'lodash';
@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import AppInput from "@/components/AppInput";
 
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Text from "@/components/Text";
 
 // import ContentLoader, { Code} from 'react-content-loader/native'
 
@@ -91,7 +92,7 @@ export default function PostsScreen() {
 				contentContainerClassName="gap-5 overflow-visible z-10"
 
 				onEndReached={fetchPosts}
-				onEndReachedThreshold={0.25}
+				onEndReachedThreshold={0.5}
 
 				removeClippedSubviews={true}
 			/>

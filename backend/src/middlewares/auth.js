@@ -74,6 +74,6 @@ exports.invalidateToken = (oldToken) => {
 	if (!session || session.token != oldToken)
 		return false
 
-	activeSessions[user.id] = undefined
+	activeSessions[user?.id] = undefined
 	return true
 };
