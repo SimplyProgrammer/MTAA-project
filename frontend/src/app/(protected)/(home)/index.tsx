@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Redirect, useRouter, useSegments } from "expo-router";
 
@@ -14,8 +14,7 @@ import * as Styles from "@/components/styles";
 import axios from "@/libs/axios";
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
-import { Outline } from "@/components/AppButton";
+import Text from "@/components/Text";
 
 export default function HomeScreen() {
 	if (useAuthStore.getUser()?.role == 'ADMIN') 
