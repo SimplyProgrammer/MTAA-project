@@ -153,8 +153,13 @@ router.delete("/:id", async (req, res) => {
 	const subjectId = req.params.id;
 
 	try {
-		// Remove subject references from User_Subjects first
+
 		await db.query(`DELETE FROM User_Subjects WHERE subject_id = $1`, [subjectId]);
+		await db.query(`DELETE FROM User_Lectures WHERE subject_id = $1`, [subjectId]);
+
+		await db.query(`DELETE FROM Lectures WHERE subject_id = $1`, [subjectId]);
+		await db.query(`DELETE FROM Seminars WHERE subject_id = $1`, [subjectId]);
+
 
 		// Then remove the subject itself
 		await db.query(`DELETE FROM Subjects WHERE id = $1`, [subjectId]);

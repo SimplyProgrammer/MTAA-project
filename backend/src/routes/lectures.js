@@ -117,6 +117,9 @@ router.delete("/:id", async (req, res) => {
 	const lectureId = req.params.id;
 
 	try {
+
+		await db.query(`DELETE FROM User_Lectures WHERE lecture_id = $1`, [lectureId]);
+
 		const deletedLecture = await db.query(
 			"DELETE FROM Lectures WHERE id = $1 RETURNING *",
 			[lectureId]

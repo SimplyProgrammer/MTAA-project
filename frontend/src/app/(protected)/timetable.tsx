@@ -140,75 +140,81 @@ export default function TimetableScreen() {
 
   return (
     <ScrollView className={Styles.ScrollViewContainer}>
-      <Text className={`${Styles.H3} mt-6 my-3`}>Timetable</Text>
-      <View className={Styles.basicContainer}>
-        {DAYS.map((day) => (
-          <View key={day} className={Styles.daySection}>
-            <Text className={Styles.dayTitle}>{day}</Text>
-            {eventsByDay[day].length === 0 ? (
-              <Text className={Styles.emptyText}>No lectures or seminars.</Text>
+
+      <View className={``}>
+        <View className={Styles.Card + "mt-3 mb-4"}>
+          <Text className={`${Styles.H3} mb-5`}>Weekly timetable</Text>
+          {DAYS.map((day) => (
+            <View key={day} className={Styles.daySection}>
+              <Text className={Styles.dayTitle}>{day}</Text>
+              {eventsByDay[day].length === 0 ? (
+                <Text className={Styles.emptyText}>No lectures or seminars.</Text>
+              ) : (
+                <View className={Styles.compactList}>
+                  {eventsByDay[day].map((event) => (
+                    <View
+                      key={`${event.type}-${event.id}`}
+                      className={Styles.compactItem}
+                      style={isPast(event.to_time) ? { opacity: 0.3 } : undefined}
+                    >
+                      <Text className={Styles.compactType}>{event.type}</Text>
+                      <Text className={Styles.compactTitle}>
+                        {getSubjectTitle(event.subject_id)}
+                      </Text>
+                      <Text className={Styles.compactTime}>
+                        {formatTime(event.from_time)} - {formatTime(event.to_time)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
+        <View className={Styles.Card + " mb-4"}>
+          <Text className={`${Styles.H3} mb-3`}>Exams</Text>
+            {examEvents.length === 0 ? (
+              <Text>No exam events found.</Text>
             ) : (
-              <View className={Styles.compactList}>
-                {eventsByDay[day].map((event) => (
-                  <View
-                    key={`${event.type}-${event.id}`}
-                    className={Styles.compactItem}
-                    style={isPast(event.to_time) ? { opacity: 0.3 } : undefined}
-                  >
-                    <Text className={Styles.compactType}>{event.type}</Text>
-                    <Text className={Styles.compactTitle}>
-                      {getSubjectTitle(event.subject_id)}
-                    </Text>
-                    <Text className={Styles.compactTime}>
-                      {formatTime(event.from_time)} - {formatTime(event.to_time)}
-                    </Text>
-                  </View>
-                ))}
-              </View>
+              examEvents.map((event) => {
+                const countdown = getCountdown(event.date_till);
+                return (
+                  <EventCard
+                    key={event.id}
+                    title={event.title}
+                    subject={event.subject_title}
+                    date={new Date(event.date_till).toLocaleString()}
+                    countdown={countdown}
+                    isPast={isPast(event.date_till)}
+                  />
+                );
+              })
             )}
-          </View>
-        ))}
+        </View>
+        <View className={Styles.Card + " mb-7"}>
+          <Text className={`${Styles.H3} mb-3`}>Assignments</Text>
+            {assignmentEvents.length === 0 ? (
+              <Text>No assignment events found.</Text>
+            ) : (
+              assignmentEvents.map((event) => {
+                const countdown = getCountdown(event.date_till);
+                return (
+                  <EventCard
+                    key={event.id}
+                    title={event.title}
+                    subject={event.subject_title}
+                    date={new Date(event.date_till).toLocaleString()}
+                    countdown={countdown}
+                    isPast={isPast(event.date_till)}
+                  />
+                );
+              })
+            )}
+        </View>
       </View>
-      <Text className={`${Styles.H3} mt-6 my-3`}>Exams</Text>
-      <View className={Styles.basicContainer}>
-      {examEvents.length === 0 ? (
-        <Text>No exam events found.</Text>
-      ) : (
-        examEvents.map((event) => {
-          const countdown = getCountdown(event.date_till);
-          return (
-            <EventCard
-              key={event.id}
-              title={event.title}
-              subject={event.subject_title}
-              date={new Date(event.date_till).toLocaleString()}
-              countdown={countdown}
-              isPast={isPast(event.date_till)}
-            />
-          );
-        })
-      )}
-      </View>
-      <Text className={`${Styles.H3} mt-6 my-3`}>Assignments</Text>
-      <View className={Styles.basicContainer}>
-      {assignmentEvents.length === 0 ? (
-        <Text>No assignment events found.</Text>
-      ) : (
-        assignmentEvents.map((event) => {
-          const countdown = getCountdown(event.date_till);
-          return (
-            <EventCard
-              key={event.id}
-              title={event.title}
-              subject={event.subject_title}
-              date={new Date(event.date_till).toLocaleString()}
-              countdown={countdown}
-              isPast={isPast(event.date_till)}
-            />
-          );
-        })
-      )}
-      </View>
+
+      
+     
     </ScrollView>
   );
 }

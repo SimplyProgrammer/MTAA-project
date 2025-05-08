@@ -139,6 +139,10 @@ router.delete("/:id", async (req, res) => {
 	const seminarId = req.params.id;
 
 	try {
+
+		// Remove seminar references from User_Seminars first
+		await db.query(`DELETE FROM User_Seminars WHERE seminar_id = $1`, [seminarId]);
+
 		const deletedSeminar = await db.query(
 			"DELETE FROM Seminars WHERE id = $1 RETURNING *",
 			[seminarId]

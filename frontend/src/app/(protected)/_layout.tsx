@@ -22,6 +22,7 @@ export default function ProtectedLayout() {
 	return (
 		<Tabs screenOptions={{
 		}}>
+			
 			<Tabs.Screen name="(home)" options={{ 
 				title: "Home",
 				tabBarIcon: ({ color, size }) => (<Ionicons name="home" size={size} color={color} />),
