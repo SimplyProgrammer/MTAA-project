@@ -1,5 +1,5 @@
-export const Screen = "flex-1 items-center bg-[#FAFAFA] dark:bg-gray-900 p-4 transition"
-export const ScrollViewContainer = "flex-1 bg-[#FAFAFA] dark:bg-gray-900 p-4 transition";
+export const Screen = "flex-1 items-center bg-[#f0f0f0] dark:bg-gray-900 p-4 transition"
+export const ScrollViewContainer = "flex-1 bg-[#f0f0f0] dark:bg-gray-900 p-4 transition pb-20";
 
 export const Card = "p-6 min-w-full max-w-2xl overflow-hidden bg-white text-white border border-gray-200 rounded-2xl dark:bg-gray-800 dark:border-gray-700 transition";
 
@@ -13,7 +13,7 @@ export const Input = "h-11 border border-gray-300 dark:border-gray-600 rounded-l
 export const IconBtn = "active:bg-[rgba(0,0,0,0.08)] rounded-full transition dark:bg-gray-200";
 
 // EVENTS
-export const EventCardItem = "bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-1.5";
+export const EventCardItem = "min-w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-1.5";
 export const EventCardTitle = "text-base font-bold mb-0.5 text-gray-900 dark:text-gray-100";
 export const EventCardSubject = "text-sm mt-1 text-gray-800 dark:text-gray-300";
 export const EventCardDate = "text-sm mt-1 text-gray-800 dark:text-gray-300";
@@ -43,3 +43,5 @@ export const deleteButton = "ml-2 px-2 py-1 rounded bg-red-200 w-8";
 export const deleteButtonText = "text-dark text-center";
 
 export const dropdown = "text-sm text-red-500";
+
+export const basicText = "text-base text-dark dark:text-gray-300 transition";

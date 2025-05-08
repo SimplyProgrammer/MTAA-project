@@ -104,52 +104,57 @@ export default function HomeScreen() {
 
 	return (
     <ScrollView className={Styles.ScrollViewContainer}>
-            <View className={`${Styles.basicContainer} mt-5`}>
-                <Text className={`${Styles.H2} text-center`}>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
+            <View className={``}>
+                <View className={`${Styles.Card} mt-0`}>
+                    <Text className={`${Styles.H2} text-center`}>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
+                </View>
+                <View className={`${Styles.Card} mt-5`}>
+                    <Text className={`${Styles.H3} mb-3`}>{timetableLabel}</Text>
+                    {loading ? (
+                        <Text>Loading...</Text>
+                    ) : todayEvents.length === 0 ? (
+                        <Text className={Styles.emptyText}>
+                            No lectures or seminars {timetableLabel === "Monday's Timetable" ? "on Monday." : "today."}
+                        </Text>
+                    ) : (
+                        todayEvents.map((event) => (
+                            <View
+                                key={`${event.type}-${event.id}`}
+                                className={Styles.compactItem}
+                            >
+                                <Text className={Styles.compactType}>{event.type}</Text>
+                                <Text className={Styles.compactTitle}>
+                                    {getSubjectTitle(event.subject_id)}
+                                </Text>
+                                <Text className={Styles.compactTime}>
+                                    {formatTime(event.from_time)} - {formatTime(event.to_time)}
+                                </Text>
+                            </View>
+                        ))
+                    )}
+                </View>
+               
+                <View className={`${Styles.Card} mt-5`}>
+                    <Text className={`${Styles.H3} mb-3`}>Your Subjects</Text>
+                    {subjects.length === 0 ? (
+                        <Text className={Styles.emptyText}>No subjects found.</Text>
+                    ) : (
+                        subjects.map((subject) => (
+                            <TouchableOpacity
+                                key={subject.id}
+                                className={`${Styles.subjectItem}`}
+                                onPress={() => router.push({ pathname: "./subjects/", params: { id: subject.id, name: subject.title, desc: subject.description } })}
+                            >
+                                <Text className={Styles.subjectTitle}>{subject.title}</Text>
+                                <Text className={Styles.arrowRight}>›</Text>
+                            </TouchableOpacity>
+                        ))
+                    )}
+                </View>
             </View>
-            <Text className={`${Styles.H3} mt-5 mb-3`}>{timetableLabel}</Text>
-            <View className={`${Styles.basicContainer}`}>
-
-                {loading ? (
-                    <Text>Loading...</Text>
-                ) : todayEvents.length === 0 ? (
-                    <Text className={Styles.emptyText}>
-                        No lectures or seminars {timetableLabel === "Monday's Timetable" ? "on Monday." : "today."}
-                    </Text>
-                ) : (
-                    todayEvents.map((event) => (
-                        <View
-                            key={`${event.type}-${event.id}`}
-                            className={Styles.compactItem}
-                        >
-                            <Text className={Styles.compactType}>{event.type}</Text>
-                            <Text className={Styles.compactTitle}>
-                                {getSubjectTitle(event.subject_id)}
-                            </Text>
-                            <Text className={Styles.compactTime}>
-                                {formatTime(event.from_time)} - {formatTime(event.to_time)}
-                            </Text>
-                        </View>
-                    ))
-                )}
-            </View>
-            <Text className={`${Styles.H3} mt-5 mb-3`}>Your Subjects</Text>
-            <View className={Styles.basicContainer}>
-                {subjects.length === 0 ? (
-                    <Text className={Styles.emptyText}>No subjects found.</Text>
-                ) : (
-                    subjects.map((subject) => (
-                        <TouchableOpacity
-                            key={subject.id}
-                            className={`${Styles.subjectItem}`}
-                            onPress={() => router.push({ pathname: "/subjects/id/index", params: { id: subject.id, name: subject.title, desc: subject.description } })}
-                        >
-                            <Text className={Styles.subjectTitle}>{subject.title}</Text>
-                            <Text className={Styles.arrowRight}>›</Text>
-                        </TouchableOpacity>
-                    ))
-                )}
-            </View>
+            
+            
+            
         </ScrollView>
     );
 
