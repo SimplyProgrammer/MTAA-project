@@ -105,7 +105,7 @@ export default function HomeScreen() {
 	return (
     <ScrollView className={Styles.ScrollViewContainer}>
             <View className={``}>
-                <View className={`${Styles.Card} mt-0`}>
+                <View className={`${Styles.Card} mt-3`}>
                     <Text className={`${Styles.H2} text-center`}>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
                 </View>
                 <View className={`${Styles.Card} mt-5`}>
@@ -143,7 +143,7 @@ export default function HomeScreen() {
                             <TouchableOpacity
                                 key={subject.id}
                                 className={`${Styles.subjectItem}`}
-                                onPress={() => router.push({ pathname: "./subjects/", params: { id: subject.id, name: subject.title, desc: subject.description } })}
+                                onPress={() => router.push({ pathname: "./subject", params: { id: subject.id, name: subject.title, desc: subject.description } })}
                             >
                                 <Text className={Styles.subjectTitle}>{subject.title}</Text>
                                 <Text className={Styles.arrowRight}>›</Text>

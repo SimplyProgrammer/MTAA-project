@@ -113,6 +113,9 @@ router.delete("/:id", async (req, res) => {
 	const eventId = req.params.id;
 
 	try {
+
+		await db.query(`DELETE FROM User_Events WHERE event_id = $1`, [eventId]);
+
 		const deletedEvent = await db.query(
 			"DELETE FROM Events WHERE id = $1 RETURNING *",
 			[eventId]
