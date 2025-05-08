@@ -161,9 +161,14 @@ router.post("/login", async (req, res) => {
 		if (!dbUserAccount.rows.length || !dbUserAccount.rows[0].active)
 			return res.status(400).json({ message: "Invalid credentials" });
 
-		const passCorrect = await bcrypt.compare(password, dbUserAccount.rows[0].password);
-		if (!passCorrect)
+		try {
+			const passCorrect = await bcrypt.compare(password, dbUserAccount.rows[0].password);
+			if (!passCorrect)
+				return res.status(400).json({ message: "Invalid credentials" });
+		}
+		catch (err) {
 			return res.status(400).json({ message: "Invalid credentials" });
+		}
 
 		var preferences = undefined;
 		const dbPreferences = await select(`UserPreferences WHERE user_id = $1`, [dbUserAccount.rows[0].id])
