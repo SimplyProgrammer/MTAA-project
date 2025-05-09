@@ -256,7 +256,10 @@ export default function TeacherOverviewScreen() {
         try {
             setLoading(true);
             await axios.delete_auth_data(`subjects/${subjectId}`);
-            setSubjects((prev) => prev.filter((s) => s.id !== subjectId));
+            await fetchSubjects();
+            await fetchEvents();
+            await fetchLectures();
+            await fetchSeminars();
         } catch (error) {
             console.error(error);
         } finally {

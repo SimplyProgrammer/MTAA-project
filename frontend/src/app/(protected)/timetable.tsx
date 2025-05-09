@@ -174,7 +174,7 @@ export default function TimetableScreen() {
         <View className={Styles.Card + " mb-4"}>
           <Text className={`${Styles.H3} mb-3`}>Exams</Text>
             {examEvents.length === 0 ? (
-              <Text>No exam events found.</Text>
+              <Text className={`${Styles.basicText} mb-3`}>No exams found.</Text>
             ) : (
               examEvents.map((event) => {
                 const countdown = getCountdown(event.date_till);
@@ -194,7 +194,7 @@ export default function TimetableScreen() {
         <View className={Styles.Card + " mb-7"}>
           <Text className={`${Styles.H3} mb-3`}>Assignments</Text>
             {assignmentEvents.length === 0 ? (
-              <Text>No assignment events found.</Text>
+              <Text className={`${Styles.basicText} mb-3`}>No assignments found.</Text>
             ) : (
               assignmentEvents.map((event) => {
                 const countdown = getCountdown(event.date_till);

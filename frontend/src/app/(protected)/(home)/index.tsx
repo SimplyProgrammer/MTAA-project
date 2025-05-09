@@ -15,6 +15,23 @@ import axios from "@/libs/axios";
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Text from "@/components/Text";
+import * as Location from 'expo-location';
+
+const FIXED_POINT = { latitude: 48.1534, longitude: 17.0715 };
+
+function getDistanceFromLatLonInMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
+    const R = 6371000; // Radius of the earth in meters
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in meters
+}
 
 export default function HomeScreen() {
 	if (useAuthStore.getUser()?.role == 'ADMIN') 
@@ -26,6 +43,31 @@ export default function HomeScreen() {
 	const [todayEvents, setTodayEvents] = useState<any[]>([]);
     const [subjects, setSubjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const [distance, setDistance] = useState<number | null>(null);
+
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                console.log('Permission to access location was denied');
+                setDistance(null);
+                return;
+            }
+            let location = await Location.getCurrentPositionAsync({});
+            const { latitude, longitude } = location.coords;
+            const dist = getDistanceFromLatLonInMeters(
+                latitude,
+                longitude,
+                FIXED_POINT.latitude,
+                FIXED_POINT.longitude
+            );
+            setDistance(dist);
+            console.log("User location:", latitude, longitude);
+            console.log("Distance to fixed point (meters):", dist);
+        })();
+    }, []);
+
 
 	const router = useRouter();
 
@@ -105,10 +147,21 @@ export default function HomeScreen() {
 	return (
     <ScrollView className={Styles.ScrollViewContainer}>
             <View className={``}>
-                <View className={`${Styles.Card} mt-3`}>
+                <View className={`${Styles.Card} mt-3 mb-3`}>
                     <Text className={`${Styles.H2} text-center`}>{'Welcome back ' + useAuthStore.getUser().first_name}</Text>
                 </View>
-                <View className={`${Styles.Card} mt-5`}>
+                <View className={Styles.Card + "mt-3 items-center"}>
+                    {distance !== null ? (
+                        <Text className={Styles.basicText}>
+                            {distance >= 1000
+                                ? `Current distance to FIIT STU: ${(distance / 1000).toFixed(2)} km`
+                                : `Current distance to FIIT STU: ${distance.toFixed(1)} meters`}
+                        </Text>
+                    ) : (
+                        <Text className={Styles.basicText}>Location not available.</Text>
+                    )}
+                </View>
+                <View className={`${Styles.Card} mt-3`}>
                     <Text className={`${Styles.H3} mb-3`}>{timetableLabel}</Text>
                     {loading ? (
                         <Text>Loading...</Text>
@@ -134,7 +187,7 @@ export default function HomeScreen() {
                     )}
                 </View>
                
-                <View className={`${Styles.Card} mt-5`}>
+                <View className={`${Styles.Card} mt-3`}>
                     <Text className={`${Styles.H3} mb-3`}>Your Subjects</Text>
                     {subjects.length === 0 ? (
                         <Text className={Styles.emptyText}>No subjects found.</Text>
