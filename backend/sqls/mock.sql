@@ -1,3 +1,4 @@
+INSERT INTO Posts (user_id, title, text, image)
 SELECT
 	(random() * 2 + 1)::int,
 	'The Post Title #' || gs, 

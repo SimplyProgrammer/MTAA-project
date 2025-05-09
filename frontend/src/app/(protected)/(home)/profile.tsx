@@ -1,7 +1,7 @@
 import AppButton from "@/components/AppButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useLocalSearchParams } from "expo-router";
-import { View, Text } from "react-native";
+import { View, Text, Linking } from "react-native";
 
 import { Outline } from "@/components/AppButton";
 
@@ -19,11 +19,15 @@ import { forAxiosActionCall } from "@/libs/toasts";
 
 import { Appearance, Switch, useColorScheme } from 'react-native';
 
+import { offlineCacheStorage } from "@/libs/axios/connection";
+
 const handleLogout = async () => {
 	try {
 		const resp = await toasts.forAxiosActionCall(useAuthStore.logout(), "Logout", "Logged out successfully");
 		if (resp)
 			router.dismissTo("/login"); // Explicit...
+		await offlineCacheStorage.clear();
+
 		console.log("Logout: ", resp);
 	} catch (error) {
 		console.error(error);

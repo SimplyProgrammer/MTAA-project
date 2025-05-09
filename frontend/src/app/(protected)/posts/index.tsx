@@ -43,10 +43,13 @@ export default function PostsScreen() {
 		try {
 			setLoading(true);
 
-			const { data, next } = await api.getPosts(page, query);
-			// console.log(data, next);
-			setPosts(prev => [ ...prev, ...data ]);
-			setPage(next);
+			const response = await api.getPosts(page, query);
+			if (response) {
+				const { data, next } = response;
+				// console.log(data, next);
+				setPosts(prev => [ ...prev, ...data ]);
+				setPage(next);
+			}
 		}
 		catch (err) {
 			console.error(err);
@@ -81,7 +84,7 @@ export default function PostsScreen() {
 			{!posts.length && !loading && <Text className="text-center my-4">No posts found...</Text>}
 
 			<FlatList
-				data={posts}
+				data={posts.filter((post, index, self) => index == self.findIndex((c) => c.id == post.id))}
 				keyExtractor={(item) => item.id.toString()}
 				renderItem={({ item }) => (
 					<Pressable onPress={() => router.push(`/posts/${item.id}`)}>

@@ -60,7 +60,7 @@ export default function ProductScreen() {
 
 				<View className="m-4 flex gap-5">
 					<View className="flex-row justify-between items-center">
-						<Text className={`${H1}`}>{post?.title}</Text>
+						<Text className={`${H1}`}>{post?.title ?? "Unavailable"}</Text>
 						{post?.canEdit && <Pressable onPress={() => setIsEditing(true)}>
 							<Feather className={`p-1.5 ${IconBtn}`} name="edit" size={20} />
 						</Pressable>}
@@ -77,7 +77,7 @@ export default function ProductScreen() {
 						</Text>
 					</View>
 
-					<Text className="m-1">{post?.text}</Text>
+					<Text className="m-1">{post?.text ?? "Unavailable"}</Text>
 					{/* <Link href={`/posts/${params.id}/edit`}>Edit</Link> */}
 				</View>
 			</View>
