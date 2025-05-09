@@ -5,7 +5,7 @@ import _axios, { InternalAxiosRequestConfig } from 'axios'
 import Toast from "react-native-toast-message";
 import { show } from "../toasts";
 
-const authStorage = createStorage({ name: 'auth', secure: true });
+export const authStorage = createStorage({ name: 'auth', secure: true });
 
 const token = signal(null);
 const user = signal(null);
