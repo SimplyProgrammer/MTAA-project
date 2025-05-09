@@ -154,8 +154,8 @@ export default function HomeScreen() {
                     {distance !== null ? (
                         <Text className={Styles.basicText}>
                             {distance >= 1000
-                                ? `Current distance to FIIT STU: ${(distance / 1000).toFixed(2)} km`
-                                : `Current distance to FIIT STU: ${distance.toFixed(1)} meters`}
+                                ? `You are currently ${(distance / 1000).toFixed(2)} km away from FIIT STU.`
+                                : `You are currently ${distance.toFixed(1)} meters away from FIIT STU.`}
                         </Text>
                     ) : (
                         <Text className={Styles.basicText}>Location not available.</Text>
@@ -203,6 +203,11 @@ export default function HomeScreen() {
                             </TouchableOpacity>
                         ))
                     )}
+                </View>
+
+                <View className={`${Styles.Card} mt-3`}>
+                    <Text className={`${Styles.H3} mb-3`}>Latest posts</Text>
+                     <Text>TODO: Fetch latest posts (4)</Text>
                 </View>
             </View>
             

@@ -36,6 +36,8 @@ export default function TeacherOverviewScreen() {
     const [newSeminarFromTime, setNewSeminarFromTime] = useState("");
     const [newSeminarToTime, setNewSeminarToTime] = useState("");
 
+    
+
     const FIXED_DATE = "2025-01-01";
     const toTimestamp = (time: string) => time ? `${FIXED_DATE} ${time}` : "";
 
