@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "DB",
-    "canvasType": "ERD",
+    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
     "language": 16,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -2757,7 +2757,7 @@
         "tableId": "XdlZDHcCk1YErJbtTRHZo",
         "name": "use_biometrics",
         "comment": "",
-        "dataType": "",
+        "dataType": "boolean",
         "default": "false",
         "options": 0,
         "ui": {
@@ -2768,7 +2768,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1746654222183,
+          "updateAt": 1746797317554,
           "createAt": 1746645593446
         }
       }

@@ -109,7 +109,7 @@ export default function ProfileScreen() {
 					<Text>{JSON.stringify(useAuthStore.getUser())}</Text>
 					<AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
 				</View>
-				<Form className={`${Card} gap-5`}
+				<Form className={`${Card} py-4 gap-5`}
 					formConfig={settingsForm}
 					onChange={onSettingsChange}
 				/>

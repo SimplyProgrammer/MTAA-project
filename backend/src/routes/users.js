@@ -112,12 +112,12 @@ router.get("/preferences/:id", async (req, res) => {
  */
 router.put("/preferences/:id", async (req, res) => {
 	const userId = req.params.id;
-	const { notifications, dark_mode } = req.body;
+	const { notifications, dark_mode, use_biometrics } = req.body;
 	
 	try {
 		const result = await update(
-			"UserPreferences SET notifications = $1, dark_mode = $2 WHERE user_id = $3",
-			[notifications, dark_mode, userId]
+			"UserPreferences SET notifications = $2, dark_mode = $3, use_biometrics = $4 WHERE user_id = $1",
+			[userId, notifications, dark_mode, use_biometrics]
 		);
 
 		if (!result.rows.length)

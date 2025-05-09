@@ -1,5 +1,3 @@
--- Active: 1745917710365@@127.0.0.1@5432@mtaa@public
-INSERT INTO Posts (user_id, title, text, image)
 SELECT
 	(random() * 2 + 1)::int,
 	'The Post Title #' || gs, 

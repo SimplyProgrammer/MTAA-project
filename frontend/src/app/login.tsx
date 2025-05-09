@@ -38,16 +38,17 @@ const loginForm = [
 ]
 
 export default function Login() {
-	const handleLogin = async ({ email, password }) => {
+	const handleLogin = async ({ email, password }, rethrow = false) => {
 		// console.log(email, password);
 		try {
-			const user = await toasts.forAxiosActionCall(login({ email, password }), "Login", "Logged in successfully");
-			if (user.preferences?.use_biometrics)
-				authStorage.setString("passwd", password);
+			const { user } = await toasts.forAxiosActionCall(login({ email, password }), "Login", "Logged in successfully", rethrow ? undefined : "Something went wrong...");
+			await authStorage.setString("passwd", user.preferences?.use_biometrics ? password : null);
 			if (user)
-				router.dismissTo("/");
+				router.dismissTo("/"); // Explicit...
 		}
 		catch (error) {
+			if (rethrow)
+				throw error;
 			console.error("Login error: ", error.data);
 		}
 	};
@@ -55,22 +56,23 @@ export default function Login() {
 	const attemptBiometricAuth = async () => {
 		const user = getUser()
 		if (!user?.preferences?.use_biometrics)
-			return;
+			return console.log("Biometrics auth: No");
 
 		const password = await authStorage.getString("passwd");
 		if (!password?.length)
-			return;
+			return console.log("Biometrics auth: No passwd");
 
 		try {
-			const result = await authWithBiometrics();
+			const result = await authWithBiometrics("Login with biometrics");
 			// console.log(password);
-			await handleLogin({ email: user.email, password });
+			await handleLogin({ email: user.email, password }, true);
 		}
 		catch (err) {
 			if (err == "user_cancel")
 				return;
 
-			toasts.show("error", err, "Please login with your credentials");
+			const msg = toasts.getAxiosErrorMessage(err)
+			toasts.show("error", msg == "Invalid credentials" ? "Outdated credentials" : msg, "Please login with your password");
 			console.error(err)
 		}
 	}

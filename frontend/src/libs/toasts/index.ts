@@ -5,7 +5,7 @@ export function getAxiosErrorMessage(error, defaultMessage = "Something went wro
 	return error?.data?.message ?? error?.data?.error ?? error.message ?? error ?? defaultMessage
 }
 
-export function forAxiosActionCall(call: Promise<any>, actionTitle: string, successMessage?: string) {
+export function forAxiosActionCall(call: Promise<any>, actionTitle: string, successMessage?: string, defaultMessage = "Something went wrong...") {
 	if (successMessage != undefined) {
 		call.then(resp => {
 			Toast.show({
@@ -16,14 +16,16 @@ export function forAxiosActionCall(call: Promise<any>, actionTitle: string, succ
 		})
 	}
 
-	call.catch(error => {
-		Toast.show({
-			type: 'error',
-			text1: `${actionTitle} failed`,
-			text2: getAxiosErrorMessage(error)
+	if (defaultMessage != undefined) {
+		call.catch(error => {
+			Toast.show({
+				type: 'error',
+				text1: `${actionTitle} failed`,
+				text2: getAxiosErrorMessage(error)
+			})
+			throw error
 		})
-		throw error
-	})
+	}
 
 	return call
 }

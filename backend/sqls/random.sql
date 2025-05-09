@@ -124,9 +124,10 @@ COMMENT ON TABLE UserAccounts IS 'Login/auth related things of the user';
 
 CREATE TABLE UserPreferences
 (
-  user_id       INT     NOT NULL,
-  notifications boolean DEFAULT true,
-  dark_mode     boolean DEFAULT true,
+  user_id        INT     NOT NULL,
+  notifications  boolean DEFAULT true,
+  dark_mode      boolean DEFAULT true,
+  use_biometrics boolean DEFAULT false,
   PRIMARY KEY (user_id)
 );
 

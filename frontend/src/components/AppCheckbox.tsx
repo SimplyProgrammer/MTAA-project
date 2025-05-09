@@ -2,6 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Checkbox, CheckboxProps } from "expo-checkbox";
 import Text from "./Text";
+import tw from "twrnc";
 
 interface AppCheckboxProps extends CheckboxProps {
 	label: string;
@@ -14,6 +15,7 @@ export default function AppCheckbox({ label = "Checkbox", className = "", checkB
 		<View className={`flex-row items-center gap-4 ${className}`}>
 			<Checkbox
 				className={`${checkBoxClassName}`}
+				style={tw`w-[23px] h-[23px]`}
 				{...props}
 			/>
 			{label ? <Text>{label}</Text> : null}

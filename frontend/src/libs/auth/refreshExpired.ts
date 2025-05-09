@@ -5,8 +5,8 @@ import { router } from "expo-router";
 
 const refreshAuthLogic = async (err: AxiosError) => {
 	// console.log(err.config?.url)
-	// if (err.config?.url.includes('auth/'))
-	// 	return;
+	if (err.config?.url.includes('auth/'))
+		return;
 
 	const redirectToLogin = () => { 
 		router.dismissTo('/login'); 
