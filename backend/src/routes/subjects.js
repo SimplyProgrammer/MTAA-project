@@ -153,27 +153,40 @@ router.delete("/:id", async (req, res) => {
 	const subjectId = req.params.id;
 
 	try {
+		// Step 1: Get all related IDs
+		const lectureIds = (await db.query(`SELECT id FROM Lectures WHERE subject_id = $1`, [subjectId])).rows.map(r => r.id);
+		const seminarIds = (await db.query(`SELECT id FROM Seminars WHERE subject_id = $1`, [subjectId])).rows.map(r => r.id);
+		const eventIds = (await db.query(`SELECT id FROM Events WHERE subject_id = $1`, [subjectId])).rows.map(r => r.id);
 
+		// Step 2: Delete from related user_* tables
+		if (lectureIds.length > 0) {
+			await db.query(`DELETE FROM User_Lectures WHERE lecture_id = ANY($1::int[])`, [lectureIds]);
+		}
+		if (seminarIds.length > 0) {
+			await db.query(`DELETE FROM User_Seminars WHERE seminar_id = ANY($1::int[])`, [seminarIds]);
+		}
+		if (eventIds.length > 0) {
+			await db.query(`DELETE FROM User_Events WHERE event_id = ANY($1::int[])`, [eventIds]);
+		}
+
+		// Step 4: Delete from User_Subjects
 		await db.query(`DELETE FROM User_Subjects WHERE subject_id = $1`, [subjectId]);
-		await db.query(`DELETE FROM User_Lectures WHERE subject_id = $1`, [subjectId]);
 
+		// Step 5: Delete from Evaluations
+		await db.query(`DELETE FROM Evaluations WHERE subject_id = $1`, [subjectId]);
+
+		// Step 6: Delete lectures, seminars, events
 		await db.query(`DELETE FROM Lectures WHERE subject_id = $1`, [subjectId]);
 		await db.query(`DELETE FROM Seminars WHERE subject_id = $1`, [subjectId]);
+		await db.query(`DELETE FROM Events WHERE subject_id = $1`, [subjectId]);
 
-
-		// Then remove the subject itself
+		// Step 7: Finally, delete the Subject
 		await db.query(`DELETE FROM Subjects WHERE id = $1`, [subjectId]);
 
-		res.status(200).json({
-			message: "Subject and associated user-subject links deleted successfully",
-			data: null,
-		});
+		res.status(200).json({ message: "Deleted successfully", data: null });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({
-			message: "Internal server error",
-			data: null,
-		});
+		res.status(500).json({ message: "Internal server error", data: null });
 	}
 });
 module.exports = router;
