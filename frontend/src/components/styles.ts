@@ -13,7 +13,7 @@ export const Input = "h-11 border border-gray-300 dark:border-gray-600 rounded-l
 export const IconBtn = "active:bg-[rgba(0,0,0,0.08)] rounded-full transition dark:bg-gray-200";
 
 // EVENTS
-export const EventCardItem = "min-w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-0.5";
+export const EventCardItem = "min-w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-1";
 export const EventCardTitle = "text-base font-bold mb-0.5 text-gray-900 dark:text-gray-100";
 export const EventCardSubject = "text-sm mt-1 text-gray-800 dark:text-gray-300";
 export const EventCardDate = "text-sm mt-1 text-gray-800 dark:text-gray-300";

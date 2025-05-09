@@ -36,6 +36,8 @@ export default function TeacherOverviewScreen() {
     const [newSeminarFromTime, setNewSeminarFromTime] = useState("");
     const [newSeminarToTime, setNewSeminarToTime] = useState("");
 
+    
+
     const FIXED_DATE = "2025-01-01";
     const toTimestamp = (time: string) => time ? `${FIXED_DATE} ${time}` : "";
 
@@ -256,14 +258,17 @@ export default function TeacherOverviewScreen() {
         try {
             setLoading(true);
             await axios.delete_auth_data(`subjects/${subjectId}`);
-            setSubjects((prev) => prev.filter((s) => s.id !== subjectId));
+            await fetchSubjects();
+            await fetchEvents();
+            await fetchLectures();
+            await fetchSeminars();
         } catch (error) {
             console.error(error);
         } finally {
             setLoading(false);
         }
     };
-    
+
     const handleDeleteEvent = async (eventId: number) => {
         try {
             setLoading(true);
@@ -275,7 +280,7 @@ export default function TeacherOverviewScreen() {
             setLoading(false);
         }
     };
-    
+
     const handleDeleteLecture = async (lectureId: number) => {
         try {
             setLoading(true);
@@ -287,7 +292,7 @@ export default function TeacherOverviewScreen() {
             setLoading(false);
         }
     };
-    
+
     const handleDeleteSeminar = async (seminarId: number) => {
         try {
             setLoading(true);
@@ -312,6 +317,12 @@ export default function TeacherOverviewScreen() {
         }
     }, [subjects]);
 
+    // Helper to format time (HH:mm)
+    function formatTime(dateStr: string) {
+        const d = new Date(dateStr);
+        return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
     return (
         <ScrollView className={Styles.ScrollViewContainer}>
             <View>
@@ -330,7 +341,7 @@ export default function TeacherOverviewScreen() {
                                     <Text className={Styles.subjectTitle}>{subject.title}</Text>
                                     <Text className={Styles.subjectDescription}>{subject.description}</Text>
                                 </View>
-                                    <TouchableOpacity
+                                <TouchableOpacity
                                     onPress={() => handleDeleteSubject(subject.id)}
                                     className={Styles.deleteButton}
                                 >
@@ -339,30 +350,31 @@ export default function TeacherOverviewScreen() {
                             </View>
                         ))
                     )}
+                    {/* Add Subject */}
+                    <View className={`${Styles.Card} mt-3`}>
+                        <Text className={Styles.H3 + " mb-4"}>Add New Subject</Text>
+                        <TextInput
+                            placeholder="Subject Title"
+                            value={newSubjectTitle}
+                            placeholderTextColor="#9CA3AF"
+                            onChangeText={setNewSubjectTitle}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="Subject Description"
+                            value={newSubjectDescription}
+                            placeholderTextColor="#9CA3AF"
+                            onChangeText={setNewSubjectDescription}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <AppButton
+                            title={loading ? "Adding..." : "Add Subject"}
+                            onPress={handleAddSubject}
+                            disable={loading}
+                        />
+                    </View>
                 </View>
-                {/* Add Subject */}
-                <View className={`${Styles.Card} mt-3`}>
-                    <Text className={Styles.H3 + " mb-4"}>Add New Subject</Text>
-                    <TextInput
-                        placeholder="Subject Title"
-                        value={newSubjectTitle}
-                        placeholderTextColor="#9CA3AF"
-                        onChangeText={setNewSubjectTitle}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <TextInput
-                        placeholder="Subject Description"
-                        value={newSubjectDescription}
-                        placeholderTextColor="#9CA3AF"
-                        onChangeText={setNewSubjectDescription}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <AppButton
-                        title={loading ? "Adding..." : "Add Subject"}
-                        onPress={handleAddSubject}
-                        disable={loading}
-                    />
-                </View>
+
 
                 {/* Events Section */}
                 <View className={`${Styles.Card} mt-3`}>
@@ -379,7 +391,7 @@ export default function TeacherOverviewScreen() {
                                         <Text className={Styles.EventCardSubject}>
                                             Subject: {event.subject_title || (subjects.find(s => s.id === event.subject_id)?.title ?? "")}
                                         </Text>
-                                        <Text className={Styles.EventCardDate}>Due: {event.date_till?.slice(0, 10)}</Text>
+                                        <Text className={Styles.EventCardDate}>Due: {new Date(event.date_till).toLocaleString()}</Text>
                                     </View>
                                     <TouchableOpacity
                                         onPress={() => handleDeleteEvent(event.id)}
@@ -391,55 +403,56 @@ export default function TeacherOverviewScreen() {
                             ))
                         )}
                     </View>
-                </View>
-                {/* Add Event */}
-                <View className={`${Styles.Card} mt-3`}>
-                    <Text className={Styles.H3 + " mb-4"}>Add New Event</Text>
-                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
-                        <Picker
-                            selectedValue={newEventType}
-                            onValueChange={(itemValue) => setNewEventType(itemValue)}
-                            dropdownIconColor="#333"
-                            style={{ fontSize: 13.5 }}
-                        >
-                            <Picker.Item style={{ fontSize: 13.5 }} label="Select type" value={null} />
-                            <Picker.Item style={{ fontSize: 13.5 }} key={"exam"} label={"exam"} value={"exam"} />
-                            <Picker.Item style={{ fontSize: 13.5 }} key={"assignment"} label={"assignment"} value={"assignment"} />
-                        </Picker>
+                    {/* Add Event */}
+                    <View className={`${Styles.Card} mt-3`}>
+                        <Text className={Styles.H3 + " mb-4"}>Add New Event</Text>
+                        <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                            <Picker
+                                selectedValue={newEventType}
+                                onValueChange={(itemValue) => setNewEventType(itemValue)}
+                                dropdownIconColor="#333"
+                                style={{ fontSize: 13.5 }}
+                            >
+                                <Picker.Item style={{ fontSize: 13.5 }} label="Select type" value={null} />
+                                <Picker.Item style={{ fontSize: 13.5 }} key={"exam"} label={"exam"} value={"exam"} />
+                                <Picker.Item style={{ fontSize: 13.5 }} key={"assignment"} label={"assignment"} value={"assignment"} />
+                            </Picker>
+                        </View>
+                        <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                            <Picker
+                                selectedValue={newEventSubjectId}
+                                onValueChange={(itemValue) => setNewEventSubjectId(itemValue)}
+                                dropdownIconColor="#333"
+                                style={{ fontSize: 13.5 }}
+                            >
+                                <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
+                                {subjects.map((subject) => (
+                                    <Picker.Item style={{ fontSize: 13.5 }} key={subject.id} label={subject.title} value={subject.id} />
+                                ))}
+                            </Picker>
+                        </View>
+                        <TextInput
+                            placeholder="Event Title"
+                            placeholderTextColor="#9CA3AF"
+                            value={newEventTitle}
+                            onChangeText={setNewEventTitle}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="Due Date (YYYY-MM-DD HH:MM)"
+                            placeholderTextColor="#9CA3AF"
+                            value={newEventDateTill}
+                            onChangeText={setNewEventDateTill}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <AppButton
+                            title={loading ? "Adding..." : "Add Event"}
+                            onPress={handleAddEvent}
+                            disable={loading}
+                        />
                     </View>
-                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
-                        <Picker
-                            selectedValue={newEventSubjectId}
-                            onValueChange={(itemValue) => setNewEventSubjectId(itemValue)}
-                            dropdownIconColor="#333"
-                            style={{ fontSize: 13.5 }}
-                        >
-                            <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
-                            {subjects.map((subject) => (
-                                <Picker.Item style={{ fontSize: 13.5 }} key={subject.id} label={subject.title} value={subject.id} />
-                            ))}
-                        </Picker>
-                    </View>
-                    <TextInput
-                        placeholder="Event Title"
-                        placeholderTextColor="#9CA3AF"
-                        value={newEventTitle}
-                        onChangeText={setNewEventTitle}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <TextInput
-                        placeholder="Due Date (YYYY-MM-DD HH:MM)"
-                        placeholderTextColor="#9CA3AF"
-                        value={newEventDateTill}
-                        onChangeText={setNewEventDateTill}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <AppButton
-                        title={loading ? "Adding..." : "Add Event"}
-                        onPress={handleAddEvent}
-                        disable={loading}
-                    />
                 </View>
+
 
                 {/* Lectures Section */}
                 <View className={`${Styles.Card} mt-3`}>
@@ -454,62 +467,63 @@ export default function TeacherOverviewScreen() {
                                         {subjects.find(s => s.id === lecture.subject_id)?.title || "Unknown Subject"}
                                     </Text>
                                     <Text className={Styles.EventCardSubject}>
-                                        {lecture.day} {lecture.from_time?.slice(11, 16)} - {lecture.to_time?.slice(11, 16)}
+                                        {lecture.day} {formatTime(lecture.from_time)} - {formatTime(lecture.to_time)}
                                     </Text>
                                 </View>
                                 <TouchableOpacity
-                                        onPress={() => handleDeleteLecture(lecture.id)}
-                                        className={Styles.deleteButton}
-                                    >
-                                        <Text className={Styles.deleteButtonText}>×</Text>
-                                    </TouchableOpacity>
+                                    onPress={() => handleDeleteLecture(lecture.id)}
+                                    className={Styles.deleteButton}
+                                >
+                                    <Text className={Styles.deleteButtonText}>×</Text>
+                                </TouchableOpacity>
                             </View>
                         ))
                     )}
+                    <View className={`${Styles.Card} mt-3`}>
+                        <Text className={Styles.H3 + " mb-4"}>Add New Lecture</Text>
+                        <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                            <Picker
+                                selectedValue={newLectureSubjectId}
+                                onValueChange={(itemValue) => setNewLectureSubjectId(itemValue)}
+                                dropdownIconColor="#333"
+                                style={{ fontSize: 13.5 }}
+                            >
+                                <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
+                                {subjects.map((subject) => (
+                                    <Picker.Item style={{ fontSize: 13.5 }} key={subject.id} label={subject.title} value={subject.id} />
+                                ))}
+                            </Picker>
+                        </View>
+                        <TextInput
+                            placeholder="Day (e.g. Monday)"
+                            placeholderTextColor="#9CA3AF"
+                            value={newLectureDay}
+                            onChangeText={setNewLectureDay}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="From Time (HH:MM)"
+                            placeholderTextColor="#9CA3AF"
+                            value={newLectureFromTime}
+                            onChangeText={setNewLectureFromTime}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="To Time (HH:MM)"
+                            placeholderTextColor="#9CA3AF"
+                            value={newLectureToTime}
+                            onChangeText={setNewLectureToTime}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <AppButton
+                            title={loading ? "Adding..." : "Add Lecture"}
+                            onPress={handleAddLecture}
+                            disable={loading}
+                        />
+                    </View>
                 </View>
                 {/* Add Lecture */}
-                <View className={`${Styles.Card} mt-3`}>
-                    <Text className={Styles.H3 + " mb-4"}>Add New Lecture</Text>
-                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
-                        <Picker
-                            selectedValue={newLectureSubjectId}
-                            onValueChange={(itemValue) => setNewLectureSubjectId(itemValue)}
-                            dropdownIconColor="#333"
-                            style={{ fontSize: 13.5 }}
-                        >
-                            <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
-                            {subjects.map((subject) => (
-                                <Picker.Item style={{ fontSize: 13.5 }} key={subject.id} label={subject.title} value={subject.id} />
-                            ))}
-                        </Picker>
-                    </View>
-                    <TextInput
-                        placeholder="Day (e.g. Monday)"
-                        placeholderTextColor="#9CA3AF"
-                        value={newLectureDay}
-                        onChangeText={setNewLectureDay}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <TextInput
-                        placeholder="From Time (HH:MM)"
-                        placeholderTextColor="#9CA3AF"
-                        value={newLectureFromTime}
-                        onChangeText={setNewLectureFromTime}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <TextInput
-                        placeholder="To Time (HH:MM)"
-                        placeholderTextColor="#9CA3AF"
-                        value={newLectureToTime}
-                        onChangeText={setNewLectureToTime}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <AppButton
-                        title={loading ? "Adding..." : "Add Lecture"}
-                        onPress={handleAddLecture}
-                        disable={loading}
-                    />
-                </View>
+
 
                 {/* Seminars Section */}
                 <View className={`${Styles.Card} mt-3`}>
@@ -524,62 +538,63 @@ export default function TeacherOverviewScreen() {
                                         {subjects.find(s => s.id === seminar.subject_id)?.title || "Unknown Subject"}
                                     </Text>
                                     <Text className={Styles.EventCardSubject}>
-                                        {seminar.day} {seminar.from_time?.slice(11, 16)} - {seminar.to_time?.slice(11, 16)}
+                                        {seminar.day} {formatTime(seminar.from_time)} - {formatTime(seminar.to_time)}
                                     </Text>
                                 </View>
                                 <TouchableOpacity
-                                        onPress={() => handleDeleteSeminar(seminar.id)}
-                                        className={Styles.deleteButton}
-                                    >
-                                        <Text className={Styles.deleteButtonText}>×</Text>
-                                    </TouchableOpacity>
+                                    onPress={() => handleDeleteSeminar(seminar.id)}
+                                    className={Styles.deleteButton}
+                                >
+                                    <Text className={Styles.deleteButtonText}>×</Text>
+                                </TouchableOpacity>
                             </View>
                         ))
                     )}
-                </View>
-                {/* Add Seminar */}
-                <View className={`${Styles.Card} mt-3 mb-7`}>
-                    <Text className={Styles.H3 + " mb-4"}>Add New Seminar</Text>
-                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
-                        <Picker
-                            selectedValue={newSeminarSubjectId}
-                            onValueChange={(itemValue) => setNewSeminarSubjectId(itemValue)}
-                            dropdownIconColor="#333"
-                            style={{ fontSize: 13.5 }}
-                        >
-                            <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
-                            {subjects.map((subject) => (
-                                <Picker.Item style={{ fontSize: 13.5 }} key={subject.id} label={subject.title} value={subject.id} />
-                            ))}
-                        </Picker>
+                    {/* Add Seminar */}
+                    <View className={`${Styles.Card} mt-3 mb-7`}>
+                        <Text className={Styles.H3 + " mb-4"}>Add New Seminar</Text>
+                        <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                            <Picker
+                                selectedValue={newSeminarSubjectId}
+                                onValueChange={(itemValue) => setNewSeminarSubjectId(itemValue)}
+                                dropdownIconColor="#333"
+                                style={{ fontSize: 13.5 }}
+                            >
+                                <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
+                                {subjects.map((subject) => (
+                                    <Picker.Item style={{ fontSize: 13.5 }} key={subject.id} label={subject.title} value={subject.id} />
+                                ))}
+                            </Picker>
+                        </View>
+                        <TextInput
+                            placeholder="Day (e.g. Monday)"
+                            placeholderTextColor="#9CA3AF"
+                            value={newSeminarDay}
+                            onChangeText={setNewSeminarDay}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="From Time (HH:MM)"
+                            placeholderTextColor="#9CA3AF"
+                            value={newSeminarFromTime}
+                            onChangeText={setNewSeminarFromTime}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="To Time (HH:MM)"
+                            placeholderTextColor="#9CA3AF"
+                            value={newSeminarToTime}
+                            onChangeText={setNewSeminarToTime}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <AppButton
+                            title={loading ? "Adding..." : "Add Seminar"}
+                            onPress={handleAddSeminar}
+                            disable={loading}
+                        />
                     </View>
-                    <TextInput
-                        placeholder="Day (e.g. Monday)"
-                        placeholderTextColor="#9CA3AF"
-                        value={newSeminarDay}
-                        onChangeText={setNewSeminarDay}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <TextInput
-                        placeholder="From Time (HH:MM)"
-                        placeholderTextColor="#9CA3AF"
-                        value={newSeminarFromTime}
-                        onChangeText={setNewSeminarFromTime}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <TextInput
-                        placeholder="To Time (HH:MM)"
-                        placeholderTextColor="#9CA3AF"
-                        value={newSeminarToTime}
-                        onChangeText={setNewSeminarToTime}
-                        className={Styles.Input + " mb-2"}
-                    />
-                    <AppButton
-                        title={loading ? "Adding..." : "Add Seminar"}
-                        onPress={handleAddSeminar}
-                        disable={loading}
-                    />
                 </View>
+
             </View>
         </ScrollView>
     );
