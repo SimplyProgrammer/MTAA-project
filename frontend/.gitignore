@@ -31,6 +31,8 @@ yarn-error.*
 
 *.env
 
+mtaa-2df8a-firebase-adminsdk-fbsvc-3a8e0cd8e3.json
+
 # typescript
 *.tsbuildinfo
 
