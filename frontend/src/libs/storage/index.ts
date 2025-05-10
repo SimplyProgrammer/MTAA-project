@@ -84,7 +84,7 @@ export function createStorage(config: any): Storage {
 		},
 	
 		clear() {
-			throw new Error('Not implemented');
+			return AsyncStorage.clear();
 		},
 
 		provider() {

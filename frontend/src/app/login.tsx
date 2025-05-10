@@ -10,11 +10,13 @@ import * as toasts from "@/libs/toasts";
 
 import { Link, router } from "expo-router";
 
-import { Card, Screen, H3 } from "@/components/styles";
+import { Card, Screen, H3, IconBtn } from "@/components/styles";
 import AppImage from "@/components/AppImage";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { authWithBiometrics } from "@/libs/auth/biometrics";
+
+import { Entypo } from '@expo/vector-icons';
 
 const loginForm = [
 	<Text className={`${H3} text-center mb-4`}>
@@ -53,15 +55,22 @@ export default function Login() {
 		}
 	};
 
+	const [canUseBiometrics, setCanUseBiometrics] = useState(false);
+
 	const attemptBiometricAuth = async () => {
 		const user = getUser()
-		if (!user?.preferences?.use_biometrics)
+		if (!user?.preferences?.use_biometrics) {
+			setCanUseBiometrics(false);
 			return console.log("Biometrics auth: No");
+		}
 
 		const password = await authStorage.getString("passwd");
-		if (!password?.length)
+		if (!password?.length) {
+			setCanUseBiometrics(false);
 			return console.log("Biometrics auth: No passwd");
+		}
 
+		setCanUseBiometrics(true);
 		try {
 			const result = await authWithBiometrics("Login with biometrics");
 			// console.log(password);
@@ -93,6 +102,8 @@ export default function Login() {
 				onSubmit={handleLogin}
 			/>
 			<Link className="text-blue-700 mt-2" href="/signup">Create account</Link>
+
+			{ canUseBiometrics &&<Entypo name="fingerprint" size={55} color={"black"}  className={`${IconBtn} mt-14 !p-1.5`} onPress={attemptBiometricAuth}/> }
 		</View>
 	);
 }
