@@ -3,6 +3,8 @@ import React from "react";
 import { Appearance, useColorScheme as useReactNativeColorScheme } from "react-native";
 import { colorScheme, useColorScheme } from "nativewind";
 import { StatusBar } from "expo-status-bar";
+import Toast from 'react-native-toast-message';
+import AppStack from "@/components/AppStack";
 
 import "@/global.css"
 
@@ -12,8 +14,6 @@ import "@/libs/datetime-utility/global-time-utility"
 
 import * as useAuthStore from "@/libs/auth";
 
-import Toast from 'react-native-toast-message';
-
 export default function RootLayout() {
 	const user = useAuthStore.getUser();
 
@@ -22,7 +22,7 @@ export default function RootLayout() {
 	return (
 		<React.Fragment>
 			<StatusBar style="auto" />
-			<Stack>
+			<AppStack>
 				<Stack.Screen
 					name="(protected)"
 					options={{
@@ -44,7 +44,7 @@ export default function RootLayout() {
 						// animation: "none",
 					}}
 				/>
-			</Stack>
+			</AppStack>
 			<Toast />
 		</React.Fragment>
 	);

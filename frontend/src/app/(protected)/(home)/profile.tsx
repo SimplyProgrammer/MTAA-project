@@ -20,6 +20,7 @@ import { forAxiosActionCall } from "@/libs/toasts";
 import { Appearance, Switch, useColorScheme } from 'react-native';
 
 import { offlineCacheStorage } from "@/libs/axios/connection";
+import AppImage from "@/components/AppImage";
 
 const handleLogout = async () => {
 	try {
@@ -107,10 +108,14 @@ export default function ProfileScreen() {
 			</AppButton> */}
 			
 			<View className={`flex gap-5 h-[88%]`}>
-				<View className={`${Card} flex-1`}>
-					<Text>Profile...</Text>
+				<View className={`${Card} items-center flex-1`}>
+					{/* <Text>Profile...</Text>
 
-					<Text>{JSON.stringify(useAuthStore.getUser())}</Text>
+					<Text>{JSON.stringify(useAuthStore.getUser())}</Text> */}
+
+					<AppImage className="bg-gray-400 w-[125px] !aspect-square rounded-full">
+					</AppImage>
+
 					<AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
 				</View>
 				<Form className={`${Card} py-4 gap-5`}

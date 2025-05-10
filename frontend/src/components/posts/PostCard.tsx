@@ -15,7 +15,7 @@ const PostCard = ({ image = null, title = "Title", text = "Lorem impsum djasldj 
 	return (
 		<View className={`${Card} !p-0 flex`}>
 			<AppImage
-				className='w-full h-[180px]'
+				className='w-full'
 				imageName={image} 
 			/>
 

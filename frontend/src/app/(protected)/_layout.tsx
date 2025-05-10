@@ -5,12 +5,12 @@ import * as useAuth from '@/libs/auth'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { IconBtn } from "@/components/styles";
-import tw from "twrnc";
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AppTabs from "@/components/AppTabs";
 
 export default function ProtectedLayout() {
-	
+
 	if (!useAuth.getStatus()) {
 		console.log("No status: ", useAuth.getStatus())
 		return null;
@@ -21,11 +21,7 @@ export default function ProtectedLayout() {
 	}
 
 	return (
-		<Tabs screenOptions={{
-			headerStyle: tw`bg-gray-800`,
-			headerTitleStyle: tw`text-white`,
-		}}>
-			
+		<AppTabs>
 			<Tabs.Screen name="(home)" options={{ 
 				title: "Home",
 				tabBarIcon: ({ color, size }) => (<Ionicons name="home" size={size} color={color} />),
@@ -47,6 +43,6 @@ export default function ProtectedLayout() {
 				href: useAuth.getUser().role != "ADMIN" ? undefined : null,
 				tabBarIcon: ({ color, size }) => (<MaterialCommunityIcons name="timeline" size={size} color={color} />)
 			}} />
-		</Tabs>
+		</AppTabs>
 	);
 }

@@ -1,9 +1,10 @@
+import AppStack from "@/components/AppStack";
 import { Link, Stack } from "expo-router";
 import { View, Text } from "react-native";
 
 export default function PostsLayout() {
 	return (
-		<Stack>
+		<AppStack>
 			<Stack.Screen name="index" options={{ 
 				title: "Posts",
 			}} />
@@ -16,6 +17,6 @@ export default function PostsLayout() {
 			<Stack.Screen name="[id]/edit" options={{
 				title: "Edit post"
 			}} />
-		</Stack>
+		</AppStack>
 	);
 }

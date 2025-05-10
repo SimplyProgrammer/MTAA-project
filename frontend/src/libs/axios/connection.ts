@@ -11,7 +11,7 @@ let alertTimeout;
 
 const unsubscribe = NetInfo.addEventListener(state => {
 	// console.log('Connection ', state);
-	console.log("Is connected", state.isConnected);
+	// console.log("Is connected", state.isConnected);
 
 	connectionState.value = state;
 	isConnected.value = state.isConnected;

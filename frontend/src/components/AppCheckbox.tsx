@@ -15,7 +15,7 @@ export default function AppCheckbox({ label = "Checkbox", className = "", checkB
 		<View className={`flex-row items-center gap-4 ${className}`}>
 			<Checkbox
 				className={`${checkBoxClassName}`}
-				style={tw`w-[23px] h-[23px]`}
+				style={tw`w-[24px] h-[24px]`}
 				{...props}
 			/>
 			{label ? <Text>{label}</Text> : null}
