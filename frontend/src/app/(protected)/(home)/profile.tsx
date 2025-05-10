@@ -10,7 +10,7 @@ import * as useAuthStore from "@/libs/auth";
 import axios from "@/libs/axios";
 import { router } from "expo-router";
 
-import { Card, H3, Screen } from "@/components/styles";
+import { Card, H1, H3, IconBtn, Screen } from "@/components/styles";
 import Checkbox from "expo-checkbox";
 import AppCheckbox from "@/components/AppCheckbox";
 import Form from "@/components/Form";
@@ -21,6 +21,10 @@ import { Appearance, Switch, useColorScheme } from 'react-native';
 
 import { offlineCacheStorage } from "@/libs/axios/connection";
 import AppImage from "@/components/AppImage";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import AppImagePicker from "@/components/AppImagePicker";
+import { useState } from "react";
+import { set } from "date-fns";
 
 const handleLogout = async () => {
 	try {
@@ -44,15 +48,6 @@ const tryGetImage = async () => {
 	}
 }
 
-const doTest = async () => {
-	try {
-		const resp = await toasts.forAxiosActionCall(axios.get_auth_data(''), "Test", "Tested successfully");
-		console.log("Test: ", resp);
-	} catch (error) {
-		console.error(error);
-	}
-}
-
 const testRefresh = async () => {
 	try {
 		const resp = await useAuthStore.refreshToken()
@@ -68,15 +63,15 @@ const api = {
 }
 
 export default function ProfileScreen() {
-	const { preferences } = useAuthStore.getUser();
+	const user = useAuthStore.getUser();
 
 	const settingsForm = [
 		<Text className={`${H3}`}>
 			User preferences
 		</Text>,
-		{ name: "Enable Notifications", variable: "notifications", type: "checkbox", value: preferences.notifications },
-		{ name: "Dark Mode", variable: "dark_mode", type: "checkbox", value: preferences.dark_mode },
-		{ name: "Use biometric login", variable: "use_biometrics", type: "checkbox", value: preferences.use_biometrics },
+		{ name: "Enable Notifications", variable: "notifications", type: "checkbox", value: user?.preferences.notifications },
+		{ name: "Dark Mode", variable: "dark_mode", type: "checkbox", value: user?.preferences.dark_mode },
+		{ name: "Use biometric login", variable: "use_biometrics", type: "checkbox", value: user?.preferences.use_biometrics },
 	];
 
 	const onSettingsChange = async (state, name, value) => {
@@ -98,23 +93,28 @@ export default function ProfileScreen() {
 		}
 	};
 
-	return (
-		<View className={`${Screen}`}>
-			{/* <Text>Profile...</Text> */}
+	const [profileImage, setProfileImage] = useState(user?.profile_img);
 
-			{/* <AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
-			<AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
-				<MaterialIcons name="http" size={24} color="blue" />
-			</AppButton> */}
-			
+	return (
+		<View className={`${Screen}`}>	
 			<View className={`flex gap-5 h-[88%]`}>
 				<View className={`${Card} items-center flex-1`}>
 					{/* <Text>Profile...</Text>
 
 					<Text>{JSON.stringify(useAuthStore.getUser())}</Text> */}
 
-					<AppImage className="bg-gray-400 w-[125px] !aspect-square rounded-full">
-					</AppImage>
+					{/* <Text>Profile...</Text> */}
+
+					{/* <AppButton title="tst refresh" className={`mt-4`} onPress={testRefresh} />
+					<AppButton title="Test" className={`mt-4 ${Outline}`} onPress={tryGetImage}>
+						<MaterialIcons name="http" size={24} color="blue" />
+					</AppButton> */}
+
+					<AppImagePicker className={`${IconBtn} bg-gray-400 w-[125px] rounded-full`} onImagePicked={img => setProfileImage(img.uri)}>
+						<AppImage imageName={profileImage} className="!aspect-square">
+							{ !profileImage && <Text className={`${H1} text-4xl !text-gray-900`}>{user?.first_name[0].toUpperCase() + user?.last_name[0].toUpperCase()}</Text> }
+						</AppImage>
+					</AppImagePicker>
 
 					<AppButton title="Logout" className={`mt-4`} onPress={handleLogout} />
 				</View>
