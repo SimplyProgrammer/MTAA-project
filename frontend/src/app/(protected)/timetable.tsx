@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import api from "@/libs/axios";
 import { getUser } from "@/libs/auth";
 import EventCard from "@/components/timetable/EventCard";
 import * as Styles from "@/components/styles";
+import { useFocusEffect } from "expo-router";
+
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -16,7 +18,11 @@ export default function TimetableScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+
+  
+
+  useFocusEffect( 
+    useCallback(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -99,7 +105,10 @@ export default function TimetableScreen() {
     };
 
     fetchData();
-  }, []);
+
+    
+
+  }, []));
 
   if (loading) return <ActivityIndicator />;
   if (error) return <Text>{error}</Text>;
@@ -137,6 +146,8 @@ export default function TimetableScreen() {
   // Helper: get subject title by id
   const getSubjectTitle = (id: number) =>
     subjects.find((s) => s.id === id)?.title || "";
+
+  
 
   return (
     <ScrollView className={Styles.ScrollViewContainer}>

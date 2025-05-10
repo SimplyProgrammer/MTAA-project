@@ -189,4 +189,28 @@ router.delete("/:id", async (req, res) => {
 		res.status(500).json({ message: "Internal server error", data: null });
 	}
 });
+
+router.get("/:id/students", async (req, res) => {
+    const subjectId = req.params.id;
+    try {
+        const result = await db.query(
+            `SELECT ua.id, ua.first_name, ua.last_name, ua.email, ua.role
+             FROM UserAccounts ua
+             JOIN User_Subjects us ON ua.id = us.user_id
+             WHERE us.subject_id = $1`,
+            [subjectId]
+        );
+        res.status(200).json({
+            message: "Students fetched successfully",
+            data: result.rows,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Internal server error",
+            data: null,
+        });
+    }
+});
+
 module.exports = router;
