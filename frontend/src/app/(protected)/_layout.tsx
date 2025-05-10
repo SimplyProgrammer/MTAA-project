@@ -5,6 +5,7 @@ import * as useAuth from '@/libs/auth'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { IconBtn } from "@/components/styles";
+import tw from "twrnc";
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
@@ -21,6 +22,8 @@ export default function ProtectedLayout() {
 
 	return (
 		<Tabs screenOptions={{
+			headerStyle: tw`bg-gray-800`,
+			headerTitleStyle: tw`text-white`,
 		}}>
 			
 			<Tabs.Screen name="(home)" options={{ 

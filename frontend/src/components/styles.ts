@@ -10,7 +10,7 @@ export const H = [H1, H2, H3];
 
 export const Input = "h-11 border border-gray-300 dark:border-gray-600 rounded-lg px-4 bg-white dark:bg-gray-800 dark:text-white placeholder-gray-500 transition";
 
-export const IconBtn = "active:opacity-70 p-0.5 rounded-full transition dark:bg-gray-300";
+export const IconBtn = "active:opacity-60 p-0.5 rounded-full transition dark:bg-gray-200";
 
 // EVENTS
 export const EventCardItem = "min-w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 px-3.5 py-2.5 rounded-lg my-1";

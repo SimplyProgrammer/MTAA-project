@@ -7,13 +7,16 @@ import { createStorage } from '../storage'
 export const connectionState = signal<NetInfoState>();
 export const isConnected = signal(true);
 
+let alertTimeout;
+
 const unsubscribe = NetInfo.addEventListener(state => {
 	// console.log('Connection ', state);
+	console.log("Is connected", state.isConnected);
 
 	connectionState.value = state;
 	isConnected.value = state.isConnected;
 	if (!state.isConnected) {
-		return Alert.alert('No internet connection', 'Some features may not work as expected. Try checking your connection or system settings of the app.', [
+		alertTimeout = setTimeout(() => Alert.alert('No internet connection', 'Some features may not work as expected. Try checking your connection or system settings of the app.', [
 			{
 				text: 'Settings',
 				onPress: async () => {
@@ -25,8 +28,12 @@ const unsubscribe = NetInfo.addEventListener(state => {
 				},
 			},
 			{text: 'OK', onPress: () => {}},
-		]);
+		]), 4000);
+
+		return;
 	}
+
+	clearTimeout(alertTimeout);
 });
 
 export const offlineCacheStorage = createStorage({ name: 'offline' });
