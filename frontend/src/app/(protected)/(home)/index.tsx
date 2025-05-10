@@ -209,6 +209,14 @@ export default function HomeScreen() {
                     <Text className={`${Styles.H3} mb-3`}>Latest posts</Text>
                      <Text>TODO: Fetch latest posts (4)</Text>
                 </View>
+
+                <View className={`${Styles.Card} mt-3 items-center`}>
+                    <AppButton
+                        title="Go to Notifications"
+                        onPress={() => router.push({ pathname: "./notification" })}
+                    />
+                    
+                </View>
             </View>
             
             

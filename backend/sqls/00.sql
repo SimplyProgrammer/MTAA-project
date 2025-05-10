@@ -36,3 +36,12 @@ BEGIN
 		EXECUTE 'DROP FUNCTION IF EXISTS public.' || quote_ident(r.function_name) || '(' || r.args || ') CASCADE';
 	END LOOP;
 END $$;
+
+DO $$
+DECLARE
+	r RECORD;
+BEGIN
+	FOR r IN (SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = 'public') LOOP
+		EXECUTE 'DROP SEQUENCE IF EXISTS public.' || quote_ident(r.sequence_name) || ' CASCADE';
+	END LOOP;
+END $$;

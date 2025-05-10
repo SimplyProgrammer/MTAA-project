@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1048523025320",
+    "project_id": "mtaa-2df8a",
+    "storage_bucket": "mtaa-2df8a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048523025320:android:63cace23cea7ed053d0b9d",
+        "android_client_info": {
+          "package_name": "com.anonymous.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABnxlm4CN0F8iMS_ksT2eRQWDcZxcMRc0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048523025320:android:85a30c5cf9f039fd3d0b9d",
+        "android_client_info": {
+          "package_name": "com.mtaa.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABnxlm4CN0F8iMS_ksT2eRQWDcZxcMRc0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
