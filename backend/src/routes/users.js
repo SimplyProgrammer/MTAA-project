@@ -276,6 +276,63 @@ router.put("/accounts/:id", async (req, res) => {
 	}
 });
 
+/**
+ * @openapi
+ * /users/accounts/{id}/push-token:
+ *   put:
+ *     tags:
+ *       - Users
+ *     summary: Update a user's Expo push token
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The ID of the user account to update
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               expo_push_token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Push token updated
+ *       404:
+ *         description: User account not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put("/accounts/:id/push-token", async (req, res) => {
+    const userId = req.params.id;
+    const { expo_push_token } = req.body;
+
+    if (!expo_push_token)
+        return res.status(400).json({ error: "Missing expo_push_token" });
+
+    try {
+        const result = await update(
+            "useraccounts SET expo_push_token = $1 WHERE id = $2",
+            [expo_push_token, userId]
+        );
+
+        if (!result.rows.length)
+            return res.status(404).send("User account not found");
+
+        const data = result.rows[0];
+        data.password = undefined;
+        res.json({ message: "Push token updated", data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error");
+    }
+});
 
 
 module.exports = router;

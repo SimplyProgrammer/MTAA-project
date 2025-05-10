@@ -81,6 +81,11 @@ app.use("/lectures", verifyToken, lecturesRouter);
 const evaluationsRouter = require("./routes/evaluations");
 app.use("/evaluations", verifyToken, evaluationsRouter);
 
+const reminderRouter = require("./routes/reminderJob");
+app.use("/reminderJob", verifyToken, reminderRouter);
+
+
+
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 
@@ -95,6 +100,13 @@ app.use(verifyToken, (req, res, next) => {
 		message: `Route ${req.originalUrl} does not exist`,
 	});
 });
+
+// function logServerTime() {
+//     const now = new Date();
+//     console.log(`[Server Time] ${now.toISOString()}`);
+// }
+
+// setInterval(logServerTime, 10000);
 
 const { IP, PORT } = require("./utils")
 app.listen(PORT, IP, () => {

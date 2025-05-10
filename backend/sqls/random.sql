@@ -117,6 +117,7 @@ CREATE TABLE UserAccounts
   active      boolean DEFAULT true,
   role        VARCHAR DEFAULT 'USER',
   profile_img varchar,
+  expo_push_token varchar,
   PRIMARY KEY (id)
 );
 
