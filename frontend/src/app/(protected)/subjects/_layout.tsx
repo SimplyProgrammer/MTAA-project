@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 export default function SubjectsLayout() {
   return (
     <AppStack>
-      <Stack.Screen name="index" options={{ title: "", headerShown: false}} />
+      <Stack.Screen name="[id]/index" options={{ title: "Subject Detail", headerShown: true}} />
     </AppStack>
   );
 }

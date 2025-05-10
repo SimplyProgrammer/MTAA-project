@@ -22,9 +22,18 @@ export default function ProtectedLayout() {
 
 	return (
 		<AppTabs>
+
+			
+
 			<Tabs.Screen name="(home)" options={{ 
 				title: "Home",
 				tabBarIcon: ({ color, size }) => (<Ionicons name="home" size={size} color={color} />),
+				headerShown: false
+			}} />
+
+			<Tabs.Screen name="subjects" options={{ 
+				title: "Subjects",
+				href:null,
 				headerShown: false
 			}} />
 

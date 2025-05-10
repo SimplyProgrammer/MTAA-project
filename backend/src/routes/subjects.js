@@ -130,6 +130,44 @@ router.post("/", async (req, res) => {
 /**
  * @openapi
  * /subjects/{id}:
+ *   get:
+ *     tags:
+ *       - Subjects
+ *     summary: Get a subject by ID
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: Subject ID
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Subject found
+ *       404:
+ *         description: Subject not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/:id", async (req, res) => {
+    const subjectId = req.params.id;
+    try {
+        const result = await db.query("SELECT * FROM Subjects WHERE id = $1", [subjectId]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Subject not found", data: null });
+        }
+        res.status(200).json({ message: "Subject fetched successfully", data: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error", data: null });
+    }
+});
+
+/**
+ * @openapi
+ * /subjects/{id}:
  *   delete:
  *     tags:
  *       - Subjects

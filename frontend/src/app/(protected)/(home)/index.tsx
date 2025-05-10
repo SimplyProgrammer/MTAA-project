@@ -17,6 +17,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Text from "@/components/Text";
 import * as Location from 'expo-location';
 
+import * as Notifications from "expo-notifications";
+
 const FIXED_POINT = { latitude: 48.1534, longitude: 17.0715 };
 
 function getDistanceFromLatLonInMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -33,6 +35,16 @@ function getDistanceFromLatLonInMeters(lat1: number, lon1: number, lat2: number,
     return R * c; // Distance in meters
 }
 
+async function registerPushToken(userId) {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== "granted") return;
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("Push token:", token);
+    await axios.put_auth_data(`users/accounts/${userId}/push-token`, { expo_push_token: token });
+}
+
+
+
 export default function HomeScreen() {
 	if (useAuthStore.getUser()?.role == 'ADMIN') 
 		return <Redirect href="/(protected)/(home)/admin" />
@@ -40,11 +52,23 @@ export default function HomeScreen() {
 	if (useAuthStore.getUser()?.role == 'TEACHER') 
 		return <Redirect href="/(protected)/(home)/teacher" />
 
+
+
+    const user = useAuthStore.getUser();
+
+    useEffect(() => {
+        if (user?.id) {
+            registerPushToken(user.id);
+        }
+    }, [user?.id]);
+
 	const [todayEvents, setTodayEvents] = useState<any[]>([]);
     const [subjects, setSubjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [distance, setDistance] = useState<number | null>(null);
+
+
 
     useEffect(() => {
         (async () => {
@@ -196,27 +220,21 @@ export default function HomeScreen() {
                             <TouchableOpacity
                                 key={subject.id}
                                 className={`${Styles.subjectItem}`}
-                                onPress={() => router.push({ pathname: "./subject", params: { id: subject.id, name: subject.title, desc: subject.description } })}
+                                onPress={() => router.push(`../subjects/${subject.id}`)}
                             >
                                 <Text className={Styles.subjectTitle}>{subject.title}</Text>
-                                <Text className={Styles.arrowRight}>›</Text>
+                                <Text className={Styles.arrowRight}>›</Text> 
                             </TouchableOpacity>
                         ))
                     )}
                 </View>
 
-                <View className={`${Styles.Card} mt-3`}>
+                <View className={`${Styles.Card} mt-3 mb-8`}>
                     <Text className={`${Styles.H3} mb-3`}>Latest posts</Text>
                      <Text>TODO: Fetch latest posts (4)</Text>
                 </View>
 
-                <View className={`${Styles.Card} mt-3 items-center`}>
-                    <AppButton
-                        title="Go to Notifications"
-                        onPress={() => router.push({ pathname: "./notification" })}
-                    />
-                    
-                </View>
+
             </View>
             
             

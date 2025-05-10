@@ -6,7 +6,8 @@ import api from "@/libs/axios";
 import { getUser } from "@/libs/auth";
 
 export default function TimelineScreen() {
-    const { name, id, desc } = useLocalSearchParams();
+    const { id } = useLocalSearchParams();
+    const [subject, setSubject] = useState<any>(null);
     const [evaluations, setEvaluations] = useState<any[]>([]);
     const [events, setEvents] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -23,6 +24,10 @@ export default function TimelineScreen() {
                     setLoading(false);
                     return;
                 }
+                // Fetch subject details
+                const subjectData = await api.get_auth_data(`subjects/${id}`);
+                setSubject(subjectData?.data || subjectData);
+
                 // Fetch evaluations
                 const evalData = await api.get_auth_data(`evaluations?user_id=${user.id}&subject_id=${id}`);
                 setEvaluations(Array.isArray(evalData) ? evalData : evalData?.data || []);
@@ -43,8 +48,16 @@ export default function TimelineScreen() {
 
             <View className={``}>
                 <View className={Styles.Card + "mt-3 items-center"}>
-                    <Text className={`${Styles.H2}`}>{name}</Text>
-                    <Text className={`${Styles.basicText} mt-3`}>{desc}</Text>
+                   {loading && !subject ? (
+                        <ActivityIndicator />
+                    ) : subject ? (
+                        <>
+                            <Text className={Styles.H2}>{subject.title}</Text>
+                            <Text className={Styles.basicText + " mt-3"}>{subject.description}</Text>
+                        </>
+                    ) : (
+                        <Text className={Styles.emptyText}>Subject not found.</Text>
+                    )}
                 </View>
             </View>
 
