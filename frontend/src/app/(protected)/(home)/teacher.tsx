@@ -6,6 +6,7 @@ import axios from "@/libs/axios";
 import { getUser } from "@/libs/auth";
 import { Picker } from "@react-native-picker/picker";
 import * as useAuthStore from '@/libs/auth';
+import { useCallback } from "react";
 
 export default function TeacherOverviewScreen() {
     const [subjects, setSubjects] = useState<any[]>([]);
@@ -36,7 +37,10 @@ export default function TeacherOverviewScreen() {
     const [newSeminarFromTime, setNewSeminarFromTime] = useState("");
     const [newSeminarToTime, setNewSeminarToTime] = useState("");
 
-    
+    const [students, setStudents] = useState<any[]>([]);
+    const [assignSubjectStudentId, setAssignSubjectStudentId] = useState<number | null>(null);
+    const [assignSubjectId, setAssignSubjectId] = useState<number | null>(null);
+    const [studentsBySubject, setStudentsBySubject] = useState<{ [subjectId: number]: any[] }>({});
 
     const FIXED_DATE = "2025-01-01";
     const toTimestamp = (time: string) => time ? `${FIXED_DATE} ${time}` : "";
@@ -323,6 +327,73 @@ export default function TeacherOverviewScreen() {
         return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
 
+    // Fetch all students (role = USER)
+    const fetchStudents = async () => {
+        try {
+            const response = await axios.get_auth_data("users/accounts?role=USER");
+            setStudents(response.data?.data || response || []);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // Assign subject to student (POST /subjects with title, description, user_id)
+    const handleAssignSubjectToStudent = async () => {
+        if (!assignSubjectStudentId || !assignSubjectId) {
+            Alert.alert("Please select both subject and student.");
+            return;
+        }
+        try {
+            setLoading(true);
+            // Find subject by id
+            const subject = subjects.find((s) => s.id === assignSubjectId);
+            if (!subject) {
+                Alert.alert("Subject not found.");
+                return;
+            }
+            // Call POST /subjects with subject title, description, and user_id (student)
+            await axios.post_auth_data("subjects", {
+                title: subject.title,
+                description: subject.description,
+                user_id: assignSubjectStudentId,
+            });
+            setAssignSubjectStudentId(null);
+            setAssignSubjectId(null);
+            await fetchStudentsBySubject();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch all teacher's students with their assigned subjects, divided by subjects
+    const fetchStudentsBySubject = async () => {
+        try {
+            // For each subject, fetch students assigned to it
+            const result: { [subjectId: number]: any[] } = {};
+            await Promise.all(
+                subjects.map(async (subject) => {
+                    const res = await axios.get_auth_data(`subjects/${subject.id}/students`)
+                    result[subject.id] = res.data?.data || res || [];
+                })
+            );
+            setStudentsBySubject(result);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // Fetch students on mount and whenever subjects change
+    useEffect(() => {
+        fetchStudents();
+    }, []);
+    useEffect(() => {
+        if (subjects.length > 0) {
+            fetchStudentsBySubject();
+        }
+    }, [subjects]);
+
     return (
         <ScrollView className={Styles.ScrollViewContainer}>
             <View>
@@ -594,7 +665,81 @@ export default function TeacherOverviewScreen() {
                         />
                     </View>
                 </View>
+                <View className={`${Styles.Card} mt-3`}>
+                    <Text className={Styles.H3 + " mb-4"}>Assign Subject to Student</Text>
+                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                        <Picker
+                            selectedValue={assignSubjectStudentId}
+                            onValueChange={setAssignSubjectStudentId}
+                            dropdownIconColor="#333"
+                            style={{ fontSize: 13.5 }}
+                        >
+                            <Picker.Item style={{ fontSize: 13.5 }} label="Select student" value={null} />
+                            {students.map((student: any) => (
+                                <Picker.Item
+                                    style={{ fontSize: 13.5 }}
+                                    key={student.id}
+                                    label={`${student.first_name} ${student.last_name} (${student.email})`}
+                                    value={student.id}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                        <Picker
+                            selectedValue={assignSubjectId}
+                            onValueChange={setAssignSubjectId}
+                            dropdownIconColor="#333"
+                            style={{ fontSize: 13.5 }}
+                        >
+                            <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
+                            {subjects.map((subject: any) => (
+                                <Picker.Item
+                                    style={{ fontSize: 13.5 }}
+                                    key={subject.id}
+                                    label={subject.title}
+                                    value={subject.id}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+                    <AppButton
+                        title={loading ? "Assigning..." : "Assign Subject"}
+                        onPress={handleAssignSubjectToStudent}
+                        disable={loading}
+                    />
+                </View>
 
+                <View className={`${Styles.Card} mt-3 mb-7`}>
+                    <Text className={Styles.H3 + " mb-4"}>Students by Subject</Text>
+                    {subjects.length === 0 ? (
+                        <Text className={Styles.emptyText}>No subjects found.</Text>
+                    ) : (
+                        subjects.map((subject: any) => (
+                            <View key={subject.id} style={{ marginBottom: 18 }}>
+                                <Text className={Styles.EventCardTitle} style={{ marginBottom: 4 }}>
+                                    {subject.title}
+                                </Text>
+                                {studentsBySubject[subject.id] && studentsBySubject[subject.id].filter((student: any) => student.role === "USER").length > 0 ? (
+                                    studentsBySubject[subject.id]
+                                        .filter((student: any) => student.role === "USER")
+                                        .map((student: any) => (
+                                            <View key={student.id} style={{ marginLeft: 10, marginBottom: 2 }}>
+                                                <Text className={Styles.EventCardSubject}>
+                                                    {student.first_name} {student.last_name}
+                                                    <Text style={{ color: "#888" }}> ({student.email})</Text>
+                                                </Text>
+                                            </View>
+                                        ))
+                                ) : (
+                                    <Text className={Styles.emptyText} style={{ marginLeft: 10 }}>
+                                        No students assigned.
+                                    </Text>
+                                )}
+                            </View>
+                        ))
+                    )}
+                </View>
             </View>
         </ScrollView>
     );
