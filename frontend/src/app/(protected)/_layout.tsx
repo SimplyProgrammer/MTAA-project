@@ -37,6 +37,12 @@ export default function ProtectedLayout() {
 				headerShown: false
 			}} />
 
+			<Tabs.Screen name="evaluations" options={{ 
+				title: "Evaluations",
+				href:null,
+				headerShown: false
+			}} />
+
 			<Tabs.Screen name="posts" options={{ 
 				title: "Posts",
 				headerShown: false,

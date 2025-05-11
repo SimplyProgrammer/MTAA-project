@@ -63,6 +63,8 @@ INSERT INTO Events (subject_id, title, type, date_till) VALUES
   (5, 'Poetry Analysis',         'assignment', '2025-05-22 23:59:00'),
   (5, 'Literature Final Exam',   'exam',       '2025-06-20 13:00:00');
 
+
+
 -- 8) Assign all events to user 1
 INSERT INTO User_Events (user_id, event_id) VALUES
   (1, 1), (1, 2),
@@ -86,3 +88,5 @@ INSERT INTO Evaluations (user_id, subject_id, title, points, max_points) VALUES
 
   (1, 5, 'Poetry Analysis',         19,  20), -- Literature (subject_id = 5)
   (1, 5, 'Shakespeare Final',       94, 100);
+
+  

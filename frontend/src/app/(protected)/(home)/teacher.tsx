@@ -7,8 +7,11 @@ import { getUser } from "@/libs/auth";
 import { Picker } from "@react-native-picker/picker";
 import * as useAuthStore from '@/libs/auth';
 import { useCallback } from "react";
+import { useRouter } from "expo-router";
 
 export default function TeacherOverviewScreen() {
+    const router = useRouter();
+
     const [subjects, setSubjects] = useState<any[]>([]);
     const [newSubjectTitle, setNewSubjectTitle] = useState("");
     const [newSubjectDescription, setNewSubjectDescription] = useState("");
@@ -724,12 +727,16 @@ export default function TeacherOverviewScreen() {
                                     studentsBySubject[subject.id]
                                         .filter((student: any) => student.role === "USER")
                                         .map((student: any) => (
-                                            <View key={student.id} style={{ marginLeft: 10, marginBottom: 2 }}>
+                                            <TouchableOpacity
+                                                key={student.id}
+                                                style={{ marginLeft: 10, marginBottom: 2 }}
+                                                onPress={() => router.push(`../evaluations/${student.id}/${subject.id}`)}
+                                            >
                                                 <Text className={Styles.EventCardSubject}>
                                                     {student.first_name} {student.last_name}
                                                     <Text style={{ color: "#888" }}> ({student.email})</Text>
                                                 </Text>
-                                            </View>
+                                            </TouchableOpacity>
                                         ))
                                 ) : (
                                     <Text className={Styles.emptyText} style={{ marginLeft: 10 }}>

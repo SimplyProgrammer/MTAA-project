@@ -58,6 +58,55 @@ router.get("/preferences/:id", async (req, res) => {
 	}
 });
 
+/**
+ * @openapi
+ * /users/accounts/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get a user account by ID
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: The ID of the user account to retrieve
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: User account found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *       404:
+ *         description: User account not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/accounts/:id", async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const result = await query(
+            "SELECT * FROM UserAccounts WHERE id = $1",
+            [userId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "User account not found", data: null });
+        }
+        const data = result.rows[0];
+        data.password = undefined;
+        res.status(200).json({ data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error");
+    }
+});
 
 /**
  * @openapi
