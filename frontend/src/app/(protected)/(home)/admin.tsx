@@ -1,202 +1,151 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TextInput, Button } from "react-native";
-import api from "@/libs/axios";
-import { Screen } from "@/components/styles";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from "react-native";
+import * as Styles from "@/components/styles";
 import AppButton from "@/components/AppButton";
-import { router, useSegments } from "expo-router";
+import axios from "@/libs/axios";
 
-export default function AdminScreen() {
-  const [students, setStudents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default function AdminOverviewScreen() {
+    const [users, setUsers] = useState<any[]>([]);
+    const [newUserFirstName, setNewUserFirstName] = useState("");
+    const [newUserLastName, setNewUserLastName] = useState("");
+    const [newUserEmail, setNewUserEmail] = useState("");
+    const [newUserPassword, setNewUserPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
-  // Form state
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [formError, setFormError] = useState<string | null>(null);
-  const [formSuccess, setFormSuccess] = useState<string | null>(null);
+    // Fetch all users
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get_auth_data("users/accounts");
+            setUsers(response.data?.data || response.data || response || []);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
+    // Add new user
+    const handleAddUser = async () => {
+        if (!newUserFirstName || !newUserLastName || !newUserEmail || !newUserPassword) {
+            console.error("Please fill in all fields.");
+            return;
+        }
+        try {
+            setLoading(true);
+            const response = await axios.post_auth_data("auth/signup", {
+                first_name: newUserFirstName,
+                last_name: newUserLastName,
+                email: newUserEmail,
+                password: newUserPassword,
+            });
+            if (response) {
+                setUsers((prev) => [...prev, response]);
+                setNewUserFirstName("");
+                setNewUserLastName("");
+                setNewUserEmail("");
+                setNewUserPassword("");
+            } else {
+                  console.error("Failed to add user.");
+            }
+        } catch (error) {
+              console.error("Failed to add user.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const fetchStudents = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const usersData = await api.get_auth_data("/users/accounts");
-      const usersArr: any[] = Array.isArray(usersData)
-        ? usersData
-        : usersData?.data || [];
-      setStudents(usersArr);
-    } catch (err: any) {
-      setError(err?.data?.message || "Failed to load users.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    // "Delete" user (set active = false)
+    const handleDeleteUser = async (userId: number) => {
+        try {
+            setLoading(true);
+            await axios.put_auth_data(`users/accounts/${userId}`, {
+                first_name: users.find(u => u.id === userId)?.first_name,
+                last_name: users.find(u => u.id === userId)?.last_name,
+                active: false,
+            });
+            setUsers((prev) => prev.map(u => u.id === userId ? { ...u, active: false } : u));
+        } catch (error) {
+            Alert.alert("Failed to deactivate user.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleAddUser = async () => {
-    setFormError(null);
-    setFormSuccess(null);
-    if (!firstName || !lastName || !email || !password) {
-      setFormError("All fields are required.");
-      return;
-    }
-    try {
-      const res = await api.post("/auth/signup", {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password,
-      });
-      setFormSuccess("User added successfully.");
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-      setPassword("");
-      fetchStudents();
-    } catch (err: any) {
-      setFormError(err?.response?.data?.error || err?.data?.message || "Failed to add user.");
-    }
-  };
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
-  if (loading) return <ActivityIndicator />;
-  if (error) return <Text>{error}</Text>;
-
-  return (
-    <ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        alignItems: "center",
-        backgroundColor: "#fff",
-        padding: 16,
-      }}
-    >
-      <View style={{ width: "100%", maxWidth: 600 }}>
-        
-
-        <Text style={styles.header}>All users</Text>
-        <View style={styles.tableHeader}>
-          <Text style={[styles.cell, styles.headerCell]}>ID</Text>
-          <Text style={[styles.cell, styles.headerCell]}>First Name</Text>
-          <Text style={[styles.cell, styles.headerCell]}>Last Name</Text>
-          <Text style={[styles.cell, styles.headerCell]}>Email</Text>
-        </View>
-        {students.length === 0 ? (
-          <Text>No users found.</Text>
-        ) : (
-          students.map((student) => (
-            <View key={student.id} style={styles.tableRow}>
-              <Text style={styles.cell}>{student.id}</Text>
-              <Text style={styles.cell}>{student.first_name}</Text>
-              <Text style={styles.cell}>{student.last_name}</Text>
-              <Text style={styles.cell}>{student.email}</Text>
+    return (
+        <ScrollView className={Styles.ScrollViewContainer}>
+            <View>
+                {/* Users Section */}
+                <View className={`${Styles.Card} mt-3 mb-8`}>
+                    <Text className={Styles.H3 + " mb-3"}>All Users</Text>
+                    {users.length === 0 ? (
+                        <Text className={Styles.emptyText}>No users found.</Text>
+                    ) : (
+                        users.map((user) => (
+                            <View key={user.id} className={Styles.subjectItem + " flex-row justify-between items-center"}>
+                                <View>
+                                    <Text className={Styles.subjectTitle}>
+                                        {user.first_name} {user.last_name}
+                                    </Text>
+                                    <Text className={Styles.subjectDescription}>{user.email}</Text>
+                                    <Text className={Styles.subjectDescription}>
+                                        Status: {user.active ? "Active" : "Deactivated"}
+                                    </Text>
+                                </View>
+                                {user.active && (
+                                    <TouchableOpacity
+                                        onPress={() => handleDeleteUser(user.id)}
+                                        className={Styles.deleteButton}
+                                    >
+                                        <Text className={Styles.deleteButtonText}>×</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        ))
+                    )}
+                    {/* Add User */}
+                    <View className={`${Styles.Card} mt-3 mb-7`}>
+                        <Text className={Styles.H3 + " mb-4"}>Add New User</Text>
+                        <TextInput
+                            placeholder="First Name"
+                            value={newUserFirstName}
+                            placeholderTextColor="#9CA3AF"
+                            onChangeText={setNewUserFirstName}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="Last Name"
+                            value={newUserLastName}
+                            placeholderTextColor="#9CA3AF"
+                            onChangeText={setNewUserLastName}
+                            className={Styles.Input + " mb-2"}
+                        />
+                        <TextInput
+                            placeholder="Email"
+                            value={newUserEmail}
+                            placeholderTextColor="#9CA3AF"
+                            onChangeText={setNewUserEmail}
+                            className={Styles.Input + " mb-2"}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                        <TextInput
+                            placeholder="Password"
+                            value={newUserPassword}
+                            placeholderTextColor="#9CA3AF"
+                            onChangeText={setNewUserPassword}
+                            className={Styles.Input + " mb-2"}
+                            secureTextEntry
+                        />
+                        <AppButton
+                            title={loading ? "Adding..." : "Add User"}
+                            onPress={handleAddUser}
+                            disable={loading}
+                        />
+                    </View>
+                </View>
             </View>
-          ))
-        )}
-
-<Text style={styles.header}>Add new user</Text>
-        <View style={styles.formRow}>
-          <TextInput
-            style={styles.input}
-            placeholder="First Name"
-            value={firstName}
-            onChangeText={setFirstName}
-            autoCapitalize="words"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Last Name"
-            value={lastName}
-            onChangeText={setLastName}
-            autoCapitalize="words"
-          />
-        </View>
-        <View style={styles.formRow}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
-        <AppButton title="Add" className={`mt-2`} onPress={handleAddUser} />
-
-        {formError && <Text  style={styles.error}>{formError}</Text>}
-        {formSuccess && <Text style={styles.success}>{formSuccess}</Text>}
-      </View>
-    </ScrollView>
-  );
+        </ScrollView>
+    );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 18,
-    textAlign: "left",
-  },
-  formRow: {
-    flexDirection: "row",
-    marginBottom: 8,
-    gap: 8,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 6,
-    padding: 8,
-    fontSize: 14,
-    backgroundColor: "#fff",
-    marginHorizontal: 2,
-  },
-  error: {
-    color: "#ef4444",
-    marginTop: 8,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  success: {
-    color: "#22c55e",
-    marginTop: 8,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: "#e0e7ff",
-    borderRadius: 6,
-    paddingVertical: 8,
-    marginBottom: 4,
-  },
-  tableRow: {
-    flexDirection: "row",
-    backgroundColor: "#f3f4f6",
-    borderRadius: 6,
-    paddingVertical: 8,
-    marginBottom: 2,
-  },
-  cell: {
-    flex: 1,
-    fontSize: 13,
-    paddingHorizontal: 4,
-    textAlign: "center",
-  },
-  headerCell: {
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-});
