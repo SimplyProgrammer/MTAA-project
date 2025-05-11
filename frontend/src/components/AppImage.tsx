@@ -1,9 +1,17 @@
 import { View } from "react-native";
-import { Image } from "expo-image";
+import { Image, ImageContentFit, ImageProps } from "expo-image";
 import { getFile } from "@/libs/axios/resource";
+import tw from "twrnc";
 
-export default function AuthImage({ children = undefined, imageName = null, className="w-full", contentFit = undefined, ...props }) {
-	const theProps = {...props}
+export interface AppImageProps extends ImageProps {
+	imageName?: string;
+	className?: string;
+	contentFit?: ImageContentFit;
+	children?: React.ReactNode;
+}
+
+export default function AuthImage({ children = undefined, imageName = null, className="w-full", contentFit = "contain", ...props }: AppImageProps) {
+	const theProps: any = {...props}
 	if (!theProps.source) {
 		theProps.source = getFile(imageName);
 	}
@@ -11,8 +19,9 @@ export default function AuthImage({ children = undefined, imageName = null, clas
 	return (
 		<View className={`flex justify-center items-center bg-transparent aspect-video ${className}`}>
 			{children ?? <Image
-				style={{ width: '100%', height: '100%' }}
-				contentFit={contentFit ?? "contain"}
+				style={tw`w-full h-full`}
+				contentFit={contentFit as ImageContentFit ?? "contain"}
+				cachePolicy=""
 				{...theProps}
 			/>}
 		</View>

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { EventCardItem, EventCardTitle, EventCardSubject, EventCardDate } from "@/components/styles";
 
-type EventCardProps = {
+export type EventCardProps = {
   title: string;
   subject: string;
   date: string;

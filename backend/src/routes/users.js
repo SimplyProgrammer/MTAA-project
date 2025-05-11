@@ -296,7 +296,7 @@ router.get("/accounts", async (req, res) => {
 router.put("/accounts/:id", async (req, res) => {
 	const userId = req.params.id;
 
-	var { first_name, last_name, active } = req.body;
+	var { first_name, last_name, active, profile_img } = req.body;
 
 	first_name = first_name?.trim();
 	last_name = last_name?.trim();
@@ -308,8 +308,8 @@ router.put("/accounts/:id", async (req, res) => {
 
 	try {
 		const result = await update(
-			"useraccounts SET first_name = $1, last_name = $2, active = $3 WHERE id = $4",
-			[first_name, last_name, active, userId]
+			"useraccounts SET first_name = $2, last_name = $3, active = $4, profile_img = $5 WHERE id = $1",
+			[userId, first_name, last_name, active, profile_img]
 		);
 
 		if (!result.rows.length)
