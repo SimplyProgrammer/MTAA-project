@@ -36,13 +36,14 @@ async function getUpcomingEventsForUser(userId) {
         WHERE us.user_id = $1
           AND (e.type = 'exam' OR e.type = 'assignment')
           AND e.date_till >= NOW()
-          AND e.date_till < NOW() + INTERVAL '5 days'
+          AND e.date_till < NOW() + INTERVAL '3 days'
         ORDER BY e.date_till ASC
     `, [userId]);
     return rows;
 }
 
-cron.schedule("59 23 * * *", async () => {
+// setupnem to na 16:30 na prezentaciu, aj tak to bude treba zmenit
+cron.schedule("30 16 * * *", async () => {
     console.log("[ReminderJob] Running daily event reminder job...");
 
     const users = await getUsersWithPushTokens();
