@@ -485,7 +485,7 @@ export default function TeacherOverviewScreen() {
                                 selectedValue={newEventType}
                                 onValueChange={(itemValue) => setNewEventType(itemValue)}
                                 dropdownIconColor="#333"
-                                style={{ fontSize: 13.5 }}
+                                style={{ fontSize: 13.5, color: "#999" }}
                             >
                                 <Picker.Item style={{ fontSize: 13.5 }} label="Select type" value={null} />
                                 <Picker.Item style={{ fontSize: 13.5 }} key={"exam"} label={"exam"} value={"exam"} />
@@ -497,7 +497,7 @@ export default function TeacherOverviewScreen() {
                                 selectedValue={newEventSubjectId}
                                 onValueChange={(itemValue) => setNewEventSubjectId(itemValue)}
                                 dropdownIconColor="#333"
-                                style={{ fontSize: 13.5 }}
+                                style={{ fontSize: 13.5, color: "#999" }}
                             >
                                 <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
                                 {subjects.map((subject) => (
@@ -560,7 +560,7 @@ export default function TeacherOverviewScreen() {
                                 selectedValue={newLectureSubjectId}
                                 onValueChange={(itemValue) => setNewLectureSubjectId(itemValue)}
                                 dropdownIconColor="#333"
-                                style={{ fontSize: 13.5 }}
+                                style={{ fontSize: 13.5, color: "#999" }}
                             >
                                 <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
                                 {subjects.map((subject) => (
@@ -632,7 +632,7 @@ export default function TeacherOverviewScreen() {
                                 selectedValue={newSeminarSubjectId}
                                 onValueChange={(itemValue) => setNewSeminarSubjectId(itemValue)}
                                 dropdownIconColor="#333"
-                                style={{ fontSize: 13.5 }}
+                                style={{ fontSize: 13.5, color: "#999" }}
                             >
                                 <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
                                 {subjects.map((subject) => (
@@ -668,50 +668,7 @@ export default function TeacherOverviewScreen() {
                         />
                     </View>
                 </View>
-                <View className={`${Styles.Card} mt-3`}>
-                    <Text className={Styles.H3 + " mb-4"}>Assign Subject to Student</Text>
-                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
-                        <Picker
-                            selectedValue={assignSubjectStudentId}
-                            onValueChange={setAssignSubjectStudentId}
-                            dropdownIconColor="#333"
-                            style={{ fontSize: 13.5 }}
-                        >
-                            <Picker.Item style={{ fontSize: 13.5 }} label="Select student" value={null} />
-                            {students.map((student: any) => (
-                                <Picker.Item
-                                    style={{ fontSize: 13.5 }}
-                                    key={student.id}
-                                    label={`${student.first_name} ${student.last_name} (${student.email})`}
-                                    value={student.id}
-                                />
-                            ))}
-                        </Picker>
-                    </View>
-                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
-                        <Picker
-                            selectedValue={assignSubjectId}
-                            onValueChange={setAssignSubjectId}
-                            dropdownIconColor="#333"
-                            style={{ fontSize: 13.5 }}
-                        >
-                            <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
-                            {subjects.map((subject: any) => (
-                                <Picker.Item
-                                    style={{ fontSize: 13.5 }}
-                                    key={subject.id}
-                                    label={subject.title}
-                                    value={subject.id}
-                                />
-                            ))}
-                        </Picker>
-                    </View>
-                    <AppButton
-                        title={loading ? "Assigning..." : "Assign Subject"}
-                        onPress={handleAssignSubjectToStudent}
-                        disable={loading}
-                    />
-                </View>
+                
 
                 <View className={`${Styles.Card} mt-3 mb-7`}>
                     <Text className={Styles.H3 + " mb-4"}>Students by Subject</Text>
@@ -746,6 +703,50 @@ export default function TeacherOverviewScreen() {
                             </View>
                         ))
                     )}
+                    <View className={`${Styles.Card} mt-3`}>
+                    <Text className={Styles.H3 + " mb-4"}>Assign Subject to Student</Text>
+                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                        <Picker
+                            selectedValue={assignSubjectStudentId}
+                            onValueChange={setAssignSubjectStudentId}
+                            dropdownIconColor="#333"
+                            style={{ fontSize: 13.5, color: "#999" }}
+                        >
+                            <Picker.Item style={{ fontSize: 13.5 }} label="Select student" value={null} />
+                            {students.map((student: any) => (
+                                <Picker.Item
+                                    style={{ fontSize: 13.5 }}
+                                    key={student.id}
+                                    label={`${student.first_name} ${student.last_name} (${student.email})`}
+                                    value={student.id}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View className={Styles.Input + " h-[52px] mb-2 px-0.5"}>
+                        <Picker
+                            selectedValue={assignSubjectId}
+                            onValueChange={setAssignSubjectId}
+                            dropdownIconColor="#333"
+                            style={{ fontSize: 13.5, color: "#999" }}
+                        >
+                            <Picker.Item style={{ fontSize: 13.5 }} label="Select subject" value={null} />
+                            {subjects.map((subject: any) => (
+                                <Picker.Item
+                                    style={{ fontSize: 13.5 }}
+                                    key={subject.id}
+                                    label={subject.title}
+                                    value={subject.id}
+                                />
+                            ))}
+                        </Picker>
+                    </View>
+                    <AppButton
+                        title={loading ? "Assigning..." : "Assign Subject"}
+                        onPress={handleAssignSubjectToStudent}
+                        disable={loading}
+                    />
+                </View>
                 </View>
             </View>
         </ScrollView>
