@@ -444,7 +444,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Subject"}
                             onPress={handleAddSubject}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -522,7 +522,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Event"}
                             onPress={handleAddEvent}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -592,7 +592,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Lecture"}
                             onPress={handleAddLecture}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -664,7 +664,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Seminar"}
                             onPress={handleAddSeminar}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -744,7 +744,7 @@ export default function TeacherOverviewScreen() {
                     <AppButton
                         title={loading ? "Assigning..." : "Assign Subject"}
                         onPress={handleAssignSubjectToStudent}
-                        disable={loading}
+                        disabled={loading}
                     />
                 </View>
                 </View>

@@ -21,7 +21,6 @@ export default function AuthImage({ children = undefined, imageName = null, clas
 			{children ?? <Image
 				style={tw`w-full h-full`}
 				contentFit={contentFit as ImageContentFit ?? "contain"}
-				cachePolicy=""
 				{...theProps}
 			/>}
 		</View>
