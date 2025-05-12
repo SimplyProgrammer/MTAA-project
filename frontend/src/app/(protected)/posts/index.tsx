@@ -50,7 +50,8 @@ export default function PostsScreen() {
 			}
 		}, undefined, err => {
 			if (err.message == "Connection reset") {
-				connectWebSocket();
+				console.error("Posts: ", err);
+				setSocket(null);
 			}
 		}));
 	};
