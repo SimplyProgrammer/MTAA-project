@@ -27,6 +27,7 @@ import Text from "@/components/Text";
 import { post_auth_file } from "@/libs/files";
 import { set } from "date-fns";
 import AppImagePicker from "@/components/AppImagePicker";
+import tw from "twrnc";
 
 const api = {
 	updateUserPrefs: (id, prefs) => axios.put_auth_data(`users/preferences/${id}`, prefs),
@@ -124,7 +125,14 @@ export default function ProfileScreen() {
 						<MaterialIcons name="http" size={24} color="blue" />
 					</AppButton> */}
 
-					<AppImagePicker profileImage={user?.profile_img} className={`${IconBtn} bg-gray-400 w-[150px] rounded-full mb-2 overflow-hidden`} imageClassName="!aspect-square" onImagePicked={updateProfileImage} imgOptions={{ aspect: [1, 1] }}>
+					<AppImagePicker 
+						profileImage={user?.profile_img} 
+						className={`${IconBtn} bg-gray-400 w-[160px] rounded-full mb-2 overflow-hidden`} 
+						imageClassName="!aspect-square"
+						imageStyle={tw`w-[102%] h-[102%]`}
+						onImagePicked={updateProfileImage} 
+						imgOptions={{ aspect: [1, 1] }}
+					>
 						{ !user?.profile_img && user?.first_name?.[0] && user?.last_name?.[0] ? <Text className={`${H1} text-4xl !text-gray-900`}>{(user.first_name[0].toUpperCase()) + user?.last_name[0].toUpperCase()}</Text> : null }
 					</AppImagePicker>
 

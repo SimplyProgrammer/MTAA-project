@@ -5,9 +5,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { debounce } from "lodash";
 
 export interface AppImagePickerGesturesProps {
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	onImagePicked?: (img: ImagePicker.ImagePickerAsset) => void;
 	imgOptions?: ImagePicker.ImagePickerOptions;
+	
 	[props: string]: any
 }
 
