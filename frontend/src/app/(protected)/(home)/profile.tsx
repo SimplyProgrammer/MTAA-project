@@ -125,12 +125,11 @@ export default function ProfileScreen() {
 						<MaterialIcons name="http" size={24} color="blue" />
 					</AppButton> */}
 
-					<AppImagePicker 
-						profileImage={user?.profile_img} 
-						className={`${IconBtn} bg-gray-400 w-[160px] rounded-full mb-2 overflow-hidden`} 
+					<AppImagePicker className={`${IconBtn} bg-gray-400 w-[160px] rounded-full mb-2 overflow-hidden`} 
+						profileImage={user?.profile_img}
 						imageClassName="!aspect-square"
 						imageStyle={tw`w-[102%] h-[102%]`}
-						onImagePicked={updateProfileImage} 
+						onImagePicked={updateProfileImage}
 						imgOptions={{ aspect: [1, 1] }}
 					>
 						{ !user?.profile_img && user?.first_name?.[0] && user?.last_name?.[0] ? <Text className={`${H1} text-4xl !text-gray-900`}>{(user.first_name[0].toUpperCase()) + user?.last_name[0].toUpperCase()}</Text> : null }

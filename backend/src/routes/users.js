@@ -193,7 +193,7 @@ router.put("/preferences/:id", async (req, res) => {
  *     parameters:
  *       - name: role
  *         in: query
- *         description: Filter users by role (e.g., "teacher" or "student")
+ *         description: Filter users by role (e.g., "TEACHER" or "USER")
  *         required: false
  *         schema:
  *           type: string
@@ -203,7 +203,7 @@ router.put("/preferences/:id", async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/accounts", async (req, res) => {
+router.get("/accounts", authorizeFor("ADMIN", "TEACHER"), async (req, res) => {
 	const { role } = req.query;
 
 	let queryText = `SELECT * FROM UserAccounts`;

@@ -38,8 +38,7 @@ export default function PostsScreen() {
 		setSocket(createWebSocket("Posts", {
 			postCreated: (post) => {
 				console.log("Post created:", post);
-				if (!query && !page)
-					setPosts(prev => [...prev, post]);
+				setPosts(prev => [post, ...prev]);
 			},
 			postUpdated: (post) => {
 				console.log("Post updated:", post);
@@ -48,6 +47,11 @@ export default function PostsScreen() {
 			postDeleted: (post) => {
 				console.log("Post deleted:", post);
 				setPosts(prev => prev.filter(p => p.id != post.id));
+			}
+		}, undefined, err => {
+			if (err.message == "Connection reset") {
+				console.error("Posts: ", err);
+				setSocket(null);
 			}
 		}));
 	};

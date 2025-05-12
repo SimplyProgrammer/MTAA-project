@@ -5,6 +5,8 @@ import { useLocalSearchParams } from "expo-router";
 import api from "@/libs/axios";
 import { TouchableOpacity } from "react-native";
 import AppButton from "@/components/AppButton";
+import * as toasts from "@/libs/toasts";
+
 
 export default function TimelineScreen() {
     const { studentId, subjectId } = useLocalSearchParams();
@@ -25,7 +27,10 @@ export default function TimelineScreen() {
         try {
             await api.delete_auth_data(`evaluations/${id}`);
             setEvaluations((prev) => prev.filter((ev) => ev.id !== id));
+            toasts.show("success", "Evaluation deleted");
         } catch (err) {
+            const msg = toasts.getAxiosErrorMessage?.(err) || "Failed to delete evaluation.";
+            toasts.show("error", msg);
             setError("Failed to delete evaluation.");
         }
     };
@@ -33,6 +38,7 @@ export default function TimelineScreen() {
     const handleAddEvaluation = async () => {
         if (!newEvalTitle || !newEvalPoints || !newEvalMaxPoints) {
             setError("Please fill in all fields.");
+            toasts.show("error", "Please fill in all fields.");
             return;
         }
         setError(null);
@@ -49,10 +55,14 @@ export default function TimelineScreen() {
                 setNewEvalTitle("");
                 setNewEvalPoints("");
                 setNewEvalMaxPoints("");
+                toasts.show("success", "Evaluation added");
             } else {
                 setError("Failed to add evaluation.");
+                toasts.show("error", "Failed to add evaluation.");
             }
         } catch (err) {
+            const msg = toasts.getAxiosErrorMessage?.(err) || "Failed to add evaluation.";
+            toasts.show("error", msg);
             setError("Failed to add evaluation.");
         }
     };
@@ -158,7 +168,7 @@ export default function TimelineScreen() {
                     <AppButton
                         title={loading ? "Adding..." : "Add Evaluation"}
                         onPress={handleAddEvaluation}
-                        disable={loading}
+                        disabled={loading}
                     />
                 </View>
             </View>

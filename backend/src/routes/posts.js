@@ -53,10 +53,10 @@ router.get("/", /*authorizeFor("*"),*/ async (req, res) => {
 		var search = req.query.search?.trim() || "";
 
 		const result = await (search ? select(
-			`posts WHERE title ~ $1 OR text ~ $1 OFFSET $2 LIMIT $3`,
+			`posts WHERE title ~ $1 OR text ~ $1 ORDER BY created DESC OFFSET $2 LIMIT $3`,
 			[search, offset, limit]
 		) : select(
-			`posts OFFSET $1 LIMIT $2`,
+			`posts ORDER BY created DESC OFFSET $1 LIMIT $2`,
 			[offset, limit]
 		));
 
@@ -174,6 +174,7 @@ router.get("/:id", authorizeFor("*"), async (req, res) => {
  *                       type: integer
  *                     user_id:
  *                       type: integer
+ *                       nullable: true
  *                     title:
  *                       type: string
  *                     text:
@@ -187,7 +188,11 @@ router.get("/:id", authorizeFor("*"), async (req, res) => {
  */
 router.post("/", async (req, res) => {
 	try {
-		const { title, text, user_id, image } = req.body;
+		var { title, text, user_id, image } = req.body;
+		title = title?.trim();
+		text = text?.trim();
+		user_id ||= req.user.id;
+
 		if (!title)
 			return res.status(400).send("Missing title");
 		if (!text)
@@ -272,7 +277,10 @@ router.post("/", async (req, res) => {
  */
 router.put("/:id", authorizeFor("*"), async (req, res) => {
 	try {
-		const { title, text, image } = req.body;
+		var { title, text, image } = req.body;
+		title = title?.trim();
+		text = text?.trim();
+
 		if (!title)
 			return res.status(400).send("Missing title");
 		if (!text)

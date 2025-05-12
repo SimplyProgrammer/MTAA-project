@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import * as Styles from "@/components/styles";
 import AppButton from "@/components/AppButton";
 import axios from "@/libs/axios";
@@ -343,7 +343,7 @@ export default function TeacherOverviewScreen() {
     // Assign subject to student (POST /subjects with title, description, user_id)
     const handleAssignSubjectToStudent = async () => {
         if (!assignSubjectStudentId || !assignSubjectId) {
-            Alert.alert("Please select both subject and student.");
+            console.error("Please select both subject and student.");
             return;
         }
         try {
@@ -351,7 +351,7 @@ export default function TeacherOverviewScreen() {
             // Find subject by id
             const subject = subjects.find((s) => s.id === assignSubjectId);
             if (!subject) {
-                Alert.alert("Subject not found.");
+                console.error("Subject not found.");
                 return;
             }
             // Call POST /subjects with subject title, description, and user_id (student)
@@ -444,7 +444,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Subject"}
                             onPress={handleAddSubject}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -522,7 +522,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Event"}
                             onPress={handleAddEvent}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -592,7 +592,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Lecture"}
                             onPress={handleAddLecture}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -664,7 +664,7 @@ export default function TeacherOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add Seminar"}
                             onPress={handleAddSeminar}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
@@ -744,7 +744,7 @@ export default function TeacherOverviewScreen() {
                     <AppButton
                         title={loading ? "Assigning..." : "Assign Subject"}
                         onPress={handleAssignSubjectToStudent}
-                        disable={loading}
+                        disabled={loading}
                     />
                 </View>
                 </View>

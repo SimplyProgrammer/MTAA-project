@@ -91,16 +91,16 @@ export default function Login() {
 	}, []);
 
 	const colorScheme = Appearance.getColorScheme();
-    const heroImage = colorScheme === "dark"
-        ? require('../../assets/images/fiit-dark.png')
-        : require('../../assets/images/fiit-light.png');
+	const heroImage = colorScheme === "dark"
+		? require('../../assets/images/fiit-dark.png')
+		: require('../../assets/images/fiit-light.png');
 	
 	return (
 		<View className={`${Screen}`}>
 			<AppImage
-				className="w-full aspect-video my-6 px-10"
+				className="w-full my-6 px-10"
 				source={heroImage}
-				 style={{ width: "100%", aspectRatio: 16 / 8, borderRadius: 10 }}
+				style={{ width: "100%", aspectRatio: 16 / 8, borderRadius: 10 }}
 			/>
 
 			<Form className={`${Card} flex flex-col gap-5 w-full`}

@@ -3,7 +3,8 @@ import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import axios from '../axios';
 import { Platform } from 'react-native';
-import { getToken, refreshToken } from '../auth';
+import * as useAuthStore from '../auth';
+import { router } from 'expo-router';
 
 export const appFilesDir = FileSystem.documentDirectory + 'files/';
 
@@ -82,19 +83,31 @@ export async function post_auth_file(image: ImagePicker.ImagePickerAsset | strin
 	var result = await FileSystem.uploadAsync(api, _uri, {
 		...options,
 		headers: {
-			'Authorization': 'Bearer ' + getToken()
+			'Authorization': 'Bearer ' + useAuthStore.getToken()
 		}
 	});
 
-	if (result.status == 401) {
-		const refreshToken = await refreshToken()
-		
-		result = await FileSystem.uploadAsync(api, _uri, {
-			...options,
-			headers: {
-				'Authorization': 'Bearer ' + refreshToken.token
+	if (result.status == 401) { // Life could be much easier if expo wasnt/react native retarded
+		try {
+			const refreshToken = await useAuthStore.refreshToken()
+			if (!refreshToken) {
+				return router.replace('/')
 			}
-		});
+
+			result = await FileSystem.uploadAsync(api, _uri, {
+				...options,
+				headers: {
+					'Authorization': 'Bearer ' + refreshToken.token
+				}
+			});
+		}
+		catch (err) {
+			if (err.status >= 400 && err.status < 500) {
+				return router.replace('/')
+			}
+
+			throw err
+		}
 	}
 
 	return JSON.parse(result.body)
