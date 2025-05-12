@@ -256,7 +256,7 @@ export default function HomeScreen() {
                     )}
                 </View>
 
-                <View className={`${Styles.Card} mt-3`}>
+                {/* <View className={`${Styles.Card} mt-3`}>
                     <Text className={`${Styles.H3} mb-3`}>Latest posts</Text>
                     {postsLoading ? (
                         <Text>Loading...</Text>
@@ -274,7 +274,7 @@ export default function HomeScreen() {
                             </TouchableOpacity>
                         ))
                     )}
-                </View>
+                </View> */}
 
 
             </View>
