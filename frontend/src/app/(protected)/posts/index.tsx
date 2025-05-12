@@ -24,6 +24,7 @@ const api = {
 
 export default function PostsScreen() {
 	const [posts, setPosts] = useState([]);
+	// const [postsDirty, setPostsDirty] = useState(0);
 	const [page, setPage] = useState(1);
 
 	const [query, setQuery] = useState("");
@@ -120,8 +121,10 @@ export default function PostsScreen() {
 				renderItem={({ item }) => (
 					<Pressable onPress={() => router.push(`/posts/${item.id}`)}>
 						<PostPreviewCard {...item} />
+						{/* <Text>{JSON.stringify(item)}</Text> */}
 					</Pressable>
 				)}
+				// key={postsDirty}
 				className="overflow-visible"
 				contentContainerClassName="gap-5 overflow-visible z-10"
 

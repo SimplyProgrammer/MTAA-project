@@ -18,9 +18,10 @@ import { post_auth_file } from "@/libs/files";
 import * as toasts from "@/libs/toasts";
 
 export default function PostCard({ post, editing = false, isLoading = false, canDelete = false, className = "", onDelete = (post) => {}, onSubmit = (data) => {} }: any) {
-	const [isEditing, setIsEditing] = useState(editing);
 	const [editFormData, setEditFormData] = useState(null);
 	const [newImage, setNewImage] = useState<ImagePickerAsset>(null);
+
+	const [isEditing, setIsEditing] = useState(editing);
 
 	const confirmDelete = (post) => {
 		Alert.alert('Delete post?', 'Are you sure you want to delete this post?', [
