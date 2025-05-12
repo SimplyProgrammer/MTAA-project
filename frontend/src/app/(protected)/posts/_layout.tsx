@@ -14,9 +14,9 @@ export default function PostsLayout() {
 			<Stack.Screen name="[id]/index" options={{
 				title: "Post"
 			}} />
-			<Stack.Screen name="[id]/edit" options={{
+			{/* <Stack.Screen name="[id]/edit" options={{
 				title: "Edit post"
-			}} />
+			}} /> */}
 		</AppStack>
 	);
 }

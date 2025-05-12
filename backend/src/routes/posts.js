@@ -4,6 +4,8 @@ const { begin, commit, rollback, select, insert, update, remove, query } = requi
 const { checkOwnership, authorizeFor } = require("../middlewares/authorize");
 const { getPageInfo, pagination } = require("../config/pagination");
 
+const { ws } = require("../config/wss");
+
 /**
  * @openapi
  * /posts:
@@ -51,10 +53,10 @@ router.get("/", /*authorizeFor("*"),*/ async (req, res) => {
 		var search = req.query.search?.trim() || "";
 
 		const result = await (search ? select(
-			`posts WHERE title ~ $1 OR text ~ $1 OFFSET $2 LIMIT $3`,
+			`posts WHERE title ~ $1 OR text ~ $1 ORDER BY created DESC OFFSET $2 LIMIT $3`,
 			[search, offset, limit]
 		) : select(
-			`posts OFFSET $1 LIMIT $2`,
+			`posts ORDER BY created DESC OFFSET $1 LIMIT $2`,
 			[offset, limit]
 		));
 
@@ -172,6 +174,7 @@ router.get("/:id", authorizeFor("*"), async (req, res) => {
  *                       type: integer
  *                     user_id:
  *                       type: integer
+ *                       nullable: true
  *                     title:
  *                       type: string
  *                     text:
@@ -185,7 +188,11 @@ router.get("/:id", authorizeFor("*"), async (req, res) => {
  */
 router.post("/", async (req, res) => {
 	try {
-		const { title, text, user_id, image } = req.body;
+		var { title, text, user_id, image } = req.body;
+		title = title?.trim();
+		text = text?.trim();
+		user_id ||= req.user.id;
+
 		if (!title)
 			return res.status(400).send("Missing title");
 		if (!text)
@@ -195,7 +202,11 @@ router.post("/", async (req, res) => {
 			"posts (title, text, user_id, image) VALUES ($1, $2, $3, $4)",
 			[title, text, user_id, image]
 		);
+
 		res.json({ data: result.rows[0] });
+		ws.server.clients.forEach((client) => {
+			client.send(JSON.stringify({ type: "postCreated", data: result.rows[0] }));
+		})
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
@@ -266,7 +277,10 @@ router.post("/", async (req, res) => {
  */
 router.put("/:id", authorizeFor("*"), async (req, res) => {
 	try {
-		const { title, text, image } = req.body;
+		var { title, text, image } = req.body;
+		title = title?.trim();
+		text = text?.trim();
+
 		if (!title)
 			return res.status(400).send("Missing title");
 		if (!text)
@@ -285,6 +299,9 @@ router.put("/:id", authorizeFor("*"), async (req, res) => {
 
 		await commit();
 		res.json({ message: "Post updated", data: result.rows[0] });
+		ws.server.clients.forEach((client) => {
+			client.send(JSON.stringify({ type: "postUpdated", data: result.rows[0] }));
+		})
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
@@ -328,6 +345,9 @@ router.delete("/:id", authorizeFor("*"), async (req, res) => {
 
 		await commit();
 		res.json({ data: result.rows[0] });
+		ws.server.clients.forEach((client) => {
+			client.send(JSON.stringify({ type: "postDeleted", data: result.rows[0] }));
+		})
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");

@@ -1,4 +1,4 @@
-export const Screen = "flex-1 items-center bg-[#f0f0f0] dark:bg-gray-900 p-4 transition"
+export const Screen = "!min-h-full flex-1 items-center bg-[#f0f0f0] dark:bg-gray-900 p-4 transition"
 export const ScrollViewContainer = "flex-1 bg-[#f0f0f0] dark:bg-gray-900 p-4 transition pb-20";
 
 export const Card = "p-6 min-w-full max-w-2xl overflow-hidden bg-white text-white border border-gray-200 rounded-2xl dark:bg-gray-800 dark:border-gray-700 transition";

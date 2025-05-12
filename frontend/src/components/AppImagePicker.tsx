@@ -1,27 +1,54 @@
-import { pickImage } from "@/libs/files";
-import { CameraType } from "expo-image-picker";
-import { Pressable } from "react-native";
-import * as ImagePicker from 'expo-image-picker';
-import { debounce } from "lodash";
+import { useState } from "react";
+import AppImage from "./AppImage";
+import AppImagePickerGestures, { AppImagePickerGesturesProps } from "./AppImagePickerGestures";
+import tw from "twrnc";
+import { View } from "react-native";
+import { post_auth_file } from "@/libs/files";
 
-export default function AppImagePicker({ children, onImagePicked = (img: ImagePicker.ImagePickerAsset) => {}, ...props }) {
-	var oldY;
+export interface AppImagePickerProps extends AppImagePickerGesturesProps {
+	imageName?: string
+	imageClassName?: string
+	imageStyle?: any
+	postTemp?: string
 
-	const tryPickImage = debounce((cameraType) => {
-		pickImage(cameraType).then(onImagePicked).catch(err => onImagePicked(null)) 
-	}, 200);
+	editable?: boolean
+}
 
-	return <Pressable onPress={ev => tryPickImage()} onLongPress={ev => tryPickImage(CameraType.front)} onTouchStart={ev => oldY = ev.nativeEvent.pageY} onTouchMove={ev => {
-		const delta = oldY - ev.nativeEvent.pageY
-		// console.log(ev.nativeEvent.pageY, oldY, delta);
-		if (delta > 40) {
-			tryPickImage(CameraType.front)
+export default function AppImagePicker({ children, imageName, onImagePicked, postTemp, imageClassName = undefined, editable = true, imageStyle = tw`w-full h-full`, ...props }: AppImagePickerProps) {
+	const [rerender, setRerender] = useState(0); // Certified react moment...
+	const [image, setImage] = useState(imageName);
+	// console.log(image, imageName)
+	const _onImagePicked = async (img) => {
+		if (!img || !editable)
+			return;
+
+		try {
+			if (postTemp) {
+				const result = await post_auth_file(img, "tmp");
+				setImage(result.data.filename);
+			}
+
+			await onImagePicked(img);
 		}
-		else if (delta < -40) {
-			tryPickImage(CameraType.back)
+		catch (error) {
+			console.error(error);
 		}
-		oldY = ev.nativeEvent.pageY;
-	}} { ...props }>
-		{children}
-	</Pressable>
+		finally {
+			setRerender(r => r + 1);
+		}
+	}
+
+	if (!editable) {
+		return <View { ...props }>
+			<AppImage imageName={image} key={rerender} className={`${imageClassName}`} style={imageStyle} cachePolicy="none">
+				{children}
+			</AppImage>
+		</View> 
+	}
+
+	return <AppImagePickerGestures onImagePicked={_onImagePicked} { ...props }>
+		<AppImage imageName={image} key={rerender} className={`${imageClassName}`} style={imageStyle} cachePolicy="none">
+			{children}
+		</AppImage>
+	</AppImagePickerGestures>
 }

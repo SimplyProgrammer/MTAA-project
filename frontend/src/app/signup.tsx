@@ -33,6 +33,11 @@ const signupForm = [
 		type: "password",
 	},
 	{
+		name: "* Confirm password",
+		variable: "confirm",
+		type: "password",
+	},
+	{
 		name: "Sign up",
 		type: "button",
 		className: "mt-2"
@@ -40,7 +45,12 @@ const signupForm = [
 ]
 
 export default function Signup() {
-	const handleSign = async ({ email, password, first_name, last_name }) => {
+	const handleSign = async ({ email, password, confirm, first_name, last_name }) => {
+		if (password !== confirm) {
+			toasts.show("error", "Passwords don't match", "Please try again");
+			return;
+		}
+
 		// console.log(email, password);
 		try {
 			const resp = await toasts.forAxiosActionCall(signup({ email, password, first_name, last_name }), "Sign up", "You can login now");

@@ -49,6 +49,7 @@ export default {
 	},
 
 	post_auth_data(url: string, params = null, config?: AxiosRequestConfig<any>) {
+		console.log(url, params, config)
 		return axios.post(url, params, _config(config)).then(_data).catch(_err)
 	},
 

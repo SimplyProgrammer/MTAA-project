@@ -1,17 +1,16 @@
 import { Card, H1, IconBtn, Screen } from "@/components/styles";
-import { Link, Stack, useLocalSearchParams } from "expo-router";
-import { View, Pressable } from "react-native";
+import { Link, router, Stack, useLocalSearchParams } from "expo-router";
+import { View, Pressable, ScrollView, SafeAreaView, KeyboardAvoidingView } from "react-native";
 import { useEffect, useState } from "react";
-
-import AppImage from "@/components/AppImage";
-import Feather from '@expo/vector-icons/Feather';
-
-import SkeletonExpo from "moti/build/skeleton/expo";
-import Text from "@/components/Text";
+import { forAxiosActionCall } from "@/libs/toasts";
 
 import axios from "@/libs/axios";
+import React from "react";
+import PostCard from "@/components/posts/PostCard";
 const api = {
 	getPost: (id: number) => axios.get_auth_data(`posts/${id}`),
+	deletePost: (id: number) => axios.delete_auth_data(`posts/${id}`),
+	updatePost: (id: number, data: any) => axios.put_auth_data(`posts/${id}`, data),
 }
 
 export default function ProductScreen() {
@@ -19,7 +18,6 @@ export default function ProductScreen() {
 
 	const [post, setPost] = useState<any>(null);
 
-	const [isEditing, setIsEditing] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	const fetchPost = async () => {
@@ -36,51 +34,49 @@ export default function ProductScreen() {
 		}
 	}
 
+	const deletePost = async (post) => {
+		try {
+			setLoading(true);
+			const result = await forAxiosActionCall(api.deletePost(post.id), "Deleting post");
+			if (result) {
+				router.back();
+			}
+		}
+		catch (err) {
+			console.error(err);
+		}
+		finally {
+			setLoading(false);
+		}
+	}
+
+	const editPost = async (newPost) => {
+		try {
+			setLoading(true);
+			const result = await forAxiosActionCall(api.updatePost(newPost.id, newPost), "Editing post");
+			if (result) {
+				setPost(post => ({ ...post, ...newPost }));
+				router.back();
+			}
+		}
+		catch (err) {
+			console.error(err);
+		}
+		finally {
+			setLoading(false);
+		}
+	}
+
 	useEffect(() => {
 		fetchPost();
 	}, []);
 
-	if (loading) return (
-		<View className={`${Screen}`}>
-			<View className={`${Card} h-[88%] flex gap-5`}>
-				<SkeletonExpo show width={'100%'} height={180} colorMode="light" />
-
-				<SkeletonExpo show width={'100%'} height={24} colorMode="light" />
-			</View>
-		</View>
-	);
-
 	return (
-		<View className={`${Screen}`}>
+		<SafeAreaView className={`${Screen}`}>
 			<Stack.Screen options={{
-				headerTitle: `Post #${post?.id}`
+				headerTitle: post?.id ? `Post #${post.id}` : "Post Unavailable"
 			}} />
-			<View className={`${Card} !p-0 h-[88%]`}>
-				<AppImage className='w-full' imageName={post?.image} />
-
-				<View className="m-4 flex gap-5">
-					<View className="flex-row justify-between items-center">
-						<Text className={`${H1}`}>{post?.title ?? "Unavailable"}</Text>
-						{post?.canEdit && <Pressable onPress={() => setIsEditing(true)}>
-							<Feather className={`p-1.5 ${IconBtn}`} name="edit" size={20} />
-						</Pressable>}
-					</View>
-
-					<View>
-						<Text>
-							<Text>Created by </Text>
-							<Text className="font-bold">{post?.owner}</Text>
-						</Text>
-						<Text>
-							<Text>On </Text>
-							<Text className="font-bold">{new Date(post?.created).format('dd.MM.yyyy - kk:mm', { moreThan24H: false })}</Text>
-						</Text>
-					</View>
-
-					<Text className="m-1">{post?.text ?? "Unavailable"}</Text>
-					{/* <Link href={`/posts/${params.id}/edit`}>Edit</Link> */}
-				</View>
-			</View>
-		</View>
+			<PostCard post={post} isLoading={loading} canDelete={true} className="h-[88%]" onSubmit={editPost} onDelete={deletePost} />
+		</SafeAreaView>
 	);
 }

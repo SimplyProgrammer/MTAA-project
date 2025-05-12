@@ -168,7 +168,7 @@ export default function TimelineScreen() {
                     <AppButton
                         title={loading ? "Adding..." : "Add Evaluation"}
                         onPress={handleAddEvaluation}
-                        disable={loading}
+                        disabled={loading}
                     />
                 </View>
             </View>

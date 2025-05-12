@@ -1,12 +1,19 @@
 const { getTokenFromRequest } = require("../middlewares/auth");
 const fs = require("fs");
+const busboy = require("busboy");
 
 const logging = (app, logFile) => {
 	const morgan = require('morgan');
 	morgan.token('req-body', (req, res) => {
-		const body = req?.body ?? null
-		if (body?.password )
-			body.password = "..."
+		var body = req?.body ?? null
+		if (body) {
+			if (body.password)
+				body.password = '...';
+
+			if (req.is('multipart/form-data')) {
+				body = 'FormData/Binary';
+			}
+		}
 		return typeof(body) != 'string' ? JSON.stringify(body) : body
 	})
 

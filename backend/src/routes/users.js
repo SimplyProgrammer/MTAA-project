@@ -193,7 +193,7 @@ router.put("/preferences/:id", async (req, res) => {
  *     parameters:
  *       - name: role
  *         in: query
- *         description: Filter users by role (e.g., "teacher" or "student")
+ *         description: Filter users by role (e.g., "TEACHER" or "USER")
  *         required: false
  *         schema:
  *           type: string
@@ -203,7 +203,7 @@ router.put("/preferences/:id", async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/accounts", async (req, res) => {
+router.get("/accounts", authorizeFor("ADMIN", "TEACHER"), async (req, res) => {
 	const { role } = req.query;
 
 	let queryText = `SELECT * FROM UserAccounts`;
@@ -296,7 +296,7 @@ router.get("/accounts", async (req, res) => {
 router.put("/accounts/:id", async (req, res) => {
 	const userId = req.params.id;
 
-	var { first_name, last_name, active } = req.body;
+	var { first_name, last_name, active, profile_img } = req.body;
 
 	first_name = first_name?.trim();
 	last_name = last_name?.trim();
@@ -308,8 +308,8 @@ router.put("/accounts/:id", async (req, res) => {
 
 	try {
 		const result = await update(
-			"useraccounts SET first_name = $1, last_name = $2, active = $3 WHERE id = $4",
-			[first_name, last_name, active, userId]
+			"useraccounts SET first_name = $2, last_name = $3, active = $4, profile_img = $5 WHERE id = $1",
+			[userId, first_name, last_name, active, profile_img]
 		);
 
 		if (!result.rows.length)

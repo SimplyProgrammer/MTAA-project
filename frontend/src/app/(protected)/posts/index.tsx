@@ -12,18 +12,12 @@ import Text from "@/components/Text";
 
 import SkeletonExpo from "moti/build/skeleton/expo";
 
-import PostCard from "@/components/posts/PostCard";
+import PostPreviewCard from "@/components/posts/PostPreviewCard";
 
 import { Input } from "@/components/styles";
 
-const mockPosts = Array.from({ length: 10 }, (_, i) => ({
-	id: i + 1,
-	title: `Post #${i + 1}`,
-	text: `This is post #${i + 1}. You can click on the image to open the post.  You can click on the image to open the pos  You can click on the image to open the pos  You can click on the image to open the pos  You can click on the image to open the pos  You can click on the image to open the pos`,
-	image: `test.PNG`,
-}));
-
 import axios from "@/libs/axios";
+import { createWebSocket } from "@/libs/ws";
 const api = {
 	getPosts: (page = 1, search?: string, limit: number = 10) => axios.get_auth(`/posts`, { params: { page, limit, search }} )
 }
@@ -35,6 +29,43 @@ export default function PostsScreen() {
 	const [query, setQuery] = useState("");
 	const [loading, setLoading] = useState(false);
 
+	const [socket, setSocket] = useState<WebSocket>(null); // Posts ws
+
+	const connectWebSocket = () => {
+		if (socket?.readyState == WebSocket.OPEN)
+			return;
+
+		setSocket(createWebSocket("Posts", {
+			postCreated: (post) => {
+				console.log("Post created:", post);
+				setPosts(prev => [post, ...prev]);
+			},
+			postUpdated: (post) => {
+				console.log("Post updated:", post);
+				setPosts(prev => prev.map(p => p.id == post.id ? post : p));
+			},
+			postDeleted: (post) => {
+				console.log("Post deleted:", post);
+				setPosts(prev => prev.filter(p => p.id != post.id));
+			}
+		}, undefined, err => {
+			if (err.message == "Connection reset") {
+				console.error("Posts: ", err);
+				setSocket(null);
+			}
+		}));
+	};
+
+	useEffect(() => {
+		connectWebSocket();
+
+		// Cleanup WebSocket on component unmount
+		return () => {
+			if (socket)
+				socket.close();
+		};
+	}, []);
+
 	const fetchPosts = useCallback(async () => {
 		if (!page || loading)
 			return;
@@ -43,7 +74,7 @@ export default function PostsScreen() {
 		try {
 			setLoading(true);
 
-			const response = await api.getPosts(page, query);
+			const response = await api.getPosts(page, query.trim());
 			if (response) {
 				const { data, next } = response;
 				// console.log(data, next);
@@ -84,11 +115,11 @@ export default function PostsScreen() {
 			{!posts.length && !loading && <Text className="text-center my-4">No posts found...</Text>}
 
 			<FlatList
-				data={posts.filter((post, index, self) => index == self.findIndex((c) => c.id == post.id))}
+				data={posts.filter((post, index, self) => index == self.findIndex((c) => c.id == post.id))} // Just in case...
 				keyExtractor={(item) => item.id.toString()}
 				renderItem={({ item }) => (
 					<Pressable onPress={() => router.push(`/posts/${item.id}`)}>
-						<PostCard {...item} />
+						<PostPreviewCard {...item} />
 					</Pressable>
 				)}
 				className="overflow-visible"

@@ -35,7 +35,7 @@ const loginForm = [
 	{
 		name: "Login",
 		type: "button",
-		className: "mt-2"
+		className: "mt-2",
 	}
 ]
 
@@ -86,21 +86,21 @@ export default function Login() {
 		}
 	}
 
-	const colorScheme = Appearance.getColorScheme();
-    const heroImage = colorScheme === "dark"
-        ? require('../../assets/images/fiit-dark.png')
-        : require('../../assets/images/fiit-light.png');
-
 	useEffect(() => {
 		attemptBiometricAuth();
 	}, []);
+
+	const colorScheme = Appearance.getColorScheme();
+	const heroImage = colorScheme === "dark"
+		? require('../../assets/images/fiit-dark.png')
+		: require('../../assets/images/fiit-light.png');
 	
 	return (
 		<View className={`${Screen}`}>
 			<AppImage
-				className="w-full aspect-video my-6 px-20"
+				className="w-full my-6 px-10"
 				source={heroImage}
-				 style={{ width: "100%", aspectRatio: 16 / 9, borderRadius: 50 }}
+				style={{ width: "100%", aspectRatio: 16 / 8, borderRadius: 10 }}
 			/>
 
 			<Form className={`${Card} flex flex-col gap-5 w-full`}
