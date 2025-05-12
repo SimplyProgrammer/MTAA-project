@@ -16,11 +16,13 @@ import React from "react";
 import { ImagePickerAsset } from "expo-image-picker";
 import { post_auth_file } from "@/libs/files";
 import * as toasts from "@/libs/toasts";
+import { isConnected } from "@/libs/axios/connection";
 
 export default function PostCard({ post, editing = false, isLoading = false, canDelete = false, className = "", onDelete = (post) => {}, onSubmit = (data) => {} }: any) {
-	const [isEditing, setIsEditing] = useState(editing);
 	const [editFormData, setEditFormData] = useState(null);
 	const [newImage, setNewImage] = useState<ImagePickerAsset>(null);
+
+	const [isEditing, setIsEditing] = useState(editing);
 
 	const confirmDelete = (post) => {
 		Alert.alert('Delete post?', 'Are you sure you want to delete this post?', [
@@ -83,8 +85,6 @@ export default function PostCard({ post, editing = false, isLoading = false, can
 		</View>
 	]
 
-	if (!post) return
-
 	return (
 		<View className={`${Card} !p-0 ${ isEditing ? 'overflow-visible' : 'overflow-hidden'} ${className}`}>
 			{
@@ -112,7 +112,7 @@ export default function PostCard({ post, editing = false, isLoading = false, can
 								<View className="m-4 flex gap-5">
 									<View className="flex-row justify-between items-center w-full">
 										<Text className={`${H1} flex-1`}>{post?.title ?? "Unavailable"}</Text>
-										{post?.canEdit && !isEditing && <Pressable className={`p-1.5 ${IconBtn}`} onPress={() => setIsEditing(true) }>
+										{post?.canEdit && isConnected.value && !isEditing && <Pressable className={`p-1.5 ${IconBtn}`} onPress={() => setIsEditing(true) }>
 											<Feather name="edit" size={20} />
 										</Pressable>}
 									</View>

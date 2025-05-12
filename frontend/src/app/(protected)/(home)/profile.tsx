@@ -126,7 +126,7 @@ export default function ProfileScreen() {
 					</AppButton> */}
 
 					<AppImagePicker className={`${IconBtn} bg-gray-400 w-[165px] rounded-full mb-2 overflow-hidden`} 
-						profileImage={user?.profile_img}
+						imageName={user?.profile_img}
 						imageClassName="!aspect-square"
 						imageStyle={tw`w-[102%] h-[102%]`}
 						onImagePicked={updateProfileImage}

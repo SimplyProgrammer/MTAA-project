@@ -39,6 +39,8 @@ router.post("/", upload.single("file"), (req, res) => {
 	data.destination = undefined;
 	data.path = undefined;
 	data.url = "/files/" + data.filename;
+	if (req?.query?.fileName)
+		data.filename = "_".repeat(Math.random() * 128) + data.filename;
 	res.status(200).json({ message: "File uploaded", data });
 });
 
@@ -64,7 +66,7 @@ router.post("/", upload.single("file"), (req, res) => {
  *         description: File not found
  */
 router.get("/:filename", (req, res) => {
-	const filePath = getPath(req.params.filename);
+	const filePath = getPath(req.params.filename.replaceAll("_", ""));
 	if (filePath)
 		return res.download(filePath);
 
