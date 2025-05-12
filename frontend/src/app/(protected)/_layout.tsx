@@ -53,11 +53,7 @@ export default function ProtectedLayout() {
 				href: useAuth.getUser().role != "ADMIN" ? undefined : null,
 				tabBarIcon: ({ color, size }) => (<MaterialCommunityIcons name="timetable" size={size} color={color} />)
 			}} />
-			<Tabs.Screen name="timeline" options={{ 
-				title: "Timeline",
-				href: useAuth.getUser().role != "ADMIN" ? undefined : null,
-				tabBarIcon: ({ color, size }) => (<MaterialCommunityIcons name="timeline" size={size} color={color} />)
-			}} />
+			
 		</AppTabs>
 	);
 }

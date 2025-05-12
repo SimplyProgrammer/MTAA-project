@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import { Alert, View, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import * as Styles from "@/components/styles";
 import AppButton from "@/components/AppButton";
 import axios from "@/libs/axios";
@@ -112,40 +112,56 @@ export default function TeacherOverviewScreen() {
     };
 
     // Add new event for a subject
-    const handleAddEvent = async () => {
-        if (!newEventTitle || !newEventType || !newEventSubjectId || !newEventDateTill) {
-            console.error("Please fill in all event fields");
-            return;
-        }
-        try {
-            setLoading(true);
-            const response = await axios.post_auth_data("events", {
-                title: newEventTitle,
-                subject_id: newEventSubjectId,
-                type: newEventType,
-                date_till: newEventDateTill,
-            });
-            if (response.data && response.data.data) {
-                setEvents((prev) => [...prev, response.data.data]);
-                setNewEventTitle("");
-                setNewEventType("");
-                setNewEventSubjectId(null);
-                setNewEventDateTill("");
-            } else if (response && response.id) {
-                setEvents((prev) => [...prev, response]);
-                setNewEventTitle("");
-                setNewEventType("");
-                setNewEventSubjectId(null);
-                setNewEventDateTill("");
-            } else {
-                console.error('Unexpected response structure:', response);
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+const handleAddEvent = async () => {
+    if (!newEventTitle || !newEventType || !newEventSubjectId || !newEventDateTill) {
+        console.error("Please fill in all event fields");
+        return;
+    }
+
+    Alert.alert(
+        "Confirm Add Event",
+        `Are you sure you want to add the event "${newEventTitle}"?`,
+        [
+            {
+                text: "Cancel",
+                style: "cancel",
+            },
+            {
+                text: "Add",
+                onPress: async () => {
+                    try {
+                        setLoading(true);
+                        const response = await axios.post_auth_data("events", {
+                            title: newEventTitle,
+                            subject_id: newEventSubjectId,
+                            type: newEventType,
+                            date_till: newEventDateTill,
+                        });
+                        if (response.data && response.data.data) {
+                            setEvents((prev) => [...prev, response.data.data]);
+                            setNewEventTitle("");
+                            setNewEventType("");
+                            setNewEventSubjectId(null);
+                            setNewEventDateTill("");
+                        } else if (response && response.id) {
+                            setEvents((prev) => [...prev, response]);
+                            setNewEventTitle("");
+                            setNewEventType("");
+                            setNewEventSubjectId(null);
+                            setNewEventDateTill("");
+                        } else {
+                            console.error('Unexpected response structure:', response);
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        setLoading(false);
+                    }
+                },
+            },
+        ]
+    );
+};
 
     // Fetch all lectures for the teacher's subjects
     const fetchLectures = async () => {

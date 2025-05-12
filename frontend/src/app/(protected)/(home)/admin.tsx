@@ -54,20 +54,33 @@ export default function AdminOverviewScreen() {
 
     // "Delete" user (set active = false)
     const handleDeleteUser = async (userId: number) => {
-        try {
-            setLoading(true);
-            await axios.put_auth_data(`users/accounts/${userId}`, {
-                first_name: users.find(u => u.id === userId)?.first_name,
-                last_name: users.find(u => u.id === userId)?.last_name,
-                active: false,
-                profile_img: users.find(u => u.id === userId)?.profile_img
-            });
-            setUsers((prev) => prev.map(u => u.id === userId ? { ...u, active: false } : u));
-        } catch (error) {
-            Alert.alert("Failed to deactivate user.");
-        } finally {
-            setLoading(false);
-        }
+        Alert.alert(
+            "Confirm Deactivation",
+            "Are you sure you want to deactivate this user?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Deactivate",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            setLoading(true);
+                            await axios.put_auth_data(`users/accounts/${userId}`, {
+                                first_name: users.find(u => u.id === userId)?.first_name,
+                                last_name: users.find(u => u.id === userId)?.last_name,
+                                active: false,
+                                profile_img: users.find(u => u.id === userId)?.profile_img
+                            });
+                            setUsers((prev) => prev.map(u => u.id === userId ? { ...u, active: false } : u));
+                        } catch (error) {
+                            Alert.alert("Failed to deactivate user.");
+                        } finally {
+                            setLoading(false);
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     useEffect(() => {
