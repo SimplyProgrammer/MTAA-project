@@ -1,4 +1,4 @@
-import {View, Text } from "react-native";
+import {View, Text, Appearance } from "react-native";
 import Form from "@/components/Form";
 
 import { login, getUser, authStorage } from "@/libs/auth";
@@ -89,12 +89,18 @@ export default function Login() {
 	useEffect(() => {
 		attemptBiometricAuth();
 	}, []);
+
+	const colorScheme = Appearance.getColorScheme();
+	const heroImage = colorScheme === "dark"
+		? require('../../assets/images/fiit-dark.png')
+		: require('../../assets/images/fiit-light.png');
 	
 	return (
 		<View className={`${Screen}`}>
 			<AppImage
-				className="w-full aspect-video my-6 px-5"
-				source={require('../../assets/images/hero1.png')}
+				className="w-full my-6 px-10"
+				source={heroImage}
+				style={{ width: "100%", aspectRatio: 16 / 8, borderRadius: 10 }}
 			/>
 
 			<Form className={`${Card} flex flex-col gap-5 w-full`}

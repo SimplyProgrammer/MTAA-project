@@ -60,6 +60,7 @@ export default function AdminOverviewScreen() {
                 first_name: users.find(u => u.id === userId)?.first_name,
                 last_name: users.find(u => u.id === userId)?.last_name,
                 active: false,
+                profile_img: users.find(u => u.id === userId)?.profile_img
             });
             setUsers((prev) => prev.map(u => u.id === userId ? { ...u, active: false } : u));
         } catch (error) {

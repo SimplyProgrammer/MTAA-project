@@ -17,7 +17,7 @@ export default function AuthImage({ children = undefined, imageName = null, clas
 	}
 
 	return (
-		<View className={`flex justify-center items-center bg-transparent aspect-video ${className}`}>
+		<View className={`flex justify-center items-center bg-transparent aspect-video overflow-hidden ${className}`}>
 			{children ?? <Image
 				style={tw`w-full h-full`}
 				contentFit={contentFit as ImageContentFit ?? "contain"}
