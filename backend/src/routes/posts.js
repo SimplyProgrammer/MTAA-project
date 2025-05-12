@@ -4,6 +4,8 @@ const { begin, commit, rollback, select, insert, update, remove, query } = requi
 const { checkOwnership, authorizeFor } = require("../middlewares/authorize");
 const { getPageInfo, pagination } = require("../config/pagination");
 
+const { ws } = require("../config/wss");
+
 /**
  * @openapi
  * /posts:
@@ -195,7 +197,11 @@ router.post("/", async (req, res) => {
 			"posts (title, text, user_id, image) VALUES ($1, $2, $3, $4)",
 			[title, text, user_id, image]
 		);
+
 		res.json({ data: result.rows[0] });
+		ws.server.clients.forEach((client) => {
+			client.send(JSON.stringify({ type: "postCreated", data: result.rows[0] }));
+		})
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
@@ -285,6 +291,9 @@ router.put("/:id", authorizeFor("*"), async (req, res) => {
 
 		await commit();
 		res.json({ message: "Post updated", data: result.rows[0] });
+		ws.server.clients.forEach((client) => {
+			client.send(JSON.stringify({ type: "postUpdated", data: result.rows[0] }));
+		})
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");
@@ -328,6 +337,9 @@ router.delete("/:id", authorizeFor("*"), async (req, res) => {
 
 		await commit();
 		res.json({ data: result.rows[0] });
+		ws.server.clients.forEach((client) => {
+			client.send(JSON.stringify({ type: "postDeleted", data: result.rows[0] }));
+		})
 	} catch (err) {
 		console.error(err);
 		res.status(500).send("Internal server error");

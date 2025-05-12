@@ -35,7 +35,7 @@ const loginForm = [
 	{
 		name: "Login",
 		type: "button",
-		className: "mt-2"
+		className: "mt-2",
 	}
 ]
 

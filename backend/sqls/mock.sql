@@ -1,6 +1,6 @@
 INSERT INTO Posts (user_id, title, text, image) -- Mock posts
 SELECT
-	(random() * 2 + 1)::int,
+	(random() * 3 + 1)::int,
 	titles[ceil(random() * array_length(titles, 1))::int],
 	texts[ceil(random() * array_length(texts, 1))::int],
 	CASE WHEN random() < 0.5

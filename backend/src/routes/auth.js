@@ -25,7 +25,7 @@ const { genAccessToken, getTokenFromRequest, doRefreshToken, invalidateToken } =
  *                 nullable: true
  *               email:
  *                 type: string
- *                 default: "hi.there@mail.co"
+ *                 default: "tst@mail.co"
  *               password:
  *                 type: string
  *                 default: "tst123"
@@ -115,7 +115,7 @@ router.post("/signup", async (req, res) => {
  *             properties:
  *               email:
  *                 type: string
- *                 default: "hi.there@mail.co"
+ *                 default: "tst@mail.co"
  *               password:
  *                 type: string
  *                 default: "tst123"

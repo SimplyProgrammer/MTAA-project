@@ -7,7 +7,11 @@ dotenv.config();
 
 const express = require('express');
 const app = express();
+const server = require('http').createServer(app);
 app.use(express.json());
+
+const { createWss, ws } = require("./config/wss");
+createWss(server);
 
 const cors = require("cors");
 app.use(cors());
@@ -84,8 +88,6 @@ app.use("/evaluations", verifyToken, evaluationsRouter);
 const reminderRouter = require("./routes/reminderJob");
 app.use("/reminderJob", verifyToken, reminderRouter);
 
-
-
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 
@@ -109,6 +111,8 @@ app.use(verifyToken, (req, res, next) => {
 // setInterval(logServerTime, 10000);
 
 const { IP, PORT } = require("./utils")
-app.listen(PORT, IP, () => {
+server.listen(PORT, IP, () => {
 	console.log(`Server running on http://${IP}:${PORT}`);
 });
+
+exports.app = app;

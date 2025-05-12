@@ -51,6 +51,7 @@ export default function Form({ formConfig = [], onSubmit = null, onChange = null
 				if (field.type == "button") {
 					return (
 						<AppButton
+							{...field}
 							key={index}
 							className={`${field.className || ""}`}
 							title={field.name}
@@ -62,6 +63,7 @@ export default function Form({ formConfig = [], onSubmit = null, onChange = null
 				if (field.type === "checkbox") {
 					return (
 						<AppCheckbox
+							{...field}
 							key={index}
 							label={field.label || field.name}
 							value={formState[field.variable || field.name]}
@@ -74,6 +76,7 @@ export default function Form({ formConfig = [], onSubmit = null, onChange = null
 
 				return (
 					<AppInput
+						{...field}
 						key={index}
 						className={`${Input} ${field.className || ""}`}
 						placeholder={field.name}
