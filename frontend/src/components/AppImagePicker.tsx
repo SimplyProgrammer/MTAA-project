@@ -4,6 +4,7 @@ import AppImagePickerGestures, { AppImagePickerGesturesProps } from "./AppImageP
 import tw from "twrnc";
 import { View } from "react-native";
 import { post_auth_file } from "@/libs/files";
+import { isConnected } from "@/libs/axios/connection";
 
 export interface AppImagePickerProps extends AppImagePickerGesturesProps {
 	imageName?: string
@@ -40,14 +41,14 @@ export default function AppImagePicker({ children, imageName, onImagePicked, pos
 
 	if (!editable) {
 		return <View { ...props }>
-			<AppImage imageName={image} key={rerender} className={`${imageClassName}`} style={imageStyle} cachePolicy="none">
+			<AppImage imageName={image} key={rerender} className={`${imageClassName}`} style={imageStyle} cachePolicy={isConnected.value ? 'none' : 'disk'}>
 				{children}
 			</AppImage>
 		</View> 
 	}
 
 	return <AppImagePickerGestures onImagePicked={_onImagePicked} { ...props }>
-		<AppImage imageName={image} key={rerender} className={`${imageClassName}`} style={imageStyle} cachePolicy="none">
+		<AppImage imageName={image} key={rerender} className={`${imageClassName}`} style={imageStyle} cachePolicy={isConnected.value ? 'none' : 'disk'}>
 			{children}
 		</AppImage>
 	</AppImagePickerGestures>
