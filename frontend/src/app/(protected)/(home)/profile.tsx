@@ -73,7 +73,7 @@ export default function ProfileScreen() {
 		<Text className={`${H3}`}>
 			User preferences
 		</Text>,
-		{ name: "Enable Notifications", variable: "notifications", type: "checkbox", value: user?.preferences.notifications },
+		// { name: "Enable Notifications", variable: "notifications", type: "checkbox", value: user?.preferences.notifications },
 		{ name: "Dark Mode", variable: "dark_mode", type: "checkbox", value: user?.preferences.dark_mode },
 		{ name: "Use biometric login", variable: "use_biometrics", type: "checkbox", value: user?.preferences.use_biometrics },
 	];
@@ -125,14 +125,14 @@ export default function ProfileScreen() {
 						<MaterialIcons name="http" size={24} color="blue" />
 					</AppButton> */}
 
-					<AppImagePicker className={`${IconBtn} bg-gray-400 w-[160px] rounded-full mb-2 overflow-hidden`} 
+					<AppImagePicker className={`${IconBtn} bg-gray-400 w-[165px] rounded-full mb-2 overflow-hidden`} 
 						profileImage={user?.profile_img}
 						imageClassName="!aspect-square"
 						imageStyle={tw`w-[102%] h-[102%]`}
 						onImagePicked={updateProfileImage}
 						imgOptions={{ aspect: [1, 1] }}
 					>
-						{ !user?.profile_img && user?.first_name?.[0] && user?.last_name?.[0] ? <Text className={`${H1} text-4xl !text-gray-900`}>{(user.first_name[0].toUpperCase()) + user?.last_name[0].toUpperCase()}</Text> : null }
+						{ !user?.profile_img && user?.first_name?.[0] && user?.last_name?.[0] ? <Text className={`${H1} text-5xl !text-gray-900`}>{(user.first_name[0].toUpperCase()) + user?.last_name[0].toUpperCase()}</Text> : null }
 					</AppImagePicker>
 
 					<Text className={`${H3}`}>{user?.first_name} {user?.last_name}</Text>
