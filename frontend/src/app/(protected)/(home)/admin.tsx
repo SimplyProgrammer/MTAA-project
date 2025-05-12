@@ -142,7 +142,7 @@ export default function AdminOverviewScreen() {
                         <AppButton
                             title={loading ? "Adding..." : "Add User"}
                             onPress={handleAddUser}
-                            disable={loading}
+                            disabled={loading}
                         />
                     </View>
                 </View>
