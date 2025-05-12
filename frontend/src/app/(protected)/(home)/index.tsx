@@ -19,6 +19,9 @@ import * as Location from 'expo-location';
 
 import * as Notifications from "expo-notifications";
 
+import PostCard from "@/components/posts/PostCard";
+
+
 const FIXED_POINT = { latitude: 48.1534, longitude: 17.0715 };
 
 function getDistanceFromLatLonInMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -68,7 +71,27 @@ export default function HomeScreen() {
 
     const [distance, setDistance] = useState<number | null>(null);
 
+    const [latestPosts, setLatestPosts] = useState<any[]>([]);
+    const [postsLoading, setPostsLoading] = useState(false);
 
+    useEffect(() => {
+        const fetchLatestPosts = async () => {
+            setPostsLoading(true);
+            try {
+                // Fetch 4 latest posts, same as posts screen
+                const response = await axios.get_auth_data("/posts?limit=4&page=1");
+                setLatestPosts(response || []);
+                console.log("Latest posts:", response);
+            } catch (err) {
+                setLatestPosts([]);
+            } finally {
+                setPostsLoading(false);
+            }
+        };
+        fetchLatestPosts();
+    }, []);
+
+    
 
     useEffect(() => {
         (async () => {
@@ -168,6 +191,10 @@ export default function HomeScreen() {
         return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     };
 
+    if (latestPosts.length > 0) {
+        latestPosts.forEach(post => console.log(post.title));
+    }
+
 	return (
     <ScrollView className={Styles.ScrollViewContainer}>
             <View className={``}>
@@ -229,9 +256,24 @@ export default function HomeScreen() {
                     )}
                 </View>
 
-                <View className={`${Styles.Card} mt-3 mb-8`}>
+                <View className={`${Styles.Card} mt-3`}>
                     <Text className={`${Styles.H3} mb-3`}>Latest posts</Text>
-                     <Text>TODO: Fetch latest posts (4)</Text>
+                    {postsLoading ? (
+                        <Text>Loading...</Text>
+                    ) : latestPosts.length === 0 ? (
+                        <Text className={Styles.emptyText}>No posts found.</Text>
+                    ) : (
+                        latestPosts.map((post) => (
+                            <TouchableOpacity
+                                key={post.id}
+                                onPress={() => router.push(`../posts/${post.id}`)}
+                                activeOpacity={0.8}
+                                style={{ marginBottom: 10 }}
+                            >
+                                <PostCard post={post} />
+                            </TouchableOpacity>
+                        ))
+                    )}
                 </View>
 
 

@@ -43,7 +43,7 @@ async function getUpcomingEventsForUser(userId) {
 }
 
 // setupnem to na 16:30 na prezentaciu, aj tak to bude treba zmenit
-cron.schedule("05 12 * * *", async () => {
+cron.schedule("30 16 * * *", async () => {
     console.log("[ReminderJob] Running daily event reminder job...");
 
     const users = await getUsersWithPushTokens();
