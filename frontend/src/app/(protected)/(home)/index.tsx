@@ -191,9 +191,7 @@ export default function HomeScreen() {
         return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     };
 
-    if (latestPosts.length > 0) {
-        latestPosts.forEach(post => console.log(post.title));
-    }
+
 
 	return (
     <ScrollView className={Styles.ScrollViewContainer}>
@@ -238,7 +236,7 @@ export default function HomeScreen() {
                     )}
                 </View>
                
-                <View className={`${Styles.Card} mt-3`}>
+                <View className={`${Styles.Card} mt-3 mb-7`}>
                     <Text className={`${Styles.H3} mb-3`}>Your Subjects</Text>
                     {subjects.length === 0 ? (
                         <Text className={Styles.emptyText}>No subjects found.</Text>
