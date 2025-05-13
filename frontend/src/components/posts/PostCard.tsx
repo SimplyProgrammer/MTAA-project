@@ -18,7 +18,7 @@ import { post_auth_file } from "@/libs/files";
 import * as toasts from "@/libs/toasts";
 import { isConnected } from "@/libs/axios/connection";
 
-export default function PostCard({ post, editing = false, isLoading = false, canDelete = false, className = "", onDelete = (post) => {}, onSubmit = (data) => {} }: any) {
+export default function PostCard({ post, editing = false, isLoading = false, canDelete = false, className = "", onDelete = (post) => {}, onSubmit = (data) => {} }) {
 	const [editFormData, setEditFormData] = useState(null);
 	const [newImage, setNewImage] = useState<ImagePickerAsset>(null);
 
@@ -28,7 +28,7 @@ export default function PostCard({ post, editing = false, isLoading = false, can
 		Alert.alert('Delete post?', 'Are you sure you want to delete this post?', [
 			{
 				text: 'Cancel',
-				onPress: () => console.log('Delete canceled'),
+				onPress: () => console.log('Post delete canceled'),
 				style: 'cancel',
 			},
 			{
@@ -59,9 +59,9 @@ export default function PostCard({ post, editing = false, isLoading = false, can
 			title: editFormData?.title ?? post?.title, 
 			text: editFormData?.text ?? post?.text, 
 			image
-		};
+		}
 		// console.log(data)
-		await onSubmit(data);
+		await onSubmit(data)
 	}
 
 	const editForm = [
