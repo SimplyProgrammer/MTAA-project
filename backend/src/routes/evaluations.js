@@ -1,12 +1,9 @@
 const router = require("express").Router();
 const db = require("../config/db");
 
-// GET /evaluations?user_id=...&subject_id=...
-// Returns all evaluations matching the given user_id and subject_id
 router.get("/", async (req, res) => {
 	const { user_id, subject_id } = req.query;
   
-	// validate inputs
 	if (!user_id || !subject_id) {
 	  return res
 		.status(400)

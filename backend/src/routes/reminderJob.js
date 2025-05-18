@@ -67,4 +67,10 @@ cron.schedule("22 02 * * *", async () => {
     console.log("[ReminderJob] Finished.");
 }, { timezone: "Europe/Bratislava" });
 
-module.exports = router;
+module.exports = {
+    router,
+    sendPushNotification,
+    getUsersWithPushTokens,
+    getUpcomingEventsForUser
+};
+

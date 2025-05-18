@@ -53,6 +53,7 @@
     "expo-system-ui": "~4.0.9",
     "expo-task-manager": "~12.0.6",
     "expo-web-browser": "~14.0.2",
+    "frontend": "file:../frontend",
     "lodash": "^4.17.21",
     "moti": "^0.30.0",
     "nativewind": "^4.1.23",
